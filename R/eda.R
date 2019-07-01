@@ -6,11 +6,10 @@
 #'
 #' @param scrna Seurat object.
 #' @param outdir Path to output directory.
-#'
 #' @return Seurat object with percent mitochondrial reads added to the
 #'   metadata for each cell.
 #'
-#' @import Seurat
+#' @importFrom Seurat PercentageFeatureSet VlnPlot
 #'
 #' @export
 #'
@@ -18,8 +17,8 @@ RunQC <- function(scrna, outdir){
   # Low-quality or dying cells often have mitochondrial contamination.
   scrna[["percent.mt"]] <- PercentageFeatureSet(scrna, pattern = "^MT-")
 
-  print("Creating QC plots.")
-  pdf(sprintf("%s/Vln.QC.Metrics.pdf", outdir), height = 12, width = 12, 
+  message("Creating QC plots.")
+  pdf(sprintf("%s/Vln.QC.Metrics.pdf", outdir), height = 12, width = 8, 
   	useDingbats = FALSE)
   p <- VlnPlot(scrna, features = c("nFeature_RNA", "nCount_RNA", 
 		"percent.mt"), ncol = 1)
@@ -29,7 +28,7 @@ RunQC <- function(scrna, outdir){
   return(scrna)
 }
 
-#' Normalize counts and score cell cycle for each cell.
+#' Normalize counts and score cell cycle for each cell
 #' 
 #' \code{NormScoreCC} returns a Seurat object with normalized counts and adds 
 #' cell cycle scores for each gene based on Seurat's cell cycle gene lists.
@@ -40,31 +39,27 @@ RunQC <- function(scrna, outdir){
 #' for data normalization, scaling, and therefore, regression. 
 #'
 #' @param scrna Seurat object to score cell cycle genes for each cell.
-#'
 #' @return Seurat object with cell cycle scores (S.Score, G2M.Score) and 
 #'   Phase added to metadata for each cell.
 #'
-#' @import Seurat
+#' @importFrom Seurat NormalizeData CellCycleScoring
 #'
 #' @export
 #'
 NormScoreCC <- function(scrna){
-	print("Scoring cell cycle genes.")
+	message("Scoring cell cycle genes.")
 	# A list of cell cycle markers, from Tirosh et al, 2015, is loaded with 
 	# Seurat. We can segregate this list into markers of G2/M and of S phase.
-	s_genes <- cc.genes$s.genes
-	g2m_genes <- cc.genes$g2m.genes
+	s.genes <- cc.genes$s.genes
+	g2m.genes <- cc.genes$g2m.genes
 
 	scrna <- NormalizeData(scrna)
-	scrna <- FindVariableFeatures(scrna)
-	scrna <- ScaleData(scrna, vars.to.regress = "percent.mt", features = 
-		rownames(scrna))
 
-	cc_seurat <- CellCycleScoring(scrna, s.features = s_genes, 
-		g2m.features = g2m_genes)
-	print("Cell cycle scoring complete.")
+	cc.seurat <- CellCycleScoring(scrna, s.features = s.genes, 
+		g2m.features = g2m.genes)
+	message("Cell cycle scoring complete.")
 
-	return(cc_seurat)
+	return(cc.seurat)
 }
 
 #' Exploratory data analysis plots
@@ -76,14 +71,13 @@ NormScoreCC <- function(scrna){
 #' PCA on variable features can also be plotted by batch to view potential batch
 #' effects.
 #'
-#' A new directory called "BatchEffect_CellCycle_EDA" will be created in the 
-#' output directory for plot output.
-#'
 #' @param scrna Seurat object.
 #' @param outdir Path to output directory for plots.
 #' @param npcs Number of PCs to use for PCA and ElbowPlot. 50 by default.
-#' @param batch Boolean indicating whether `batch` should be investigated.
-#'   Requires `batch` metadata for each cell. FALSE by default.
+#' @param batch Boolean indicating whether \code{batch} should be investigated.
+#'   Requires \code{batch} metadata for each cell. FALSE by default.
+#' @return A Seurat object with a PCA for cell cycle genes stored with
+#'   \code{reduction.name = "cc"}. 
 #'
 #' @import sctransform
 #' @import Seurat
@@ -94,9 +88,10 @@ BatchCCEDA <- function(scrna, outdir, npcs = 50, batch = FALSE){
 
   # A list of cell cycle markers, from Tirosh et al, 2015, is loaded with 
   # Seurat.  We can segregate this list into markers of G2/M and S phase.
-  s_genes <- cc.genes$s.genes
-  g2m_genes <- cc.genes$g2m.genes
+  s.genes <- cc.genes$s.genes
+  g2m.genes <- cc.genes$g2m.genes
 
+  # Scale and return all genes so cell cycle gene PCAs won't lie to use.
   scrna <- SCTransform(scrna, vars.to.regress = "percent.mt",
   	return.only.var.genes = FALSE)
   scrna <- RunPCA(scrna, npcs = npcs)
@@ -109,21 +104,23 @@ BatchCCEDA <- function(scrna, outdir, npcs = 50, batch = FALSE){
 
   # Take a look at PCA for variable genes across batch.
   if(isTRUE(batch)) {
-		pdf(sprintf("%s/PCA.Batch.NoRegression.pdf", out), height = 5, width = 9)
-		p <- DimPlot(scrna, group.by = "batch", pt.size = 0.3) +
-			ggplot2::theme(legend.position = "right")
+		pdf(sprintf("%s/PCA.Batch.NoRegression.pdf", out), height = 5, width = 7,
+			useDingbats = FALSE)
+		p <- DimPlot(scrna, group.by = "batch", pt.size = 0.3)
 		p <- AugmentPlot(plot = p) # Saves dots as a png rather than vectors.
 		print(p)
 		dev.off()
   }
 
   # Now take a look at the PCA for the cell cycle genes.
-  scrna <- RunPCA(scrna, npcs = npcs, features = c(s_genes, g2m_genes))
+  scrna <- RunPCA(scrna, npcs = npcs, features = c(s.genes, g2m.genes),
+  	reduction.name = "cc")
   pdf(sprintf("%s/PCA.CellCycle.NoRegression.pdf", outdir), height = 5, 
-  	width = 9)
-  p <- DimPlot(scrna, group.by = "Phase", pt.size = 0.3) +
-  	ggplot2::theme(legend.position = "right")
+  	width = 7, useDingbats = FALSE)
+  p <- DimPlot(scrna, group.by = "Phase", pt.size = 0.3, reduction = "cc")
   p <- AugmentPlot(plot = p) # Saves dots as a png rather than vectors.
   print(p)
   dev.off()
+
+  return(scrna)
 }

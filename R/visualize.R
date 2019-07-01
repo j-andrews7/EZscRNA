@@ -13,7 +13,35 @@
 #' @export
 #'
 VizAnnotatedMarkers <- function(scrna, marker_file, outdir) {
-
+	# gene lists
+	glists.raw <- read.table(gene.lists, sep = ",", row.names = NULL, 
+		header = TRUE, as.is = TRUE)
+  glists <- glists.raw[which(glists.raw$Name %in% rownames(scrna)), ] # filtered genelists
+                                         # plot individual genes in various classes:
+  for (i in unique(glists$List)) {
+    gplotlist=list()
+    j=gsub(" ","_",i)
+    j=gsub("/","_",j)
+    genesToPlot = glists$Name[which(glists$List == i)]
+    ng = length(genesToPlot) # number of genes
+    outfile = sprintf("%s/tsneplot.%s.%s.%s.pdf", output.genes, j, control, 
+    	date)
+    print(outfile)
+    h = 0
+    w = 0
+    if (ng > 1) {
+      w = 10 # two columns
+      h = 5 * (floor(ng / 2) + ng %% 2) # number of rows
+    } else {
+      w = 5 # two columns
+      h = 5 # number of rows
+      }
+    pdf(outfile, useDingbats = FALSE, height = h, width = w)
+    fp <- FeaturePlot(object = scrna, features = genesToPlot, 
+    	cols = c("gray","red"), ncol=2, reduction = "tsne")
+    print(fp)
+    dev.off()
+  }
 }
 
 #' Visualize a list of genes
