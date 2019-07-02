@@ -104,10 +104,9 @@ BatchCCEDA <- function(scrna, outdir, npcs = 50, batch = FALSE){
 
   # Take a look at PCA for variable genes across batch.
   if(isTRUE(batch)) {
-		pdf(sprintf("%s/PCA.Batch.NoRegression.pdf", out), height = 5, width = 7,
+		pdf(sprintf("%s/PCA.Batch.NoRegression.pdf", outdir), height = 5, width = 7,
 			useDingbats = FALSE)
 		p <- DimPlot(scrna, group.by = "batch", pt.size = 0.3)
-		p <- AugmentPlot(plot = p) # Saves dots as a png rather than vectors.
 		print(p)
 		dev.off()
   }
@@ -118,7 +117,6 @@ BatchCCEDA <- function(scrna, outdir, npcs = 50, batch = FALSE){
   pdf(sprintf("%s/PCA.CellCycle.NoRegression.pdf", outdir), height = 5, 
   	width = 7, useDingbats = FALSE)
   p <- DimPlot(scrna, group.by = "Phase", pt.size = 0.3, reduction = "cc")
-  p <- AugmentPlot(plot = p) # Saves dots as a png rather than vectors.
   print(p)
   dev.off()
 

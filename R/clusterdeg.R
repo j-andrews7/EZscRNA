@@ -39,9 +39,6 @@
 #'   shown). If provided, must be same length as groups parameter.
 #' @param ccpca Boolean to indicate whether PCA using only cell cycle genes
 #'   should be performed and plotted by sample identity and Phase.
-#' @param use.augment Boolean to indicate whether \code{AugmentPlot} should be
-#'   used so points aren't saved as vector graphics while axes, labels, etc are.
-#'   Useful if the plot is going to be edited in Illustrator. True by default.
 #' @param test Denotes which DE test to use for marker finding. Options are: 
 #'   "wilcox" (default), "bimod", "roc", "t", "negbinom", "poisson", "LR", 
 #'   "MAST", "DESeq2".
@@ -63,7 +60,7 @@
 RunSCT <- function(scrna, outdir, npcs = 50, res = 0.8, min.dist = 0.3, 
 									n.neighbors = 30, regress = NULL, groups = NULL, 
 									groups.pca = NULL, groups.label = NULL, groups.legend = NULL,
-									ccpca = FALSE, use.augment = TRUE, test = "wilcox", 
+									ccpca = FALSE, test = "wilcox", 
 									logfc.thresh = 0.25, min.pct = 0.1) {
 
   # Run sctransform & regress out any specified variables.
@@ -77,17 +74,11 @@ RunSCT <- function(scrna, outdir, npcs = 50, res = 0.8, min.dist = 0.3,
 		scrna <- RunPCA(scrna, npcs = npcs, features = c(s.genes, g2m.genes),
 		  reduction.name = "cc")
 		pdf(sprintf("%s/CellCycle.PCA.Regression.pdf", outdir), height = 5, 
-		width = 9)
+		width = 7)
 		p <- DimPlot(scrna, group.by = "orig.ident", reduction = "cc", 
 			pt.size = 0.3) 
-		if (isTRUE(use.augment)) {
-		  p <- AugmentPlot(plot = p) # Saves points as a png.
-		}
 		print(p)
 		p <- DimPlot(scrna, group.by = "Phase", reduction = "cc", pt.size = 0.3)
-		if (isTRUE(use.augment)) {
-		  p <- AugmentPlot(plot = p) # Saves points as a png.
-		}
 		print(p)
 		dev.off()
   }
@@ -117,31 +108,32 @@ RunSCT <- function(scrna, outdir, npcs = 50, res = 0.8, min.dist = 0.3,
 			# Yikes.
 			if (!is.null(groups.legend)) {
 
-			  if (!isTRUE(groups.legend[i])) {
+			  if (isTRUE(groups.legend[i])) {
 					p <- DimPlot(scrna, label = label, group.by = var, pt.size = 0.3) +
-				  	NoLegend() + ggtitle(label = sprintf("UMAP - %s", var))
+				  	ggtitle(label = sprintf("UMAP - %s", var))
 					if (!is.null(groups.pca)) {
 				  	if (isTRUE(groups.pca[i])) {
 						p2 <- DimPlot(scrna, label = label, group.by = var,
-					  	reduction = "pca", pt.size = 0.3) + NoLegend() +
+					  	reduction = "pca", pt.size = 0.3) + 
 					  	ggtitle(label = sprintf("PCA - %s", var))
 				  	}
 					}
 			  } else {
 			    p <- DimPlot(scrna, label = label, group.by = var, pt.size = 0.3) +
-				  ggtitle(label = sprintf("UMAP - %s", var))
+				  ggtitle(label = sprintf("UMAP - %s", var)) + NoLegend()
 			    if (!is.null(groups.pca)) {
 				  	if (isTRUE(groups.pca[i])) {
 				    	p2 <- DimPlot(scrna, label = label, group.by = var,
-					  	reduction = "pca", pt.size = 0.3) +
-					  	ggtitle(label = sprintf("PCA - %s", var))
+					  	reduction = "pca", pt.size = 0.3) + 
+					  	ggtitle(label = sprintf("PCA - %s", var)) + NoLegend() 
 				  	}
 			    }
 			  }
 
 			} else {
+				message("All legends should be printed.")
 			  p <- DimPlot(scrna, label = label, group.by = var, pt.size = 0.3) +
-				ggtitle(label = sprintf("UMAP - %s", var))
+					ggtitle(label = sprintf("UMAP - %s", var))
 				if (!is.null(groups.pca)) {
 			  	if (isTRUE(groups.pca[i])) {
 						p2 <- DimPlot(scrna, label = label, group.by = var,
@@ -151,15 +143,9 @@ RunSCT <- function(scrna, outdir, npcs = 50, res = 0.8, min.dist = 0.3,
 				}
 		  }
 
-		  if (isTRUE(use.augment)) {
-		    p <- AugmentPlot(plot = p)
-		  }
 		  print(p)
 
 		  if (!is.null(p2)) {
-		    if (isTRUE(use.augment)) {
-			  	p2 <- AugmentPlot(plot = p2)
-		    }
 		    print(p2)
 		  }
     }
@@ -167,9 +153,7 @@ RunSCT <- function(scrna, outdir, npcs = 50, res = 0.8, min.dist = 0.3,
 
   p <- DimPlot(scrna, label = TRUE, pt.size = 0.3) + NoLegend() + 
   	ggtitle(label = "UMAP")
-	if (isTRUE(use.augment)) {
-		p <- AugmentPlot(plot = p)
-	}
+
 	print(p)
   dev.off()
 
@@ -177,6 +161,12 @@ RunSCT <- function(scrna, outdir, npcs = 50, res = 0.8, min.dist = 0.3,
   markers <- FindAllMarkers(scrna, assay = "RNA", 
 		logfc.threshold = logfc.thresh, min.pct = min.pct, test.use = test)
 	
+    # Save markers as table.
+  message("Saving cluster markers.")
+  write.table(markers, file=sprintf("%s/Cluster.Markers.txt", outdir), 
+		sep="\t", quote=FALSE, row.names=FALSE)
+
+  message("Visualizing cluster markers.")
   # Make marker heatmap.
   pdf(sprintf("%s/Top10.UpMarkers.Cluster.Heatmap.pdf", outdir), height=24, 
 	width=38)
@@ -184,10 +174,6 @@ RunSCT <- function(scrna, outdir, npcs = 50, res = 0.8, min.dist = 0.3,
 		dplyr::top_n(n = 10, wt = avg.logFC) %>% dplyr::filter(avg.logFC > 0)
   DoHeatmap(scrna, features = top10up$gene, lines.width=5)
   dev.off()
-
-  # Save markers as table.
-  write.table(markers, file=sprintf("%s/Cluster.Markers.txt", outdir), 
-		sep="\t", quote=FALSE, row.names=FALSE)
 
   return(scrna)
 }

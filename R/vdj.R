@@ -118,9 +118,9 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 			group = ord,  fill = !!as.symbol(g.by))) + 
 			geom_col(position = position_dodge(preserve = "single"), 
 			colour = "black") + scale_y_continuous(labels = scales::percent) +
-			xlab("Clonotype") + ylab("Frequency") +
-			theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-			theme_classic()
+			xlab("Clonotype") + ylab("Frequency") + theme_classic() +
+			theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1), 
+			axis.line.x = element_line(size = 1, colour = "black"))
 		print(p)
 
 		# Plot individual group frequencies.
@@ -136,9 +136,9 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 
 			p <- ggplot(g.spec, aes(x = reorder(cdr3s_aa, -prop), prop)) + geom_col(
 				colour = "black") + scale_y_continuous(labels = scales::percent) +
-				ggtitle(i) + xlab("Clonotype") + ylab("Frequency") +
-				theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-				theme_classic()
+				ggtitle(i) + xlab("Clonotype") + ylab("Frequency") + theme_classic() +
+				theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1), 
+				axis.line.x = element_line(size = 1, colour = "black"))
 				print(p)
 		}
 	} else {
@@ -154,9 +154,9 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 
 		p <- ggplot(g.spec, aes(x = reorder(cdr3s_aa, -prop), prop)) + geom_col(
 			colour = "black") + scale_y_continuous(labels = scales::percent) +
-			xlab("Clonotype") + ylab("Frequency") +
-			theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-			theme_classic()
+			xlab("Clonotype") + ylab("Frequency") + theme_classic() +
+			theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1), 
+			axis.line.x = element_line(size = 1, colour = "black")) 
 			print(p)
 	}
 
