@@ -78,6 +78,8 @@ AddClonotype <- function(vdj.dir, scrna){
 VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 	n.clono.g = NULL) {
 
+	message("Visualizing clonotype distributions.")
+
 	if (!is.null(g.by)) {
 
 		# Get clonotype frequencies.
@@ -117,7 +119,8 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 			geom_col(position = position_dodge(preserve = "single"), 
 			colour = "black") + scale_y_continuous(labels = scales::percent) +
 			xlab("Clonotype") + ylab("Frequency") +
-			theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+			theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+			theme_classic()
 		print(p)
 
 		# Plot individual group frequencies.
@@ -134,7 +137,8 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 			p <- ggplot(g.spec, aes(x = reorder(cdr3s_aa, -prop), prop)) + geom_col(
 				colour = "black") + scale_y_continuous(labels = scales::percent) +
 				ggtitle(i) + xlab("Clonotype") + ylab("Frequency") +
-				theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+				theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+				theme_classic()
 				print(p)
 		}
 	} else {
@@ -151,7 +155,8 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 		p <- ggplot(g.spec, aes(x = reorder(cdr3s_aa, -prop), prop)) + geom_col(
 			colour = "black") + scale_y_continuous(labels = scales::percent) +
 			xlab("Clonotype") + ylab("Frequency") +
-			theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+			theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+			theme_classic()
 			print(p)
 	}
 
