@@ -2,7 +2,7 @@
 % Please edit documentation in R/eda.R
 \name{NormScoreCC}
 \alias{NormScoreCC}
-\title{Normalize counts and score cell cycle for each cell.}
+\title{Normalize counts and score cell cycle for each cell}
 \usage{
 NormScoreCC(scrna)
 }

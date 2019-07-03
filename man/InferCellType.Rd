@@ -4,7 +4,7 @@
 \alias{InferCellType}
 \title{Infer cell type using reference dataset}
 \usage{
-InferCellType(scrna, dataset, outdir, n_cores)
+InferCellType(scrna, dataset, outdir, lineage = FALSE, n.cores = 1)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -13,11 +13,18 @@ InferCellType(scrna, dataset, outdir, n_cores)
 be gene identifiers that match those of the Seurat object. Each subsequent
 column should contain counts for a cell type with the column header
 denoting the cell type. Replicates should contain an underscore followed 
-by the replicate number (e.g. BCell_1, BCell_2, etc).}
+by the replicate number (e.g. Bcell_1, Bcell_2, etc).}
 
 \item{outdir}{Path to output directory.}
 
-\item{n_cores}{Number of cores to use for correlation. Linearly decreases 
+\item{lineage}{Boolean indicating whether or not column names are formatted
+as lineage followed by more granular specifications (e.g. Tcell.CD4_1,
+Tcell.CD8_1, etc). If TRUE, will assign the lineage (everything before the)
+first '.' in the column name to a metadata column called "base.lineage".
+Columns not containing a '.' will use the entire name, though replicate
+indicators will be removed (e.g. NK_1 will just be NK).}
+
+\item{n.cores}{Number of cores to use for correlation. Linearly decreases 
 computation time.}
 }
 \value{

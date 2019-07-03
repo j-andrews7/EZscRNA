@@ -13,8 +13,12 @@ BatchCCEDA(scrna, outdir, npcs = 50, batch = FALSE)
 
 \item{npcs}{Number of PCs to use for PCA and ElbowPlot. 50 by default.}
 
-\item{batch}{Boolean indicating whether `batch` should be investigated.
-Requires `batch` metadata for each cell. FALSE by default.}
+\item{batch}{Boolean indicating whether \code{batch} should be investigated.
+Requires \code{batch} metadata for each cell. FALSE by default.}
+}
+\value{
+A Seurat object with a PCA for cell cycle genes stored with
+  \code{reduction.name = "cc"}.
 }
 \description{
 \code{BatchCCEDA} creates a number of plots to determine the number of PCs
@@ -23,8 +27,4 @@ effects should be addressed. Runs and plots an ElbowPlot to determine PCs
 for later use. Runs and plots PCA for cell cycle genes to show their impact.
 PCA on variable features can also be plotted by batch to view potential batch
 effects.
-}
-\details{
-A new directory called "BatchEffect_CellCycle_EDA" will be created in the 
-output directory for plot output.
 }

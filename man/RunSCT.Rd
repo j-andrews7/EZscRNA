@@ -4,11 +4,11 @@
 \alias{RunSCT}
 \title{Normalize, scale, and regress out wanted variation}
 \usage{
-RunSCT(scrna, outdir, npcs = 50, res = 0.8, min_dist = 0.3,
-  n_neighbors = 30, regress = NULL, groups = NULL,
-  groups_pca = NULL, groups_label = NULL, groups_legend = NULL,
-  ccpca = FALSE, use_augment = TRUE, test = "wilcox",
-  logfc_thresh = 0.25, min_pct = 0.1)
+RunSCT(scrna, outdir, npcs = 50, res = 0.8, min.dist = 0.3,
+  n.neighbors = 30, regress = NULL, groups = NULL,
+  groups.pca = NULL, groups.label = NULL, groups.legend = NULL,
+  ccpca = FALSE, test = "wilcox", logfc.thresh = 0.25,
+  min.pct = 0.1)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -23,11 +23,11 @@ is 0.8 (Seurat default). Increasing this value will speed up clustering,
 but may decrease the numbers of distinct clusters. Values of 0.5-3 are 
 sensible.}
 
-\item{min_dist}{Number that controls how tighly the embedding is allowed to
+\item{min.dist}{Number that controls how tighly the embedding is allowed to
 compress points together in \code{RunUMAP}. Increasing may be beneficial
 for large datasets. Default is 0.3 (Seurat default).}
 
-\item{n_neighbors}{Integer that determines the number of neighboring points
+\item{n.neighbors}{Integer that determines the number of neighboring points
 used in local approximations of manifold structure in \code{RunUMAP}.
 Altering it may be beneficial for large datasets (though it isn't stated
 how it should be changed). Values of 5-50 are considered sensical.
@@ -39,40 +39,37 @@ Must match column headers in metadata.}
 \item{groups}{Vector of metadata variables to use for grouping in UMAP and 
 PCA dimplots. Must match column headers in metadata.}
 
-\item{groups_pca}{Vector of boolean values to determine if \code{DimPlots} 
+\item{groups.pca}{Vector of boolean values to determine if \code{DimPlots} 
 PCA reductions should also be created for each group. NULL by default (
 only UMAP reductions will be shown for each group). If provided, must be
 same length as groups parameter.}
 
-\item{groups_label}{Vector of boolean values to determine if \code{DimPlots} 
+\item{groups.label}{Vector of boolean values to determine if \code{DimPlots} 
 should show labels for each group. NULL by default (labels will not be 
 shown). If provided, must be same length as groups parameter.}
 
-\item{groups_legend}{Vector of boolean values to determine if \code{DimPlots} 
+\item{groups.legend}{Vector of boolean values to determine if \code{DimPlots} 
 should show legends for each group. NULL by default (legends will be 
 shown). If provided, must be same length as groups parameter.}
 
 \item{ccpca}{Boolean to indicate whether PCA using only cell cycle genes
 should be performed and plotted by sample identity and Phase.}
 
-\item{use_augment}{Boolean to indicate whether \code{AugmentPlot} should be
-used so points aren't saved as vector graphics while axes, labels, etc are.
-Useful if the plot is going to be edited in Illustrator. True by default.}
-
 \item{test}{Denotes which DE test to use for marker finding. Options are: 
 "wilcox" (default), "bimod", "roc", "t", "negbinom", "poisson", "LR", 
 "MAST", "DESeq2".}
 
-\item{logfc_thresh}{Value that limits DE testing to genes that show, 
+\item{logfc.thresh}{Value that limits DE testing to genes that show, 
 on average, at least X-fold difference (log-scale) between two groups of 
 cells. Increasing speeds up function at cost of potentially missing weaker 
 signals. Default is 0.25 (Seurat default).}
 
-\item{min_pct}{Value that limits DE testing to genes detected in a minimum
+\item{min.pct}{Value that limits DE testing to genes detected in a minimum
 fraction of cells in either population. Default is 0.1 (Seurat default).}
 }
 \value{
 A Seurat object with normalized, scaled counts and assigned clusters.
+  If \code{ccpca = TRUE}, an additional PCA named "cc" will also be present.
 }
 \description{
 \code{SCT} runs \code{SCTransform} on a Seurat object, followed by PCA, UMAP,

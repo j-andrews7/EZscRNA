@@ -4,7 +4,8 @@
 \alias{AssignCellType}
 \title{Infers and assigns cell type for each cell}
 \usage{
-AssignCellType(scrna, dataset, outdir, assign = TRUE, n_cores = 1)
+AssignCellType(scrna, dataset, outdir, lineage = FALSE, assign = TRUE,
+  n.cores = 1)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -17,26 +18,35 @@ by the replicate number (e.g. BCell_1, BCell_2, etc).}
 
 \item{outdir}{Path to output directory.}
 
+\item{lineage}{Boolean indicating whether or not column names are formatted
+as lineage followed by more granular specifications (e.g. Tcell.CD4_1,
+Tcell.CD8_1, etc). If TRUE, will assign the lineage (everything before the)
+first '.' in the column name to a metadata column called "base.lineage".
+Columns not containing a '.' will use the entire name, though replicate
+indicators will be removed (e.g. NK_1 will just be NK).}
+
 \item{assign}{Boolean indicating whether inferred cell types should actually
 be assigned to seurat object or just returned as a table. TRUE by default.}
 
-\item{n_cores}{Number of cores to use for correlation. Linearly decreases 
+\item{n.cores}{Number of cores to use for correlation. Linearly decreases 
 computation time.}
 }
 \value{
 If assign is TRUE, returns a seurat object with inferred cell type
-  information in the metadata. If FALSE, returns a dataframe
+  information in the metadata. If FALSE, returns a dataframe of the 
+  inferred cell type/lineage information instead.
 }
 \description{
 \code{AssignCellType} performs correlation-based cell inference using a 
 user-provided reference dataset. It returns either a seurat object with
-lineage, cell.type, and corr columns added to the metadata, or a dataframe 
-containing the top three predicted cell types for each cell along with their 
-correlation values. This dataframe will be saved in the output directory 
-regardless, along with distribution statistics for inferred cell types.
+lineage, cell.type, corr, and (potentially) base.lineage columns added to the 
+metadata, or a dataframe containing the top three predicted cell types for 
+each cell along with their correlation values. This dataframe will be saved 
+in the output directory regardless, along with distribution statistics for 
+inferred cell types and lineages if set.
 }
 \details{
 The reference dataset can be from any source, it should just be normalized so
-that columns (cell types) are comparable. The meat of this code was written
-by Allegra Petti - the version here has just been made more generic.
+that columns (cell types) are comparable. The majority of this code was 
+written by Allegra Petti - the version here has just been made more generic.
 }

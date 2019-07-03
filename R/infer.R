@@ -2,10 +2,11 @@
 #'
 #' \code{AssignCellType} performs correlation-based cell inference using a 
 #' user-provided reference dataset. It returns either a seurat object with
-#' lineage, cell.type, and corr columns added to the metadata, or a dataframe 
-#' containing the top three predicted cell types for each cell along with their 
-#' correlation values. This dataframe will be saved in the output directory 
-#' regardless, along with distribution statistics for inferred cell types.
+#' lineage, cell.type, corr, and (potentially) base.lineage columns added to the 
+#' metadata, or a dataframe containing the top three predicted cell types for 
+#' each cell along with their correlation values. This dataframe will be saved 
+#' in the output directory regardless, along with distribution statistics for 
+#' inferred cell types and lineages if set.
 #'
 #' The reference dataset can be from any source, it should just be normalized so
 #' that columns (cell types) are comparable. The majority of this code was 
@@ -18,34 +19,56 @@
 #'   denoting the cell type. Replicates should contain an underscore followed 
 #'   by the replicate number (e.g. BCell_1, BCell_2, etc).
 #' @param outdir Path to output directory.
+#' @param lineage Boolean indicating whether or not column names are formatted
+#'   as lineage followed by more granular specifications (e.g. Tcell.CD4_1,
+#'   Tcell.CD8_1, etc). If TRUE, will assign the lineage (everything before the)
+#'   first '.' in the column name to a metadata column called "base.lineage".
+#'   Columns not containing a '.' will use the entire name, though replicate
+#'   indicators will be removed (e.g. NK_1 will just be NK).
 #' @param assign Boolean indicating whether inferred cell types should actually
 #'   be assigned to seurat object or just returned as a table. TRUE by default.
 #' @param n.cores Number of cores to use for correlation. Linearly decreases 
 #'   computation time.
 #' @return If assign is TRUE, returns a seurat object with inferred cell type
-#'   information in the metadata. If FALSE, returns a dataframe 
+#'   information in the metadata. If FALSE, returns a dataframe of the 
+#'   inferred cell type/lineage information instead.
 #'
 #' @importFrom Seurat AddMetaData
 #'
 #' @export
 #'
-AssignCellType <- function(scrna, dataset, outdir, assign = TRUE, n.cores = 1) {
-	predictions <- InferCellType(scrna, dataset, outdir, n.cores)
+AssignCellType <- function(scrna, dataset, outdir, lineage = FALSE, 
+													 assign = TRUE, n.cores = 1) {
+	predictions <- InferCellType(scrna, dataset, outdir, lineage, n.cores)
 
 	if (isTRUE(assign)) {
 
 	  message("Incorporating inferred cell types.")
 
-		names(predictions)  <- c("CellBarcode", "Lineage.1", "Lineage.2", 
-			"Lineage.3", "Celltype.1", "Celltype.2", "Celltype.3", "Max.1", "Max.2", 
-			"Max.3", "Linmed.1", "Linmed.2", "Linmed.3")
+	  if (lineage) {
+			names(predictions)  <- c("CellBarcode", "Lineage.1", "Lineage.2", 
+				"Lineage.3", "Celltype.1", "Celltype.2", "Celltype.3", "Max.1", "Max.2", 
+				"Max.3", "Linmed.1", "Linmed.2", "Linmed.3", "base.lineage")
 
-		# Most lenient version - take top prediction only.
-		final.predictions <- predictions[, c("CellBarcode", "Lineage.1", 
-			"Celltype.1", "Max.1")] 
+			# Most lenient version - take top prediction only.
+			final.predictions <- predictions[, c("CellBarcode", "Lineage.1", 
+				"Celltype.1", "Max.1", "base.lineage")] 
 
-		# Create metadata table and add to seurat object.
-		names(final.predictions) <- c("cell", "lineage", "celltype", "corr")
+			# Create metadata table and add to seurat object.
+			names(final.predictions) <- c("cell", "lineage", "celltype", "corr", 
+				"base.lineage")
+		} else {
+			# Same thing, but with no base lineage.
+			names(predictions)  <- c("CellBarcode", "Lineage.1", "Lineage.2", 
+				"Lineage.3", "Celltype.1", "Celltype.2", "Celltype.3", "Max.1", "Max.2", 
+				"Max.3", "Linmed.1", "Linmed.2", "Linmed.3")
+
+			final.predictions <- predictions[, c("CellBarcode", "Lineage.1", 
+				"Celltype.1", "Max.1")] 
+
+			names(final.predictions) <- c("cell", "lineage", "celltype", "corr")
+		}
+
 		rownames(final.predictions) <- final.predictions[, 1]
 		final.predictions[, 1] <- NULL
 		scrna <- AddMetaData(object = scrna, metadata = final.predictions)
@@ -75,8 +98,14 @@ AssignCellType <- function(scrna, dataset, outdir, assign = TRUE, n.cores = 1) {
 #'   be gene identifiers that match those of the Seurat object. Each subsequent
 #'   column should contain counts for a cell type with the column header
 #'   denoting the cell type. Replicates should contain an underscore followed 
-#'   by the replicate number (e.g. BCell_1, BCell_2, etc).
+#'   by the replicate number (e.g. Bcell_1, Bcell_2, etc). 
 #' @param outdir Path to output directory.
+#' @param lineage Boolean indicating whether or not column names are formatted
+#'   as lineage followed by more granular specifications (e.g. Tcell.CD4_1,
+#'   Tcell.CD8_1, etc). If TRUE, will assign the lineage (everything before the)
+#'   first '.' in the column name to a metadata column called "base.lineage".
+#'   Columns not containing a '.' will use the entire name, though replicate
+#'   indicators will be removed (e.g. NK_1 will just be NK).
 #' @param n.cores Number of cores to use for correlation. Linearly decreases 
 #'   computation time.
 #' @return A table containing the top three predicted cell types for each cell.
@@ -84,7 +113,7 @@ AssignCellType <- function(scrna, dataset, outdir, assign = TRUE, n.cores = 1) {
 #' @importFrom foreach foreach
 #' @import doParallel
 #'
-InferCellType <- function(scrna, dataset, outdir, n.cores){
+InferCellType <- function(scrna, dataset, outdir, lineage = FALSE, n.cores = 1){
 	message(paste("Preparing reference dataset and seurat object for cell type", 
 		" inference.", sep = ""))
 	x <- PrepRef(scrna, dataset)
@@ -162,11 +191,28 @@ InferCellType <- function(scrna, dataset, outdir, n.cores){
 	output.table <- table(results$lineage1)
 	output.table.pct <- 100 * (table(results$lineage1) / 
 		sum(table(results$lineage1)))
-	write.table(output.table, file = sprintf("%s/TopLineage.Distribution.txt", 
+	write.table(output.table, file = sprintf("%s/TopCelltype.Distribution.txt", 
 		outdir), quote = FALSE, sep = "\t", row.names = FALSE)
 	write.table(output.table.pct, 
-		file = sprintf("%s/TopLineage.Distribution.Pct.txt", 
+		file = sprintf("%s/TopCelltype.Distribution.Pct.txt", 
 		outdir), quote = FALSE, sep = "\t", row.names = FALSE)
+
+	# Get base lineages.
+	if(lineage) {
+		results$base.lineage <- unlist(strsplit(as.character(results$lineage1), ".", 
+			fixed = TRUE))[1]
+
+		# Save output.
+		output.table <- table(results$base.lineage)
+		output.table.pct <- 100 * (table(results$base.lineage) / 
+			sum(table(results$base.lineage)))
+		write.table(output.table, file = sprintf("%s/TopLineage.Distribution.txt", 
+			outdir), quote = FALSE, sep = "\t", row.names = FALSE)
+		write.table(output.table.pct, 
+			file = sprintf("%s/TopLineage.Distribution.Pct.txt", 
+			outdir), quote = FALSE, sep = "\t", row.names = FALSE)
+	}
+
 	write.table(results, file=sprintf("%s/CellType.Predictions.txt", outdir), 
 		sep = "\t", quote = FALSE, row.names = FALSE)
 

@@ -55,7 +55,8 @@ AddClonotype <- function(vdj.dir, scrna){
 #' seurat object as histograms as well as barcharts comparing clonotype 
 #' proportions between them.
 #'
-#' Rows with 
+#' Cells with no clonotypes are still included in determining clonotype
+#' frequencies, but NA is removed from subsequent graphs.
 #'
 #' @param scrna Seurat object with clonotype data added to metadata with 
 #'   \code{AddClonotype}.
@@ -63,10 +64,10 @@ AddClonotype <- function(vdj.dir, scrna){
 #' @param g.by Metadata column to group samples by. If not provided, only
 #'   histograms of clonotypes will be saved.
 #' @param o.by Vector containing names of members of each group to sort by 
-#'   within the group. Ignored if g_by is NULL. Should contain one instance of
-#'   each potential value in g_by column if provided.
+#'   within the group. Ignored if \code{g_by} is NULL. Should contain one 
+#'   instance of each potential value in \code{g_by} column if provided.
 #' @param n.clono.c Number of top clonotypes to plot for comparison barchart.
-#'   Default is 10. Ignored if \code(group_by) is NULL.
+#'   Default is 10. Ignored if \code{g.by} is NULL.
 #' @param n.clono.g Number of clonotypes to show in group-specific histograms.
 #'   All are shown by default.
 #'

@@ -4,8 +4,8 @@
 \alias{VizVDJDist}
 \title{Visualize clonotype distributions}
 \usage{
-VizVDJDist(scrna, outdir, g_by = NULL, o_by = NULL, n_clono_c = 10,
-  n_clono_g = NULL)
+VizVDJDist(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
+  n.clono.g = NULL)
 }
 \arguments{
 \item{scrna}{Seurat object with clonotype data added to metadata with 
@@ -13,17 +13,17 @@ VizVDJDist(scrna, outdir, g_by = NULL, o_by = NULL, n_clono_c = 10,
 
 \item{outdir}{Path to output directory.}
 
-\item{g_by}{Metadata column to group samples by. If not provided, only
+\item{g.by}{Metadata column to group samples by. If not provided, only
 histograms of clonotypes will be saved.}
 
-\item{o_by}{Vector containing names of members of each group to sort by 
+\item{o.by}{Vector containing names of members of each group to sort by 
 within the group. Ignored if g_by is NULL. Should contain one instance of
 each potential value in g_by column if provided.}
 
-\item{n_clono_c}{Number of top clonotypes to plot for comparison barchart.
+\item{n.clono.c}{Number of top clonotypes to plot for comparison barchart.
 Default is 10. Ignored if \code(group_by) is NULL.}
 
-\item{n_clono_g}{Number of clonotypes to show in group-specific histograms.
+\item{n.clono.g}{Number of clonotypes to show in group-specific histograms.
 All are shown by default.}
 }
 \description{

@@ -73,7 +73,7 @@ RunSCT <- function(scrna, outdir, npcs = 50, res = 0.8, min.dist = 0.3,
 		g2m.genes <- cc.genes$g2m.genes
 		scrna <- RunPCA(scrna, npcs = npcs, features = c(s.genes, g2m.genes),
 		  reduction.name = "cc")
-		pdf(sprintf("%s/CellCycle.PCA.Regression.pdf", outdir), height = 5, 
+		pdf(sprintf("%s/CellCycle.PCA.pdf", outdir), height = 5, 
 		width = 7)
 		p <- DimPlot(scrna, group.by = "orig.ident", reduction = "cc", 
 			pt.size = 0.3) 
@@ -90,8 +90,7 @@ RunSCT <- function(scrna, outdir, npcs = 50, res = 0.8, min.dist = 0.3,
   message("Performing clustering on variable features.")
   scrna <- FindNeighbors(scrna, dims = 1:npcs)
   scrna <- FindClusters(scrna, resolution = res)
-  scrna <- StashIdent(object = scrna, 
-		save.name = sprintf("ClusterNames_%.1f_%dPC", res, npcs))
+  scrna[[sprintf("Clusters_%.1f_%dPC", res, npcs)]] <- Idents(object = scrna) 
 
   message("Plotting PCA/UMAP dimplots.")
   pdf(sprintf("%s/EDA.UMAP.PCA.pdf", outdir), height = 5, width = 7)
@@ -131,7 +130,6 @@ RunSCT <- function(scrna, outdir, npcs = 50, res = 0.8, min.dist = 0.3,
 			  }
 
 			} else {
-				message("All legends should be printed.")
 			  p <- DimPlot(scrna, label = label, group.by = var, pt.size = 0.3) +
 					ggtitle(label = sprintf("UMAP - %s", var))
 				if (!is.null(groups.pca)) {
@@ -171,7 +169,7 @@ RunSCT <- function(scrna, outdir, npcs = 50, res = 0.8, min.dist = 0.3,
   pdf(sprintf("%s/Top10.UpMarkers.Cluster.Heatmap.pdf", outdir), height=24, 
 	width=38)
   top10up <- markers %>% dplyr::group_by(cluster) %>% 
-		dplyr::top_n(n = 10, wt = avg.logFC) %>% dplyr::filter(avg.logFC > 0)
+		dplyr::top_n(n = 10, wt = avg_logFC) %>% dplyr::filter(avg_logFC > 0)
   DoHeatmap(scrna, features = top10up$gene, lines.width=5)
   dev.off()
 
