@@ -202,6 +202,8 @@ InferCellType <- function(scrna, dataset, outdir, lineage = FALSE, n.cores = 1){
 		results$base.lineage <- unlist(strsplit(as.character(results$lineage1), ".", 
 			fixed = TRUE))[c(TRUE,FALSE)]
 
+		results$base.lineage <- lapply(results$lineage1, SplitIt)
+
 		# Save output.
 		output.table <- table(results$base.lineage)
 		output.table.pct <- 100 * (table(results$base.lineage) / 
@@ -261,4 +263,15 @@ PrepRef <- function(scrna, dataset){
 	data.sorted <- data.unsorted[new.indices,]
 
 	return(list("ref" = data.sorted, "sc.sub" = scrna.subset))
+}
+
+#' Split lineages to get base lineages
+#'
+#' For use in \code{lapply}. Returns only the first element of resulting list.
+#'
+#' @param x String to be split.
+#'
+SplitIt <- function(x) {
+  unlist(strsplit(as.character(x), ".", 
+		fixed = TRUE))[c(TRUE,FALSE)]
 }
