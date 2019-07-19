@@ -28,6 +28,7 @@ RunQC <- function(scrna, outdir){
   return(scrna)
 }
 
+
 #' Normalize counts and score cell cycle for each cell
 #' 
 #' \code{NormScoreCC} returns a Seurat object with normalized counts and adds 
@@ -61,6 +62,7 @@ NormScoreCC <- function(scrna){
 
 	return(cc.seurat)
 }
+
 
 #' Exploratory data analysis plots
 #'

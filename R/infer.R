@@ -201,6 +201,7 @@ InferCellType <- function(scrna, dataset, outdir, lineage = FALSE, n.cores = 1){
 	if(lineage) {
 
 		results$base.lineage <- lapply(results$lineage1, SplitIt)
+		results$base.lineage <- as.character(results$base.lineage)
 
 		# Save output.
 		output.table <- table(results$base.lineage)
@@ -219,6 +220,7 @@ InferCellType <- function(scrna, dataset, outdir, lineage = FALSE, n.cores = 1){
 	return(results)
 }
 
+
 #' Load and prepare reference dataset for cell type inference
 #'
 #' \code{PrepRef} processes a reference dataset of normalized gene counts for
@@ -235,7 +237,6 @@ InferCellType <- function(scrna, dataset, outdir, lineage = FALSE, n.cores = 1){
 #'   dataset also found in the seurat object, and "sc.sub" - sorted genes from 
 #'   the seurat object also found in the reference dataset.
 #'
-#' @import dplyr
 #' @importFrom Seurat Cells FetchData
 #'
 PrepRef <- function(scrna, dataset){
@@ -263,13 +264,14 @@ PrepRef <- function(scrna, dataset){
 	return(list("ref" = data.sorted, "sc.sub" = scrna.subset))
 }
 
+
 #' Split lineages to get base lineages
 #'
-#' For use in \code{lapply}. Returns only the first element of resulting list.
+#' For use with \code{lapply}. Returns only the first element of resulting list.
 #'
 #' @param x String to be split.
 #'
 SplitIt <- function(x) {
   unlist(strsplit(as.character(x), ".", 
-		fixed = TRUE))[c(TRUE,FALSE)]
+		fixed = TRUE))[c(TRUE, FALSE, FALSE, FALSE)]
 }
