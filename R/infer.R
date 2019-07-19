@@ -199,8 +199,6 @@ InferCellType <- function(scrna, dataset, outdir, lineage = FALSE, n.cores = 1){
 
 	# Get base lineages.
 	if(lineage) {
-		results$base.lineage <- unlist(strsplit(as.character(results$lineage1), ".", 
-			fixed = TRUE))[c(TRUE,FALSE)]
 
 		results$base.lineage <- lapply(results$lineage1, SplitIt)
 
