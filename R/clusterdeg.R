@@ -83,9 +83,10 @@ RunSCT <- function(scrna, outdir, npcs = 50, res = 0.8, min.dist = 0.3,
 		dev.off()
   }
 
-  message("Performing PCA/UMAP on variable features.")
+  message("Performing PCA/UMAP/TSNE on variable features.")
   scrna <- RunPCA(scrna, npcs = npcs)
   scrna <- RunUMAP(scrna, dims = 1:npcs)
+  scrna <- RunTSNE(scrna, dims = 1:npcs)
 
   message("Performing clustering on variable features.")
   scrna <- FindNeighbors(scrna, dims = 1:npcs)
