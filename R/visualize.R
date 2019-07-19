@@ -88,24 +88,41 @@ VizMetaData <- function(scrna, vars, outdir) {
 #'
 #'
 #' @importFrom Seurat DimPlot
-#' @importFrom Seurat CombinePlots
+#' @import cowplot
 #'
 #' @export
 #'
 VizCellType <- function(scrna, outdir) {
+  message("Plotting cell types.")
   # All found lineages.
 	lineage_found <- sort(unique(scrna@meta.data$lineage))
 	  
 	# Color with rainbow colors.
 	cell_colors <- rainbow(length(lineage_found), s = 0.6, v = 0.9)
 
+	w <- 10 + (2 * ceiling((length(lineage_found) / 12)))
+
 	# Plot.
-	pdf(sprintf("%s/UMAP.TSNE.celltype.pdf", outdir), width = 12, height = 5, 
+	pdf(sprintf("%s/UMAP.TSNE.celltype.pdf", outdir), width = w, height = 5, 
 		useDingbats=FALSE)
 	p1 <- DimPlot(object = scrna, group.by = "lineage", cols = cell_colors, 
-		pt.size = 0.3, reduction = "tsne")
+		pt.size = 0.3, reduction = "tsne") + NoLegend()
 	p2 <- DimPlot(object = scrna, group.by = "lineage", cols = cell_colors, 
-		pt.size = 0.3, reduction = "umap")
-	print(CombinePlots(plots = c(p1, p2), legend = "right"))
+		pt.size = 0.3, reduction = "umap") + 
+		theme(legend.text = element_text(size = 7)) +
+		labs(color='Cell Lineage')
+
+	# Finicky garbage to get legends to not overlay plots.
+	p2a <- p2 + theme(legend.position = "none")
+	legend <- get_legend(p2)
+	plots <- align_plots(p1, p2a, align = 'h', axis = '0')
+	leg.w <- ceiling((lineages / 12)) * 0.4
+	c <- plot_grid(
+	  plots[[1]], plots[[2]], legend,
+	  labels = c("A", "B"),
+	  rel_widths = c(1, 1, leg.w),
+	  nrow = 1
+	)
+	print(c)
 	dev.off()
 }
