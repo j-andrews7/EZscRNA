@@ -10,7 +10,8 @@
 #' @param pt.size Use to adjust point size for plotting. 
 #'
 #' @importFrom Seurat DimPlot
-#' @import cowplot
+#' @importFrom grDevices dev.off pdf rainbow
+#' @import ggplot2
 #'
 #' @export
 #'
@@ -39,10 +40,10 @@ VizMetaData <- function(scrna, vars, outdir, pt.size = NULL) {
 
 		# Finicky garbage to get legends to not overlay plots.
 		p2a <- p2 + theme(legend.position = "none")
-		legend <- get_legend(p2)
-		plots <- align_plots(p1, p2a, align = 'h', axis = '0')
+		legend <- cowplot::get_legend(p2)
+		plots <- cowplot::align_plots(p1, p2a, align = 'h', axis = '0')
 		leg.w <- ceiling((length(vars_found) / 12)) * 0.4
-		c <- plot_grid(
+		c <- cowplot::plot_grid(
 		  plots[[1]], plots[[2]], legend,
 		  rel_widths = c(1, 1, leg.w),
 		  nrow = 1
@@ -65,7 +66,6 @@ VizMetaData <- function(scrna, vars, outdir, pt.size = NULL) {
 #' @param pt.size Use to adjust point size for plotting. 
 #'
 #' @importFrom Seurat DimPlot
-#' @import cowplot
 #' @import ggplot2
 #'
 #' @export
@@ -92,10 +92,10 @@ VizCellType <- function(scrna, outdir, pt.size = NULL) {
 
 	# Finicky garbage to get legends to not overlay plots.
 	p2a <- p2 + theme(legend.position = "none")
-	legend <- get_legend(p2)
-	plots <- align_plots(p1, p2a, align = 'h', axis = '0')
+	legend <- cowplot::get_legend(p2)
+	plots <- cowplot::align_plots(p1, p2a, align = 'h', axis = '0')
 	leg.w <- ceiling((lineages / 12)) * 0.4
-	c <- plot_grid(
+	c <- cowplot::plot_grid(
 	  plots[[1]], plots[[2]], legend,
 	  rel_widths = c(1, 1, leg.w),
 	  nrow = 1
@@ -422,7 +422,6 @@ VizDotPlot <- function(scrna, outfile, genes) {
 #' @param scrna Seurat object.
 #' @param outfile Path for output PDF.
 #' @param genes Vector of genes to plot.
-#' @param n.subset Number of cells to use for subsetting. NULL by default.
 #'
 #' @importFrom Seurat DotPlot
 #' @import ggplot2

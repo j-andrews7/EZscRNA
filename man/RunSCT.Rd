@@ -62,7 +62,7 @@ should be performed and plotted by sample identity and Phase.}
 \item{logfc.thresh}{Value that limits DE testing to genes that show, 
 on average, at least X-fold difference (log-scale) between two groups of 
 cells. Increasing speeds up function at cost of potentially missing weaker 
-signals. Default is 0.25 (Seurat default).}
+differences. Default is 0.25 (Seurat default).}
 
 \item{min.pct}{Value that limits DE testing to genes detected in a minimum
 fraction of cells in either population. Default is 0.1 (Seurat default).}

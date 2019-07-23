@@ -112,6 +112,8 @@ AssignCellType <- function(scrna, dataset, outdir, lineage = FALSE,
 #'
 #' @importFrom foreach foreach
 #' @import doParallel
+#' @importFrom stats cor median reorder
+#' @importFrom utils read.csv read.table write.table
 #'
 InferCellType <- function(scrna, dataset, outdir, lineage = FALSE, n.cores = 1){
 	message(paste("Preparing reference dataset and seurat object for cell type", 

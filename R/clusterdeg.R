@@ -53,7 +53,6 @@
 #'
 #' @import Seurat
 #' @import sctransform
-#' @import dplyr
 #'
 #' @export
 #'
@@ -171,7 +170,7 @@ RunSCT <- function(scrna, outdir, npcs = 50, res = 0.8, min.dist = 0.3,
 	width=38)
   top10up <- markers %>% dplyr::group_by(cluster) %>% 
 		dplyr::top_n(n = 10, wt = avg_logFC) %>% dplyr::filter(avg_logFC > 0)
-  DoHeatmap(scrna, features = top10up$gene, lines.width=5)
+  DoHeatmap(scrna, features = top10up$gene)
   dev.off()
 
   return(scrna)
