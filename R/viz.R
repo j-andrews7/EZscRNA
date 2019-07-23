@@ -66,6 +66,7 @@ VizMetaData <- function(scrna, vars, outdir, pt.size = NULL) {
 #'
 #' @importFrom Seurat DimPlot
 #' @import cowplot
+#' @import ggplot2
 #'
 #' @export
 #'
@@ -245,6 +246,7 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 #'   set. Splits by cell idents. NULL by default.
 #'
 #' @import Seurat
+#' @import ggplot2
 #' 
 #' @export
 #'
@@ -332,6 +334,7 @@ VizAnnotatedMarkers <- function(scrna, marker.file, outdir, pt.size = NULL,
 #' @param genes Vector of genes to plot.
 #'
 #' @importFrom Seurat VlnPlot
+#' @import ggplot2
 #'
 VizVlnPlot <- function(scrna, outfile, genes) {
 	ng <- length(genes)
@@ -362,6 +365,7 @@ VizVlnPlot <- function(scrna, outfile, genes) {
 #' @param genes Vector of genes to plot.
 #'
 #' @importFrom Seurat RidgePlot
+#' @import ggplot2
 #'
 VizRidgePlot <- function(scrna, outfile, genes) {
 	ng <- length(genes)
@@ -395,6 +399,7 @@ VizRidgePlot <- function(scrna, outfile, genes) {
 #' @param genes Vector of genes to plot.
 #'
 #' @importFrom Seurat DotPlot
+#' @import ggplot2
 #'
 VizDotPlot <- function(scrna, outfile, genes) {
 	ng <- length(genes)
@@ -420,6 +425,7 @@ VizDotPlot <- function(scrna, outfile, genes) {
 #' @param n.subset Number of cells to use for subsetting. NULL by default.
 #'
 #' @importFrom Seurat DotPlot
+#' @import ggplot2
 #'
 VizHeatmap <- function(scrna, outfile, genes) {
 	ng <- length(genes)
