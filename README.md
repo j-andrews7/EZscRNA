@@ -1,5 +1,7 @@
 # EZscRNA
 
+[![Travis build status](https://travis-ci.org/j-andrews7/EZscRNA.svg?branch=master)](https://travis-ci.org/j-andrews7/EZscRNA)
+
 This R package is meant to be a high-level wrapper around popular, well-maintained scRNA R packages (Seurat, Slingshot, Monocle), created in an effort to streamline the end-to-end process for new users while still maintaining the ability to customize the analyses fully for more advanced users. It also attempts to include convenience functions for integrating multimodal data that other tools don't seem to address (mainly VDJ data) and cell type inference using any supplied reference dataset.
 
 It was written with best practices as defined by the creators of Seurat, Monocle, and scanpy in mind, so few changes should be necessary for basic users.
