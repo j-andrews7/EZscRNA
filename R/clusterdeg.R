@@ -63,7 +63,8 @@ RunSCT <- function(scrna, outdir, npcs = 50, res = 0.8, min.dist = 0.3,
 									logfc.thresh = 0.25, min.pct = 0.1) {
 
   # Run sctransform & regress out any specified variables.
-  scrna <- SCTransform(scrna, vars.to.regress = regress)
+  scrna <- SCTransform(scrna, vars.to.regress = regress, return.only.var.genes =
+  	FALSE )
 
   # Run PCA using just cell cycle genes if indicated. Saved as "cc".
   if (isTRUE(ccpca)) {

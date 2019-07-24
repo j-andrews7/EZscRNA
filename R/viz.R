@@ -226,14 +226,13 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 #'
 #' Plots for each annotation set will be output to a PDF that will be
 #' dynamically sized and named based on the name and number of markers for the
-#' set.
+#' set. New directories will be created for each set in the output directory.
 #'
 #' @param scrna Seurat object.
-#' @param marker.file Tab-delimited file with the first two columns named "Set"
-#'   and "Marker". The "Set" column should contain a cell or process-type (e.g.
-#'   Tcell, Bcell, Exhaustion markers, etc.) while the "Marker" column contains
-#'   the gene symbol associated with it. Many rows can be added to visualize 
-#'   many "Markers" for each "Set". 
+#' @param marker.df Dataframe with the two columns called "Set" and "Marker". 
+#'   The "Set" column should contain a cell or process-type (e.g. Tcell, Bcell, 
+#'   Exhaustion markers, etc.) while the "Marker" column contains the 
+#'   comma-delimited gene symbols associated with it. 
 #' @param outdir Path to output directory.
 #' @param pt.size Use to adjust point size for plotting FeaturePlots.
 #' @param vln Boolean indicating whether to create Seurat VlnPlots for each set.
@@ -250,26 +249,31 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 #' 
 #' @export
 #'
-VizAnnotatedMarkers <- function(scrna, marker.file, outdir, pt.size = NULL,
+VizAnnotatedMarkers <- function(scrna, marker.df, outdir, pt.size = NULL,
 	vln = NULL, ridge = NULL, dot = NULL, heatmap = NULL) {
-	# Read and filter the gene lists.
-	message("Parsing and filtering gene lists.")
-	glists.raw <- read.table(marker.file, sep = "\t", row.names = NULL, 
-		header = TRUE, as.is = TRUE)
-  glists <- glists.raw[which(glists.raw$Marker %in% rownames(scrna)), ] 
 
   # Plot individual genes in various classes.
-  message("Plotting gene sets.")
-  for (i in unique(glists$Set)) {
-    gplotlist <- list()
+  for (i in unique(marker.df$Set)) {
     # Remove problematic characters from cell classes.
     j <- gsub(" ", "_", i)
     j <- gsub("/", "_", j)
     message("Plotting ", j)
-    genes <- glists$Marker[which(glists$Set == i)]
-    ng <- length(genes) 
-    out.tsne <- sprintf("%s/TSNE.%s.pdf", outdir, j)
-    out.umap <- sprintf("%s/UMAP.%s.pdf", outdir, j)
+    genes <- trimws(unlist(strsplit(marker.df$Marker[which(marker.df$Set == i)], 
+    	",")))
+    # Remove genes not found in Seurat object.
+    genes <- genes[which(genes %in% rownames(scrna))]
+    ng <- length(genes)
+
+    # Move to next set if no genes for current set are in Seurat object.
+    if (ng == 0) {
+    	message("Skipping ", j, " as no markers are present in Seurat object.")
+    	next
+    }
+
+    out <- sprintf("%s/%s", outdir, j)
+    dir.create(file.path(out), showWarnings = FALSE)
+    out.tsne <- sprintf("%s/TSNE.%s.pdf", out, j)
+    out.umap <- sprintf("%s/UMAP.%s.pdf", out, j)
 
     # Dynamic figure sizing.
     h = 0
@@ -296,31 +300,133 @@ VizAnnotatedMarkers <- function(scrna, marker.file, outdir, pt.size = NULL,
     # Additional plots.
     if (vln) {
     	message("Plotting violin plots.")
-    	out <- sprintf("%s/VlnPlots.%s.pdf", outdir, j)
-    	VizVlnPlot(scrna, out, genes)
+    	out.vln <- sprintf("%s/VlnPlots.%s.pdf", out, j)
+    	VizVlnPlot(scrna, out.vln, genes)
     }
 
     if (ridge) {
     	message("Plotting ridge plots.")
-    	out <- sprintf("%s/RidgePlots.%s.pdf", outdir, j)
-    	VizRidgePlot(scrna, out, genes)
+    	out.rid <- sprintf("%s/RidgePlots.%s.pdf", out, j)
+    	VizRidgePlot(scrna, out.rid, genes)
     }
 
     if (dot) {
     	message("Plotting dot plots.")
-    	out <- sprintf("%s/DotPlots.%s.pdf", outdir, j)
-    	VizDotPlot(scrna, out, genes)
+    	out.dot <- sprintf("%s/DotPlots.%s.pdf", out, j)
+    	VizDotPlot(scrna, out.dot, genes)
     }
 
     if (heatmap) {
     	message("Plotting heatmaps.")
-    	out <- sprintf("%s/Heatmaps.%s.pdf", outdir, j)
-    	VizHeatmap(scrna, out, genes)
+    	out.heat <- sprintf("%s/Heatmaps.%s.pdf", out, j)
+    	VizHeatmap(scrna, out.heat, genes)
     }
 
   }
 }
 
+
+#' Visualize scored annotated marker sets
+#'
+#' \code{VizScoredSets} creates Seurat FeaturePlots for sets of 
+#' marker genes associated with a given annotation.
+#'
+#' Plots for each annotation set will be output to a PDF that will be
+#' dynamically named based on the set name. 
+#'
+#' @param scrna Seurat object.
+#' @param sets Vector of 
+#' @param outdir Path to output directory.
+#' @param pt.size Use to adjust point size for plotting FeaturePlots.
+#' @param vln Boolean indicating whether to create Seurat VlnPlots for each set.
+#'   Splits by cell idents. NULL by default.
+#' @param ridge Boolean indicating whether to create Seurat RidgePlots for each
+#'   set. Splits by cell idents. NULL by default.
+#' @param dot Boolean indicating whether to create Seurat DotPlots for each
+#'   set. Splits by cell idents. NULL by default.
+#' @param heatmap Boolean indicating whether to create a Seurat Heatmap for each
+#'   set. Splits by cell idents. NULL by default.
+#'
+#' @import Seurat
+#' @import ggplot2
+#' 
+#' @export
+#'
+VizScoredSets <- function(scrna, sets, outdir, pt.size = NULL,
+	vln = NULL, ridge = NULL, dot = NULL, heatmap = NULL) {
+
+  # Plot individual genes in various classes.
+  for (i in sets) {
+    # Remove problematic characters from cell classes.
+    j <- gsub(" ", "_", i)
+    j <- gsub("/", "_", j)
+    message("Plotting ", j)
+    genes <- trimws(unlist(strsplit(marker.df$Marker[which(marker.df$Set == i)], 
+    	",")))
+    # Remove genes not found in Seurat object.
+    genes <- genes[which(genes %in% rownames(scrna))]
+    ng <- length(genes)
+
+    # Move to next set if no genes for current set are in Seurat object.
+    if (ng == 0) {
+    	message("Skipping ", j, " as no markers are present in Seurat object.")
+    	next
+    }
+
+    out <- sprintf("%s/%s", outdir, j)
+    dir.create(file.path(out), showWarnings = FALSE)
+    out.tsne <- sprintf("%s/TSNE.%s.pdf", out, j)
+    out.umap <- sprintf("%s/UMAP.%s.pdf", out, j)
+
+    # Dynamic figure sizing.
+    h = 0
+    w = 0
+    if (ng > 1) {
+      w = 10 # two columns
+      h = 5 * (floor(ng / 2) + ng %% 2) # number of rows
+    } else {
+      w = 5 
+      h = 5 
+    }
+    pdf(out.tsne, useDingbats = FALSE, height = h, width = w)
+    fp <- FeaturePlot(object = scrna, features = genes, 
+    	cols = c("gray","red"), ncol = 2)
+    print(fp)
+    dev.off()
+
+    pdf(out.umap, useDingbats = FALSE, height = h, width = w)
+    fp <- FeaturePlot(object = scrna, features = genes, 
+    	cols = c("gray","red"), ncol = 2, reduction = "umap", pt.size = pt.size)
+    print(fp)
+    dev.off()
+
+    # Additional plots.
+    if (vln) {
+    	message("Plotting violin plots.")
+    	out.vln <- sprintf("%s/VlnPlots.%s.pdf", out, j)
+    	VizVlnPlot(scrna, out.vln, genes)
+    }
+
+    if (ridge) {
+    	message("Plotting ridge plots.")
+    	out.rid <- sprintf("%s/RidgePlots.%s.pdf", out, j)
+    	VizRidgePlot(scrna, out.rid, genes)
+    }
+
+    if (dot) {
+    	message("Plotting dot plots.")
+    	out.dot <- sprintf("%s/DotPlots.%s.pdf", out, j)
+    	VizDotPlot(scrna, out.dot, genes)
+    }
+
+    if (heatmap) {
+    	message("Plotting heatmaps.")
+    	out.heat <- sprintf("%s/Heatmaps.%s.pdf", out, j)
+    	VizHeatmap(scrna, out.heat, genes)
+    }
+
+  }
+}
 
 # Internal======================================================================
 
