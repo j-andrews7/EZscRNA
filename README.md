@@ -18,7 +18,7 @@ Currently, EZscRNA can be installed with devtools:
 devtools::install_github("j-andrews7/EZscRNA")
 ```
 
-I'll get it on CRAN once I have a stable version.
+I'll get it on CRAN once I have a stable version (and the time to write documentation).
 
 ## Quick Start
 
@@ -35,3 +35,10 @@ Bug reports, issues, and suggestions are welcome and can be submitted to the [is
 ## Contributing
 
 Pull requests fixing bugs or adding features are welcome. Please follow the [Google R style guide](https://google.github.io/styleguide/Rguide.xml) and properly document your code in [roxygen format](http://r-pkgs.had.co.nz/man.html).
+
+## License
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
