@@ -1,16 +1,17 @@
 Package: EZscRNA
 Title: Simple Convenience Functions for High-Level scRNA-Seq Analysis
-Version: 0.0.0.9000
+Version: 0.1.0
+Date: 2019-07-24
 Authors@R: person("Jared", "Andrews", email = "jared.andrews07@gmail.com", 
     role = c("aut", "cre"),
     comment = c(ORCID = "https://orcid.org/0000-0002-0780-6248"))
-Maintainer: Jared Andrews <jared.andrews07@gmail.com>
-Description: This package serves as a (hopefully) convenient wrapper for 
+Description: Serves as a (hopefully) convenient wrapper for 
     EZ(-er) scRNA-seq analysis using best practices. It uses Seurat (v3+),
-    sctransform, and slingshot (v3+) for most analysis steps. It provides a 
+    sctransform, and slingshot for most analysis steps. It provides a 
     number of high-level functions spanning QC/preprocessing, exploratory 
     data analysis, clustering, cell type inference using user-provided 
-    reference data sets, pseudotime trajectories, and visualizations.
+    reference data sets, pseudotime trajectories, and dynamic 
+    visualizations.
 Depends: R (>= 3.5.0),
     Seurat (>= 3.0.0),
     sctransform (>= 0.2.0)
