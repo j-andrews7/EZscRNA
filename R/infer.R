@@ -29,6 +29,11 @@
 #'   be assigned to seurat object or just returned as a table. TRUE by default.
 #' @param n.cores Number of cores to use for correlation. Linearly decreases 
 #'   computation time.
+#' @param top.var.genes Number of genes from reference dataset to use for 
+#'   inference, ranked by most variable. 3000 by default. Set to NULL to use all
+#'   genes. Fewer genes is significantly quicker. Generally, results won't 
+#'   change using higher numbers of genes past a certain point (usually a few
+#'   hundred genes, depending on the reference dataset).
 #' @return If assign is TRUE, returns a seurat object with inferred cell type
 #'   information in the metadata. If FALSE, returns a dataframe of the 
 #'   inferred cell type/lineage information instead.
@@ -38,8 +43,9 @@
 #' @export
 #'
 AssignCellType <- function(scrna, dataset, outdir, lineage = FALSE, 
-													 assign = TRUE, n.cores = 1) {
-	predictions <- InferCellType(scrna, dataset, outdir, lineage, n.cores)
+													 assign = TRUE, n.cores = 1, top.var.genes = 3000) {
+	predictions <- InferCellType(scrna, dataset, outdir, lineage, n.cores,
+		top.var.genes)
 
 	if (isTRUE(assign)) {
 
@@ -108,6 +114,9 @@ AssignCellType <- function(scrna, dataset, outdir, lineage = FALSE,
 #'   indicators will be removed (e.g. NK_1 will just be NK).
 #' @param n.cores Number of cores to use for correlation. Linearly decreases 
 #'   computation time.
+#' @param top.var.genes Number of genes from reference dataset to use for 
+#'   inference, ranked by most variable. 3000 by default. Set to NULL to use all
+#'   genes.
 #' @return A table containing the top three predicted cell types for each cell.
 #'
 #' @importFrom foreach foreach
@@ -115,10 +124,11 @@ AssignCellType <- function(scrna, dataset, outdir, lineage = FALSE,
 #' @importFrom stats cor median reorder
 #' @importFrom utils read.csv read.table write.table
 #'
-InferCellType <- function(scrna, dataset, outdir, lineage = FALSE, n.cores = 1){
+InferCellType <- function(scrna, dataset, outdir, lineage = FALSE, n.cores = 1,
+	top.var.genes = 3000) {
 	message(paste("Preparing reference dataset and seurat object for cell type", 
 		" inference.", sep = ""))
-	x <- PrepRef(scrna, dataset)
+	x <- PrepRef(scrna, dataset, top.var.genes)
 	data.sorted <- x$ref
 	scrna.subset <- x$sc.sub
 
@@ -235,13 +245,16 @@ InferCellType <- function(scrna, dataset, outdir, lineage = FALSE, n.cores = 1){
 #'   column should contain counts for a cell type with the column header
 #'   denoting the cell type. Replicates contain an underscore followed by the
 #'   replicate number (e.g. BCell_1, BCell_2, etc).
+#' @param top.var.genes Number of genes from reference dataset to use for 
+#'   inference, ranked by most variable. 3000 by default. Set to NULL to use all
+#'   genes.
 #' @return A list of two dataframes: "ref" - sorted genes from the reference 
 #'   dataset also found in the seurat object, and "sc.sub" - sorted genes from 
 #'   the seurat object also found in the reference dataset.
 #'
 #' @importFrom Seurat Cells FetchData
 #'
-PrepRef <- function(scrna, dataset){
+PrepRef <- function(scrna, dataset, top.var.genes = 3000){
 	# Get both the genes and cells for the normalized seurat object.
 	genes <- rownames(x = scrna)
 	cells <- Cells(scrna)
@@ -251,6 +264,15 @@ PrepRef <- function(scrna, dataset){
 		fill = TRUE, quote = '', check.names = FALSE)
 	# Only keep genes found in the seurat object as well.
 	data.unsorted <- data.all[which(rownames(data.all) %in% genes), ]
+
+	# Get only top n variable genes if necessary.
+	if (!is.null(top.var.genes)) {
+		data.unsorted$var_by_row <- apply(data.unsorted, 1, var)
+		data.unsorted <- data.unsorted[order(-data.unsorted$var_by_row), ]
+		data.unsorted <- data.unsorted[1:top.var.genes,]
+		check <- dim(data.unsorted)
+		data.unsorted$var_by_row <- NULL
+	}
 
 	# Extract signature genes from normalized seurat object.
 	g.ind = which(genes %in% rownames(data.unsorted))
