@@ -41,7 +41,7 @@ ScoreAnnotatedMarkers <- function(scrna, marker.df) {
     }
 
     # Score set.
-    scrna <- AddModuleScore(scrna, features = genes, name = paste0(j, ".Score1"
+    scrna <- AddModuleScore(scrna, features = genes, name = paste0(j, ".Score"
     	))
 
     # Remove random number from column header, annoys me.
