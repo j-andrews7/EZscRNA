@@ -7,7 +7,9 @@
 #' @param scrna Seurat object.
 #' @param vars Vector of meta.data column names to plot.
 #' @param outdir Path to output directory.
-#' @param pt.size Use to adjust point size for plotting. 
+#' @param ... Arguments to be passed to Seurat \code{DimPlot}. \code{cols}, 
+#'   \code{reduction}, and \code{group.by} are already defined and will throw
+#'   an error if passed.
 #'
 #' @importFrom Seurat DimPlot
 #' @importFrom grDevices dev.off pdf rainbow
@@ -15,7 +17,7 @@
 #'
 #' @export
 #'
-VizMetaData <- function(scrna, vars, outdir, pt.size = NULL) {
+VizMetaData <- function(scrna, vars, outdir, ...) {
 	message("Plotting meta.data variables.")
 
 	for (i in vars) {
@@ -32,9 +34,9 @@ VizMetaData <- function(scrna, vars, outdir, pt.size = NULL) {
 		pdf(sprintf("%s/UMAP.TSNE.%s.pdf", outdir, i), width = w, height = 5, 
 			useDingbats=FALSE)
 		p1 <- DimPlot(object = scrna, group.by = as.character(i), 
-			cols = cell_colors, reduction = "tsne", pt.size = pt.size) + NoLegend()
+			cols = cell_colors, reduction = "tsne", ...) + NoLegend()
 		p2 <- DimPlot(object = scrna, group.by = as.character(i), 
-			cols = cell_colors, reduction = "umap", pt.size = pt.size) + 
+			cols = cell_colors, reduction = "umap", ...) + 
 			theme(legend.text = element_text(size = 7)) +
 			labs(color = as.character(i))
 
@@ -63,14 +65,16 @@ VizMetaData <- function(scrna, vars, outdir, pt.size = NULL) {
 #' @param scrna Seurat object with base.lineage, lineage, and celltype columns
 #'   added to the meta.data (as done by \code{AssignCellType}).
 #' @param outdir Path to output directory.
-#' @param pt.size Use to adjust point size for plotting. 
+#' @param ... Arguments to be passed to Seurat \code{DimPlot}. \code{cols}, 
+#'   \code{reduction}, and \code{group.by} are already defined and will throw
+#'   an error if passed.
 #'
 #' @importFrom Seurat DimPlot
 #' @import ggplot2
 #'
 #' @export
 #'
-VizCellType <- function(scrna, outdir, pt.size = NULL) {
+VizCellType <- function(scrna, outdir, pt.size = NULL, ...) {
   message("Plotting cell types.")
   # All found lineages.
 	lineage_found <- sort(unique(scrna@meta.data$lineage))
@@ -84,9 +88,9 @@ VizCellType <- function(scrna, outdir, pt.size = NULL) {
 	pdf(sprintf("%s/UMAP.TSNE.celltype.pdf", outdir), width = w, height = 5, 
 		useDingbats=FALSE)
 	p1 <- DimPlot(object = scrna, group.by = "lineage", cols = cell_colors, 
-		reduction = "tsne", pt.size = pt.size) + NoLegend()
+		reduction = "tsne", ...) + NoLegend()
 	p2 <- DimPlot(object = scrna, group.by = "lineage", cols = cell_colors, 
-		reduction = "umap", pt.size = pt.size) + 
+		reduction = "umap", ...) + 
 		theme(legend.text = element_text(size = 7)) +
 		labs(color = 'Cell Lineage')
 
