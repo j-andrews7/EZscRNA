@@ -4,7 +4,7 @@
 \alias{VizDotPlot}
 \title{Creates DotPlot for gene set}
 \usage{
-VizDotPlot(scrna, outfile, genes)
+VizDotPlot(scrna, outfile, genes, dot.params = NULL)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -12,6 +12,10 @@ VizDotPlot(scrna, outfile, genes)
 \item{outfile}{Path for output PDF.}
 
 \item{genes}{Vector of genes to plot.}
+
+\item{dot.params}{List of keyword arguments to be passed to Seurat
+\code{DotPlot}. \code{features} are already defined and will throw
+an error if passed. NULL by default.}
 }
 \description{
 Dynamically generates a Seurat DotPlot for all genes in a given gene set as

@@ -13,7 +13,7 @@ Description: Serves as a (hopefully) convenient wrapper for
     reference data sets, pseudotime trajectories, and dynamic 
     visualizations.
 Depends: R (>= 3.5.0),
-    Seurat (>= 3.0.0),
+    Seurat (>= 3.0.2),
     sctransform (>= 0.2.0)
 Imports: 
     dplyr,

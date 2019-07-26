@@ -4,7 +4,7 @@
 \alias{VizRidgePlot}
 \title{Creates RidgePlots for gene set}
 \usage{
-VizRidgePlot(scrna, outfile, genes)
+VizRidgePlot(scrna, outfile, genes, ridge.params = NULL)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -12,6 +12,10 @@ VizRidgePlot(scrna, outfile, genes)
 \item{outfile}{Path for output PDF.}
 
 \item{genes}{Vector of genes to plot.}
+
+\item{ridge.params}{List of keyword arguments to be passed to Seurat
+\code{RidgePlot}. \code{features} are already defined and will throw
+an error if passed. NULL by default.}
 }
 \description{
 Dynamically generates Seurat RidgePlots for all genes in a given gene set as

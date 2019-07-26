@@ -4,7 +4,7 @@
 \alias{VizVlnPlot}
 \title{Creates VlnPlots for gene set}
 \usage{
-VizVlnPlot(scrna, outfile, genes)
+VizVlnPlot(scrna, outfile, genes, vln.params = NULL)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -12,6 +12,10 @@ VizVlnPlot(scrna, outfile, genes)
 \item{outfile}{Path for output PDF.}
 
 \item{genes}{Vector of genes to plot.}
+
+\item{vln.params}{List of keyword arguments to be passed to Seurat
+\code{VlnPlot}. \code{features} are already defined and will throw
+an error if passed. NULL by default.}
 }
 \description{
 Dynamically generates Seurat VlnPlots for all genes in a given gene set as a

@@ -4,8 +4,9 @@
 \alias{VizAnnotatedMarkers}
 \title{Visualize an annotated marker list}
 \usage{
-VizAnnotatedMarkers(scrna, marker.df, outdir, pt.size = NULL,
-  vln = NULL, ridge = NULL, dot = NULL, heatmap = NULL)
+VizAnnotatedMarkers(scrna, marker.df, outdir, vln = NULL, ridge = NULL,
+  dot = NULL, heatmap = NULL, vln.params = NULL,
+  ridge.params = NULL, dot.params = NULL, heatmap.params = NULL)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -16,8 +17,6 @@ Exhaustion markers, etc.) while the "Marker" column contains the
 comma-delimited gene symbols associated with it.}
 
 \item{outdir}{Path to output directory.}
-
-\item{pt.size}{Use to adjust point size for plotting FeaturePlots.}
 
 \item{vln}{Boolean indicating whether to create Seurat VlnPlots for each set.
 Splits by cell idents. NULL by default.}
@@ -30,6 +29,23 @@ set. Splits by cell idents. NULL by default.}
 
 \item{heatmap}{Boolean indicating whether to create a Seurat Heatmap for each
 set. Splits by cell idents. NULL by default.}
+
+\item{vln.params}{List of keyword arguments to be passed to Seurat
+\code{VlnPlot}. \code{features} are already defined and will throw
+an error if passed.}
+
+\item{ridge.params}{Boolean indicating whether to create Seurat RidgePlots 
+for each set. Splits by cell idents. NULL by default.}
+
+\item{dot.params}{Boolean indicating whether to create Seurat DotPlots for 
+each set. Splits by cell idents. NULL by default.}
+
+\item{heatmap.params}{Boolean indicating whether to create a Seurat Heatmap 
+for each set. Splits by cell idents. NULL by default.}
+
+\item{...}{Arguments to be passed to Seurat \code{FeaturePlot}. \code{cols}, 
+\code{features}, \code{reduction}, and \code{ncol} are already defined and
+will throw an error if passed.}
 }
 \description{
 \code{VizAnnotatedMarkers} creates Seurat FeaturePlots for lists of 

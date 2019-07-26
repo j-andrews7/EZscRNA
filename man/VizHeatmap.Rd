@@ -4,7 +4,7 @@
 \alias{VizHeatmap}
 \title{Creates Heatmap for gene set}
 \usage{
-VizHeatmap(scrna, outfile, genes)
+VizHeatmap(scrna, outfile, genes, heatmap.params = NULL)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -12,6 +12,10 @@ VizHeatmap(scrna, outfile, genes)
 \item{outfile}{Path for output PDF.}
 
 \item{genes}{Vector of genes to plot.}
+
+\item{heatmap.params}{List of keyword arguments to be passed to Seurat
+\code{DoHeatmap}. \code{features} are already defined and will throw
+an error if passed. NULL by default.}
 }
 \description{
 Dynamically generates Seurat Heatmap for all genes in a given gene set as
