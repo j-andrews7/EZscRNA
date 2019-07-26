@@ -4,7 +4,8 @@
 \alias{InferCellType}
 \title{Infer cell type using reference dataset}
 \usage{
-InferCellType(scrna, dataset, outdir, lineage = FALSE, n.cores = 1)
+InferCellType(scrna, dataset, outdir, lineage = FALSE, n.cores = 1,
+  top.var.genes = 3000)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -26,6 +27,10 @@ indicators will be removed (e.g. NK_1 will just be NK).}
 
 \item{n.cores}{Number of cores to use for correlation. Linearly decreases 
 computation time.}
+
+\item{top.var.genes}{Number of genes from reference dataset to use for 
+inference, ranked by most variable. 3000 by default. Set to NULL to use all
+genes.}
 }
 \value{
 A table containing the top three predicted cell types for each cell.

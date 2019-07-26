@@ -4,7 +4,7 @@
 \alias{VizMetaData}
 \title{Visualize by metadata variables}
 \usage{
-VizMetaData(scrna, vars, outdir, pt.size = NULL)
+VizMetaData(scrna, vars, outdir, ...)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -13,7 +13,9 @@ VizMetaData(scrna, vars, outdir, pt.size = NULL)
 
 \item{outdir}{Path to output directory.}
 
-\item{pt.size}{Use to adjust point size for plotting.}
+\item{...}{Arguments to be passed to Seurat \code{DimPlot}. \code{cols}, 
+\code{reduction}, and \code{group.by} are already defined and will throw
+an error if passed.}
 }
 \description{
 \code{VizDimMetaData} creates Seurat DimPlots for the given meta.data columns

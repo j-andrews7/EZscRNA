@@ -4,7 +4,7 @@
 \alias{PrepRef}
 \title{Load and prepare reference dataset for cell type inference}
 \usage{
-PrepRef(scrna, dataset)
+PrepRef(scrna, dataset, top.var.genes = 3000)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -14,6 +14,10 @@ be gene identifiers that match those of the Seurat object. Each subsequent
 column should contain counts for a cell type with the column header
 denoting the cell type. Replicates contain an underscore followed by the
 replicate number (e.g. BCell_1, BCell_2, etc).}
+
+\item{top.var.genes}{Number of genes from reference dataset to use for 
+inference, ranked by most variable. 3000 by default. Set to NULL to use all
+genes.}
 }
 \value{
 A list of two dataframes: "ref" - sorted genes from the reference 

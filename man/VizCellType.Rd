@@ -4,7 +4,7 @@
 \alias{VizCellType}
 \title{Visualize inferred cell types}
 \usage{
-VizCellType(scrna, outdir, pt.size = NULL)
+VizCellType(scrna, outdir, ...)
 }
 \arguments{
 \item{scrna}{Seurat object with base.lineage, lineage, and celltype columns
@@ -12,7 +12,9 @@ added to the meta.data (as done by \code{AssignCellType}).}
 
 \item{outdir}{Path to output directory.}
 
-\item{pt.size}{Use to adjust point size for plotting.}
+\item{...}{Arguments to be passed to Seurat \code{DimPlot}. \code{cols}, 
+\code{reduction}, and \code{group.by} are already defined and will throw
+an error if passed.}
 }
 \description{
 \code{VizCellType} creates Seurat DimPlots for the cell types and lineages

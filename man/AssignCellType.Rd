@@ -5,7 +5,7 @@
 \title{Infers and assigns cell type for each cell}
 \usage{
 AssignCellType(scrna, dataset, outdir, lineage = FALSE, assign = TRUE,
-  n.cores = 1)
+  n.cores = 1, top.var.genes = 3000)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -30,6 +30,12 @@ be assigned to seurat object or just returned as a table. TRUE by default.}
 
 \item{n.cores}{Number of cores to use for correlation. Linearly decreases 
 computation time.}
+
+\item{top.var.genes}{Number of genes from reference dataset to use for 
+inference, ranked by most variable. 3000 by default. Set to NULL to use all
+genes. Fewer genes is significantly quicker. Generally, results won't 
+change using higher numbers of genes past a certain point (usually a few
+hundred genes, depending on the reference dataset).}
 }
 \value{
 If assign is TRUE, returns a seurat object with inferred cell type

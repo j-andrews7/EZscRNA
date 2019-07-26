@@ -74,7 +74,7 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
 #'
 #' @export
 #'
-VizCellType <- function(scrna, outdir, pt.size = NULL, ...) {
+VizCellType <- function(scrna, outdir, ...) {
   message("Plotting cell types.")
   # All found lineages.
 	lineage_found <- sort(unique(scrna@meta.data$lineage))
