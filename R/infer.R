@@ -253,6 +253,7 @@ InferCellType <- function(scrna, dataset, outdir, lineage = FALSE, n.cores = 1,
 #'   the seurat object also found in the reference dataset.
 #'
 #' @importFrom Seurat Cells FetchData
+#' @importFrom stats var
 #'
 PrepRef <- function(scrna, dataset, top.var.genes = 3000){
 	# Get both the genes and cells for the normalized seurat object.
