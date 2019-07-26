@@ -6,7 +6,7 @@
 \usage{
 VizAnnotatedMarkers(scrna, marker.df, outdir, vln = NULL, ridge = NULL,
   dot = NULL, heatmap = NULL, vln.params = NULL,
-  ridge.params = NULL, dot.params = NULL, heatmap.params = NULL)
+  ridge.params = NULL, dot.params = NULL, heatmap.params = NULL, ...)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -48,8 +48,8 @@ for each set. Splits by cell idents. NULL by default.}
 will throw an error if passed.}
 }
 \description{
-\code{VizAnnotatedMarkers} creates Seurat FeaturePlots for lists of 
-marker genes associated with a given annotation.
+\code{VizAnnotatedMarkers} creates Seurat FeaturePlots (and other 
+visualizations) for lists of marker genes associated with a given annotation.
 }
 \details{
 Plots for each annotation set will be output to a PDF that will be

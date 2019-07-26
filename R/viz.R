@@ -341,7 +341,7 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL,
 #' @export
 #'
 VizScoredSets <- function(scrna, marker.df, outdir, vln = NULL, 
-	ridge = NULL, dot = NULL, heatmap = NULL, vln.params = NULL, 
+	ridge = NULL, dot = NULL, vln.params = NULL, 
 	ridge.params = NULL, dot.params = NULL, ...) {
 
   # Plot score for each set.

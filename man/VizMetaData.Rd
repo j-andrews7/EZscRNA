@@ -19,6 +19,6 @@ an error if passed.}
 }
 \description{
 \code{VizDimMetaData} creates Seurat DimPlots for the given meta.data columns
-using both UMAP, TSNE, and PCA reductions. These plots are automatically 
-saved in a PDF in the specified output directory.
+using UMAP, TSNE, and PCA reductions. These plots are automatically saved in 
+a PDF in the specified output directory.
 }
