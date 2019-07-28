@@ -15,7 +15,6 @@
 #' @return Seurat object with scores for each "Set" added to meta.data.
 #'
 #' @importFrom Seurat AddModuleScore
-#' @import ggplot2
 #' 
 #' @export
 #'

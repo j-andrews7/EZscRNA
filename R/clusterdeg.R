@@ -1,20 +1,25 @@
 #' Normalize, scale, and regress out wanted variation
 #'
-#' \code{SCT} runs \code{SCTransform} on a Seurat object, followed by PCA, UMAP,
-#' and clustering. Produces PCA and UMAP dimplots based on user-provided list
-#' of metadata columns to use for grouping. Also finds marker genes and
-#' saves the output as a table along with a heatmap of the top 10 upregulated
-#' genes in each cluster.
+#' \code{ClusterDEG} runs \code{SCTransform} on a Seurat object, followed by 
+#' PCA, TSNE, UMAP, and clustering. Produces PCA and UMAP dimplots based on 
+#' a user-provided list of metadata columns to use for grouping. Also finds 
+#' marker genes and saves the output as a table along with a heatmap of the 
+#' top 10 upregulated genes in each cluster.
 #'
 #'
 #' @param scrna Seurat object.
 #' @param outdir Path to output directory.
 #' @param npcs Number of principle components to use for UMAP and clustering.
-#'   Default is 50, as \code{SCTransform} tends to do better with more.
+#'   Default is 30, as \code{SCTransform} tends to do better with more.
 #' @param res Numeric value denoting resolution to use for clustering. Default
 #'   is 0.8 (Seurat default). Increasing this value will speed up clustering,
 #'   but may decrease the numbers of distinct clusters. Values of 0.5-3 are 
-#'   sensible.
+#'   sensible. Multiple values may be entered as a vector - resulting clusters
+#'   will be added as a meta.data column named "Cluster_res_npcs" where "res"
+#'   and "npcs" will be the values for those arguments, respectively.
+#' @param skip.sct Boolean indicating whether to skip \code{SCTransform}. FALSE
+#'   by default. Set to TRUE if \code{SimpleIntegration} was used to integrate
+#'   the Seurat object.
 #' @param min.dist Number that controls how tighly the embedding is allowed to
 #'   compress points together in \code{RunUMAP}. Increasing may be beneficial
 #'   for large datasets. Default is 0.3 (Seurat default).
@@ -53,22 +58,27 @@
 #'
 #' @import Seurat
 #' @import sctransform
+#' @importFrom grDevices dev.off pdf
+#' @import ggplot2
 #'
 #' @export
 #'
-RunSCT <- function(scrna, outdir, npcs = 50, res = 0.8, min.dist = 0.3, 
-									n.neighbors = 30, regress = NULL, groups = NULL, 
-									groups.pca = NULL, groups.label = NULL, groups.legend = NULL,
-									ccpca = FALSE, test = "wilcox", 
+ClusterDEG <- function(scrna, outdir, npcs = 30, res = 0.8, skip.sct = FALSE, 
+									min.dist = 0.3, n.neighbors = 30, regress = NULL, 
+									groups = NULL, groups.pca = NULL, groups.label = NULL, 
+									groups.legend = NULL, ccpca = FALSE, test = "wilcox", 
 									logfc.thresh = 0.25, min.pct = 0.1) {
 
   # Run sctransform & regress out any specified variables.
-  scrna <- SCTransform(scrna, vars.to.regress = regress, return.only.var.genes =
-  	FALSE )
+  if(!skip.sct) {
+  	message("Scaling & normalizing data with SCTransform.")
+  	scrna <- SCTransform(scrna, vars.to.regress = regress, 
+  		return.only.var.genes = FALSE )
+	}
 
   # Run PCA using just cell cycle genes if indicated. Saved as "cc".
   if (isTRUE(ccpca)) {
-		print("Performing PCA on cell cycle genes.")
+		message("Performing PCA on cell cycle genes.")
 		s.genes <- cc.genes$s.genes
 		g2m.genes <- cc.genes$g2m.genes
 		scrna <- RunPCA(scrna, npcs = npcs, features = c(s.genes, g2m.genes),

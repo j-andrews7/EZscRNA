@@ -54,5 +54,6 @@ inferred cell types and lineages if set.
 \details{
 The reference dataset can be from any source, it should just be normalized so
 that columns (cell types) are comparable. The majority of this code was 
-written by Allegra Petti - the version here has just been made more generic.
+written by Allegra Petti - the version here has just been made more generic
+and flexible.
 }
