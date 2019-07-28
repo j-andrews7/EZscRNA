@@ -1,6 +1,7 @@
 # EZscRNA
 
 [![Travis build status](https://travis-ci.org/j-andrews7/EZscRNA.svg?branch=master)](https://travis-ci.org/j-andrews7/EZscRNA)
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/j-andrews7/EZscRNA?branch=master&svg=true)](https://ci.appveyor.com/project/j-andrews7/EZscRNA)
 
 This R package is meant to be a high-level wrapper around popular, well-maintained scRNA R packages (Seurat, Slingshot), created in an effort to streamline the end-to-end process for new users while still maintaining the ability to customize the analyses fully for more advanced users. It also attempts to include convenience functions for integrating multimodal data that other tools don't seem to address (mainly VDJ data) and cell type inference using any supplied reference dataset.
 
