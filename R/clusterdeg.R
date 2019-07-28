@@ -1,11 +1,13 @@
 #' Normalize, scale, and regress out wanted variation
 #'
 #' \code{ClusterDEG} runs \code{SCTransform} on a Seurat object, followed by 
-#' PCA, TSNE, UMAP, and clustering. Produces PCA and UMAP dimplots based on 
-#' a user-provided list of metadata columns to use for grouping. Also finds 
-#' marker genes and saves the output as a table along with a heatmap of the 
-#' top 10 upregulated genes in each cluster.
+#' PCA, TSNE, UMAP, and clustering. Also finds marker genes and saves the output 
+#' as a table along with a heatmap of the top 10 upregulated genes in each 
+#' cluster.
 #'
+#' If multiple \code{res} values are given, a table and heatmap will be make for
+#' each, along with saving the cluster numbers for each in their own meta.data
+#' columns.
 #'
 #' @param scrna Seurat object.
 #' @param outdir Path to output directory.
@@ -16,7 +18,9 @@
 #'   but may decrease the numbers of distinct clusters. Values of 0.5-3 are 
 #'   sensible. Multiple values may be entered as a vector - resulting clusters
 #'   will be added as a meta.data column named "Cluster_res_npcs" where "res"
-#'   and "npcs" will be the values for those arguments, respectively.
+#'   and "npcs" will be the values for those arguments, respectively. The
+#'   clusters derived from the last value in the list will be set as the
+#'   default Ident for cells. 
 #' @param skip.sct Boolean indicating whether to skip \code{SCTransform}. FALSE
 #'   by default. Set to TRUE if \code{SimpleIntegration} was used to integrate
 #'   the Seurat object.
@@ -29,21 +33,10 @@
 #'   how it should be changed). Values of 5-50 are considered sensical.
 #'   Default is 30 (Seurat default).
 #' @param regress Vector of metadata variables to regress during data scaling.
-#'   Must match column headers in metadata. 
-#' @param groups Vector of metadata variables to use for grouping in UMAP and 
-#'   PCA dimplots. Must match column headers in metadata. 
-#' @param groups.pca Vector of boolean values to determine if \code{DimPlots} 
-#'   PCA reductions should also be created for each group. NULL by default (
-#'   only UMAP reductions will be shown for each group). If provided, must be
-#'   same length as groups parameter.
-#' @param groups.label Vector of boolean values to determine if \code{DimPlots} 
-#'   should show labels for each group. NULL by default (labels will not be 
-#'   shown). If provided, must be same length as groups parameter.
-#' @param groups.legend Vector of boolean values to determine if \code{DimPlots} 
-#'   should show legends for each group. NULL by default (legends will be 
-#'   shown). If provided, must be same length as groups parameter.
+#'   Must match column headers in meta.data. 
 #' @param ccpca Boolean to indicate whether PCA using only cell cycle genes
-#'   should be performed and plotted by sample identity and Phase.
+#'   should be done. If so, it will saved as a reduction named "cc". FALSE by
+#'   default.
 #' @param test Denotes which DE test to use for marker finding. Options are: 
 #'   "wilcox" (default), "bimod", "roc", "t", "negbinom", "poisson", "LR", 
 #'   "MAST", "DESeq2".
@@ -54,19 +47,20 @@
 #' @param min.pct Value that limits DE testing to genes detected in a minimum
 #'   fraction of cells in either population. Default is 0.1 (Seurat default).
 #' @return A Seurat object with normalized, scaled counts and assigned clusters.
-#'   If \code{ccpca = TRUE}, an additional PCA named "cc" will also be present.
+#'   If \code{ccpca = TRUE}, an additional PCA reduction named "cc" will also be 
+#'   present.
 #'
 #' @import Seurat
 #' @import sctransform
 #' @importFrom grDevices dev.off pdf
 #' @import ggplot2
+#' @importFrom utils write.table
 #'
 #' @export
 #'
 ClusterDEG <- function(scrna, outdir, npcs = 30, res = 0.8, skip.sct = FALSE, 
 									min.dist = 0.3, n.neighbors = 30, regress = NULL, 
-									groups = NULL, groups.pca = NULL, groups.label = NULL, 
-									groups.legend = NULL, ccpca = FALSE, test = "wilcox", 
+									ccpca = FALSE, test = "wilcox", 
 									logfc.thresh = 0.25, min.pct = 0.1) {
 
   # Run sctransform & regress out any specified variables.
@@ -83,14 +77,6 @@ ClusterDEG <- function(scrna, outdir, npcs = 30, res = 0.8, skip.sct = FALSE,
 		g2m.genes <- cc.genes$g2m.genes
 		scrna <- RunPCA(scrna, npcs = npcs, features = c(s.genes, g2m.genes),
 		  reduction.name = "cc")
-		pdf(sprintf("%s/CellCycle.PCA.pdf", outdir), height = 5, 
-		width = 7)
-		p <- DimPlot(scrna, group.by = "orig.ident", reduction = "cc", 
-			pt.size = 0.3) 
-		print(p)
-		p <- DimPlot(scrna, group.by = "Phase", reduction = "cc", pt.size = 0.3)
-		print(p)
-		dev.off()
   }
 
   message("Performing PCA/UMAP/TSNE on variable features.")
@@ -100,89 +86,32 @@ ClusterDEG <- function(scrna, outdir, npcs = 30, res = 0.8, skip.sct = FALSE,
 
   message("Performing clustering on variable features.")
   scrna <- FindNeighbors(scrna, dims = 1:npcs)
-  scrna <- FindClusters(scrna, resolution = res)
-  scrna[[sprintf("Clusters_%.1f_%dPC", res, npcs)]] <- Idents(object = scrna) 
 
-  message("Plotting PCA/UMAP dimplots.")
-  pdf(sprintf("%s/EDA.UMAP.PCA.pdf", outdir), height = 5, width = 7)
+  for (i in res) {
+  	message(paste0("Finding cluster markers using ", res, "resolution."))
+  	scrna <- FindClusters(scrna, resolution = res)
+  	scrna[[sprintf("Clusters.%.1fRes.%dPC", res, npcs)]] <- Idents(object = 
+  		scrna) 
+  
+	  markers <- FindAllMarkers(scrna, assay = "RNA", 
+			logfc.threshold = logfc.thresh, min.pct = min.pct, test.use = test)
+		
+	    # Save markers as table.
+	  message("Saving cluster markers.")
+	  write.table(markers, file = sprintf("%s/Cluster.Markers.%.1fRes.%dPC.txt", 
+	  	outdir, res, npcs), sep = "\t", quote = FALSE, row.names = FALSE)
 
-  # Some preeeetty gross logic here.
-  if (!is.null(groups)) {
-		for (i in 1:length(groups)) {
-		  var = groups[i]
-		  label = FALSE
-		  p2 = NULL
-			if (!is.null(groups.label)) {
-			  label = groups.label[i]
-			}
-			# Yikes.
-			if (!is.null(groups.legend)) {
-
-			  if (isTRUE(groups.legend[i])) {
-					p <- DimPlot(scrna, label = label, group.by = var, pt.size = 0.3) +
-				  	ggtitle(label = sprintf("UMAP - %s", var))
-					if (!is.null(groups.pca)) {
-				  	if (isTRUE(groups.pca[i])) {
-						p2 <- DimPlot(scrna, label = label, group.by = var,
-					  	reduction = "pca", pt.size = 0.3) + 
-					  	ggtitle(label = sprintf("PCA - %s", var))
-				  	}
-					}
-			  } else {
-			    p <- DimPlot(scrna, label = label, group.by = var, pt.size = 0.3) +
-				  ggtitle(label = sprintf("UMAP - %s", var)) + NoLegend()
-			    if (!is.null(groups.pca)) {
-				  	if (isTRUE(groups.pca[i])) {
-				    	p2 <- DimPlot(scrna, label = label, group.by = var,
-					  	reduction = "pca", pt.size = 0.3) + 
-					  	ggtitle(label = sprintf("PCA - %s", var)) + NoLegend() 
-				  	}
-			    }
-			  }
-
-			} else {
-			  p <- DimPlot(scrna, label = label, group.by = var, pt.size = 0.3) +
-					ggtitle(label = sprintf("UMAP - %s", var))
-				if (!is.null(groups.pca)) {
-			  	if (isTRUE(groups.pca[i])) {
-						p2 <- DimPlot(scrna, label = label, group.by = var,
-				  		reduction = "pca", pt.size = 0.3) +
-				  		ggtitle(label = sprintf("PCA - %s", var))
-			  	}
-				}
-		  }
-
-		  print(p)
-
-		  if (!is.null(p2)) {
-		    print(p2)
-		  }
-    }
-  }
-
-  p <- DimPlot(scrna, label = TRUE, pt.size = 0.3) + NoLegend() + 
-  	ggtitle(label = "UMAP")
-
-	print(p)
-  dev.off()
-
-  message("Finding cluster markers.")
-  markers <- FindAllMarkers(scrna, assay = "RNA", 
-		logfc.threshold = logfc.thresh, min.pct = min.pct, test.use = test)
-	
-    # Save markers as table.
-  message("Saving cluster markers.")
-  write.table(markers, file=sprintf("%s/Cluster.Markers.txt", outdir), 
-		sep="\t", quote=FALSE, row.names=FALSE)
-
-  message("Visualizing cluster markers.")
-  # Make marker heatmap.
-  pdf(sprintf("%s/Top10.UpMarkers.Cluster.Heatmap.pdf", outdir), height=24, 
-	width=38)
-  top10up <- markers %>% dplyr::group_by(cluster) %>% 
-		dplyr::top_n(n = 10, wt = avg_logFC) %>% dplyr::filter(avg_logFC > 0)
-  DoHeatmap(scrna, features = top10up$gene)
-  dev.off()
+	  message("Visualizing cluster markers.")
+	  top10up <- markers %>% dplyr::group_by(cluster) %>% 
+			dplyr::top_n(n = 10, wt = avg_logFC) %>% dplyr::filter(avg_logFC > 0)
+	  # Make marker heatmap. Dynamic sizing.
+	  h <- 4 + (0.3 * length(top10up$gene))
+		w <- 3 + (0.4 * length(sort(unique(Idents(scrna)))))
+	  pdf(sprintf("%s/Top10.UpMarkers.Cluster.%.1fRes.%dPC.Heatmap.pdf", outdir, 
+	  	res, npcs), height = h, width = w)
+	  DoHeatmap(scrna, features = top10up$gene)
+	  dev.off()
+	}
 
   return(scrna)
 }

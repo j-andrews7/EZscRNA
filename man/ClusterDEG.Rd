@@ -5,10 +5,8 @@
 \title{Normalize, scale, and regress out wanted variation}
 \usage{
 ClusterDEG(scrna, outdir, npcs = 30, res = 0.8, skip.sct = FALSE,
-  min.dist = 0.3, n.neighbors = 30, regress = NULL, groups = NULL,
-  groups.pca = NULL, groups.label = NULL, groups.legend = NULL,
-  ccpca = FALSE, test = "wilcox", logfc.thresh = 0.25,
-  min.pct = 0.1)
+  min.dist = 0.3, n.neighbors = 30, regress = NULL, ccpca = FALSE,
+  test = "wilcox", logfc.thresh = 0.25, min.pct = 0.1)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -23,7 +21,9 @@ is 0.8 (Seurat default). Increasing this value will speed up clustering,
 but may decrease the numbers of distinct clusters. Values of 0.5-3 are 
 sensible. Multiple values may be entered as a vector - resulting clusters
 will be added as a meta.data column named "Cluster_res_npcs" where "res"
-and "npcs" will be the values for those arguments, respectively.}
+and "npcs" will be the values for those arguments, respectively. The
+clusters derived from the last value in the list will be set as the
+default Ident for cells.}
 
 \item{skip.sct}{Boolean indicating whether to skip \code{SCTransform}. FALSE
 by default. Set to TRUE if \code{SimpleIntegration} was used to integrate
@@ -40,26 +40,11 @@ how it should be changed). Values of 5-50 are considered sensical.
 Default is 30 (Seurat default).}
 
 \item{regress}{Vector of metadata variables to regress during data scaling.
-Must match column headers in metadata.}
-
-\item{groups}{Vector of metadata variables to use for grouping in UMAP and 
-PCA dimplots. Must match column headers in metadata.}
-
-\item{groups.pca}{Vector of boolean values to determine if \code{DimPlots} 
-PCA reductions should also be created for each group. NULL by default (
-only UMAP reductions will be shown for each group). If provided, must be
-same length as groups parameter.}
-
-\item{groups.label}{Vector of boolean values to determine if \code{DimPlots} 
-should show labels for each group. NULL by default (labels will not be 
-shown). If provided, must be same length as groups parameter.}
-
-\item{groups.legend}{Vector of boolean values to determine if \code{DimPlots} 
-should show legends for each group. NULL by default (legends will be 
-shown). If provided, must be same length as groups parameter.}
+Must match column headers in meta.data.}
 
 \item{ccpca}{Boolean to indicate whether PCA using only cell cycle genes
-should be performed and plotted by sample identity and Phase.}
+should be done. If so, it will saved as a reduction named "cc". FALSE by
+default.}
 
 \item{test}{Denotes which DE test to use for marker finding. Options are: 
 "wilcox" (default), "bimod", "roc", "t", "negbinom", "poisson", "LR", 
@@ -75,12 +60,17 @@ fraction of cells in either population. Default is 0.1 (Seurat default).}
 }
 \value{
 A Seurat object with normalized, scaled counts and assigned clusters.
-  If \code{ccpca = TRUE}, an additional PCA named "cc" will also be present.
+  If \code{ccpca = TRUE}, an additional PCA reduction named "cc" will also be 
+  present.
 }
 \description{
 \code{ClusterDEG} runs \code{SCTransform} on a Seurat object, followed by 
-PCA, TSNE, UMAP, and clustering. Produces PCA and UMAP dimplots based on 
-a user-provided list of metadata columns to use for grouping. Also finds 
-marker genes and saves the output as a table along with a heatmap of the 
-top 10 upregulated genes in each cluster.
+PCA, TSNE, UMAP, and clustering. Also finds marker genes and saves the output 
+as a table along with a heatmap of the top 10 upregulated genes in each 
+cluster.
+}
+\details{
+If multiple \code{res} values are given, a table and heatmap will be make for
+each, along with saving the cluster numbers for each in their own meta.data
+columns.
 }
