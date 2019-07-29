@@ -7,14 +7,9 @@
 #' Potential libraries can be viewed with \code{listEnrichrDbs()} from the
 #' \code{enrichR} package.
 #'
-#' The enrichr web server can be found at <https://amp.pharm.mssm.edu/Enrichr/>.
-#' If you use this function, you should cite the original authors as well as 
-#' this package:
-#' 
-#' @references \href{https://www.ncbi.nlm.nih.gov/pubmed/27141961}{Kuleshov MV, 
-#'   Jones MR, Rouillard AD, et al. Enrichr: a comprehensive gene set enrichment 
-#'   analysis web server 2016 update. Nucleic Acids Research. 2016; gkw377}
-#'
+#' The enrichr web server can be found at 
+#' \url{https://amp.pharm.mssm.edu/Enrichr/}. If you use this function, you 
+#' should cite the original authors as well as this package:
 #'
 #' @param genes A vector of gene symbols that will be tested.
 #' @param libraries A vector of libraries to test the genes against.
@@ -26,10 +21,14 @@
 #'
 #' @export
 #' 
+#' @references \href{https://www.ncbi.nlm.nih.gov/pubmed/27141961}{Kuleshov MV, 
+#'   Jones MR, Rouillard AD, et al. Enrichr: a comprehensive gene set enrichment 
+#'   analysis web server 2016 update. Nucleic Acids Research. 2016; gkw377}
+#'
 #' @examples
 #' genes <- c("CD8A", "CD4", "FOXP3", "CTLA4", "GNLY")
 #' libs <- c("Reactome_2016", "KEGG_2019_HUMAN")
-#' enrichments <- RunEnrichr(genes)
+#' enrichments <- RunEnrichr(genes, libraries = libs)
 #'
 RunEnrichr <- function(genes, libraries = c("GO_Molecular_Function_2018", 
 	"GO_Cellular_Component_2018", "GO_Biological_Process_2018", "KEGG_2019_Human",

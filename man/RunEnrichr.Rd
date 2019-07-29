@@ -29,12 +29,18 @@ for each library used.
 Potential libraries can be viewed with \code{listEnrichrDbs()} from the
 \code{enrichR} package.
 
-The enrichr web server can be found at <https://amp.pharm.mssm.edu/Enrichr/>.
-If you use this function, you should cite the original authors as well as 
-this package:
+The enrichr web server can be found at 
+\url{https://amp.pharm.mssm.edu/Enrichr/}. If you use this function, you 
+should cite the original authors as well as this package:
+}
+\examples{
+genes <- c("CD8A", "CD4", "FOXP3", "CTLA4", "GNLY")
+libs <- c("Reactome_2016", "KEGG_2019_HUMAN")
+enrichments <- RunEnrichr(genes, libraries = libs)
+
 }
 \references{
-\url{https://www.ncbi.nlm.nih.gov/pubmed/27141961}{Kuleshov MV, 
+\href{https://www.ncbi.nlm.nih.gov/pubmed/27141961}{Kuleshov MV, 
   Jones MR, Rouillard AD, et al. Enrichr: a comprehensive gene set enrichment 
   analysis web server 2016 update. Nucleic Acids Research. 2016; gkw377}
 }
