@@ -24,7 +24,8 @@ Imports:
     RColorBrewer,
     utils,
     grDevices,
-    stats
+    stats,
+    future
 Suggests:
   scales
 License: GPL-3 | file LICENSE
