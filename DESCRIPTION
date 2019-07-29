@@ -25,7 +25,8 @@ Imports:
     utils,
     grDevices,
     stats,
-    future
+    future,
+    enrichR (>= 2.0)
 Suggests:
   scales
 License: GPL-3 | file LICENSE
