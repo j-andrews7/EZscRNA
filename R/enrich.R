@@ -4,12 +4,12 @@
 #' ontology/pathway enrichment analyses and collects the results as a named list
 #' for each library used.
 #'
-#' Potential libraries can be viewed with \code{listEnrichrDbs()} from the
+#' Potential libraries can be viewed with \code{listEnrichrDbs} from the
 #' \code{enrichR} package.
 #'
 #' The enrichr web server can be found at 
 #' \url{https://amp.pharm.mssm.edu/Enrichr/}. If you use this function, you 
-#' should cite the original authors as well as this package:
+#' should be sure to cite the original authors.
 #'
 #' @param genes A vector of gene symbols that will be tested.
 #' @param libraries A vector of libraries to test the genes against.
@@ -18,6 +18,7 @@
 #' @return A named list of enrichment results for each library.
 #'
 #' @import enrichR
+#' @importFrom utils write.table
 #'
 #' @export
 #' 
@@ -30,6 +31,8 @@
 #' libs <- c("Reactome_2016", "KEGG_2019_HUMAN")
 #' enrichments <- RunEnrichr(genes, libraries = libs)
 #'
+#' @seealso \code{\link{VizEnrichments}} for visualization.
+#'
 RunEnrichr <- function(genes, libraries = c("GO_Molecular_Function_2018", 
 	"GO_Cellular_Component_2018", "GO_Biological_Process_2018", "KEGG_2019_Human",
 	"Reactome_2016", "BioCarta_2016", "Panther_2016"), outdir = NULL) {
@@ -40,7 +43,8 @@ RunEnrichr <- function(genes, libraries = c("GO_Molecular_Function_2018",
 	options(enrichRLive = TRUE)
 
 	# Run enrichments.
-	message("Submitting sets to the enrichr server.")
+	message("Submitting sets to the Enrichr server. Please be patient, this can",
+		" sometimes take a few minutes if the server is under heavy load or down.")
 	results <- enrichr(genes, libraries)
 	res.names <- names(results)
 

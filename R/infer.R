@@ -152,7 +152,7 @@ InferCellType <- function(scrna, dataset, outdir, lineage = FALSE, n.cores = 1,
 
 	  cell.ind <- which(colnames(scrna.subset) == cell.barcodes[i])
 	  profile <- as.vector(scrna.subset[, cell.ind])
-	  # List of correlations, one for each column.
+	  # Vector of correlations, one for each column.
 	  corrs <- vector(length = ncol(data.sorted), mode = "numeric")
 	  k <- 0
 
