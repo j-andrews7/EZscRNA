@@ -26,12 +26,12 @@ ontology/pathway enrichment analyses and collects the results as a named list
 for each library used.
 }
 \details{
-Potential libraries can be viewed with \code{listEnrichrDbs()} from the
+Potential libraries can be viewed with \code{listEnrichrDbs} from the
 \code{enrichR} package.
 
 The enrichr web server can be found at 
 \url{https://amp.pharm.mssm.edu/Enrichr/}. If you use this function, you 
-should cite the original authors as well as this package:
+should be sure to cite the original authors.
 }
 \examples{
 genes <- c("CD8A", "CD4", "FOXP3", "CTLA4", "GNLY")
@@ -43,4 +43,7 @@ enrichments <- RunEnrichr(genes, libraries = libs)
 \href{https://www.ncbi.nlm.nih.gov/pubmed/27141961}{Kuleshov MV, 
   Jones MR, Rouillard AD, et al. Enrichr: a comprehensive gene set enrichment 
   analysis web server 2016 update. Nucleic Acids Research. 2016; gkw377}
+}
+\seealso{
+\code{\link{VizEnrichments}} for visualization.
 }

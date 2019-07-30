@@ -1,33 +1,33 @@
 Package: EZscRNA
 Title: Simple Convenience Functions for High-Level scRNA-Seq Analysis
 Version: 0.1.0
-Date: 2019-07-24
+Date: 2019-07-29
 Authors@R: person("Jared", "Andrews", email = "jared.andrews07@gmail.com", 
-    role = c("aut", "cre"),
-    comment = c(ORCID = "https://orcid.org/0000-0002-0780-6248"))
+  role = c("aut", "cre"),
+  comment = c(ORCID = "https://orcid.org/0000-0002-0780-6248"))
 Description: Serves as a (hopefully) convenient wrapper for 
-    EZ(-er) scRNA-seq analysis using best practices. It uses Seurat (v3+),
-    sctransform, and slingshot for most analysis steps. It provides a 
-    number of high-level functions spanning QC/preprocessing, exploratory 
-    data analysis, clustering, cell type inference using user-provided 
-    reference data sets, pseudotime trajectories, and dynamic 
-    visualizations.
-Depends: R (>= 3.5.0),
-    Seurat (>= 3.0.2),
-    sctransform (>= 0.2.0)
+  EZ(-er) scRNA-seq analysis using best practices. It uses Seurat (v3+),
+  sctransform, and slingshot for most analysis steps. It provides a 
+  number of high-level functions spanning QC/preprocessing, exploratory 
+  data analysis, clustering, cell type inference using user-provided 
+  reference data sets, pseudotime trajectories, and dynamic 
+  visualizations.
+Depends: 
+  R (>= 3.5.0),
+  Seurat (>= 3.0.2),
+  sctransform (>= 0.2.0)
 Imports: 
-    dplyr,
-    cowplot,
-    ggplot2,
-    foreach,
-    doParallel,
-    RColorBrewer,
-    utils,
-    grDevices,
-    stats,
-    future,
-    enrichR (>= 2.0)
-Suggests:
+  dplyr,
+  cowplot,
+  ggplot2,
+  foreach,
+  doParallel,
+  RColorBrewer,
+  utils,
+  grDevices,
+  stats,
+  future,
+  enrichR (>= 2.0),
   scales
 License: GPL-3 | file LICENSE
 URL: https://github.com/j-andrews7/EZscRNA

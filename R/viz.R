@@ -1,3 +1,104 @@
+#' Visualize GO/pathway enrichments
+#'
+#' \code{VizEnrichments} creates barcharts for enrichments returned by
+#' \code{\link{RunEnrichr}}. Two plots will be created for each library - one 
+#' ranked by adj. p-value, the other by Enrichr's combined score metrics. Plots 
+#' will be saved in a PDF named by library.
+#'
+#' @param enrichments Named list containing enrichment results as returned by
+#'   \code{\link{RunEnrichr}}
+#' @param outdir Path to the output directory.
+#' @param n.terms Number of terms to place on plot. 10 by default.
+#' @param remove.insig Boolean indicating whether terms that don't meet the 
+#'   \code{adj.p.thresh} should be removed from the plots. TRUE by default.
+#' @param adj.p.thresh Value indicating adjusted p-value threshold to filter 
+#'   terms. 0.05 by default.
+#' @param colors Vector of two colors to use for coloring bars. First will be
+#'   low, second will be high. "grey" and "darkred" by default.
+#'
+#' @import ggplot2
+#' @importFrom grDevices dev.off pdf
+#' @importFrom scales wrap_format
+#'
+#' @export
+#'
+#' @examples
+#' genes <- c("CD8A", "GZMA", "GZMK", "GZMB", "CD4", "CD3E", "GNLY")
+#' libs <- c("Reactome_2016", "KEGG_2019_HUMAN")
+#' terms <- RunEnrichr(genes, libraries = libs)
+#'
+#' \dontrun{
+#' VizEnrichments(enrichments = terms)
+#' }
+#'
+#' @seealso \code{\link{VizEnrichments}} for visualization.
+#'
+VizEnrichments <- function(enrichments, outdir = "./", 
+	n.terms = 10, remove.insig = TRUE, adj.p.thresh = 0.05, 
+	colors = c("grey", "darkred")) {
+
+	if (length(colors) > 2) {
+		warning("Only two colors can be provided, get that fancy stuff outta here.")
+	}
+
+	ind = 1
+	for (i in enrichments) {
+		lib <- names(enrichments[ind])
+		ind <- ind + 1
+		# Significance filter.
+		if (isTRUE(remove.insig)) {
+			i <- i[which(i$Adjusted.P.value <= adj.p.thresh), ]
+			if (nrow(i) == 0) {
+				message(paste0("Skipping ", lib, " due to no terms meeting the ",
+					"significance threshold."))
+				next
+			}
+		}
+
+		message(paste0("Plotting ", lib))
+
+		i$log.Adj.p <- -log10(as.numeric(i$Adjusted.P.value))
+		i.p <- i[order(-i$log.Adj.p),]
+		i.s <- i[order(-i$Combined.Score),]
+
+		# Limit number of terms.
+		if (!is.null(n.terms)) {
+			if (nrow(i) > n.terms) {
+				i.p <- i.p[1:n.terms, ]
+				i.s <- i.s[1:n.terms, ]
+			}
+		}
+		
+		p1 <- ggplot(i.p, aes(x = reorder(Term, log.Adj.p),
+			log.Adj.p, fill = log.Adj.p)) + geom_col() + coord_flip() +
+			cowplot::theme_cowplot(12) + theme(axis.text.y = element_text(size = 7), 
+				legend.title = element_text(size=10), 
+				legend.text = element_text(size = 10)) + 
+			scale_x_discrete(labels = wrap_format(40)) + 
+			scale_fill_gradient(low = colors[1], high = colors[2]) + xlab("Term") +
+			ylab("-log10(Adjusted p-value)") + ylim(0, NA)
+
+		p2 <- ggplot(i.s, aes(x = reorder(Term, Combined.Score), 
+			Combined.Score, fill = log.Adj.p)) + geom_col() + coord_flip() +
+			cowplot::theme_cowplot(12) + theme(axis.text.y = element_text(size = 7), 
+				legend.title = element_text(size=10), 
+				legend.text = element_text(size = 10)) +
+			scale_x_discrete(labels = wrap_format(40)) +
+			scale_fill_gradient(low = colors[1], high = colors[2]) + xlab("Term") +
+			ylab("Combined Score (Enrichr)")
+
+		h <- 1 + 0.4 * nrow(i.p)
+		pdf(sprintf("%s/%s.Enrichments.pdf", outdir, lib), height = h, width = 12)
+		c <- cowplot::plot_grid(
+		  p1, p2, rel_widths = c(1, 1),
+		  nrow = 1
+		)
+		print(c)
+		dev.off()
+	}
+}
+
+
 #' Visualize by metadata variables
 #'
 #' \code{VizDimMetaData} creates Seurat DimPlots for the given meta.data columns
