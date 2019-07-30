@@ -13,7 +13,7 @@ Description: Serves as a (hopefully) convenient wrapper for
   reference data sets, pseudotime trajectories, and dynamic 
   visualizations.
 Depends: 
-  R (>= 3.5.0),
+  R (>= 3.6.0),
   Seurat (>= 3.0.2),
   sctransform (>= 0.2.0)
 Imports: 
@@ -28,7 +28,9 @@ Imports:
   stats,
   future,
   enrichR (>= 2.0),
-  scales
+  scales, 
+  slingshot (>= 1.3)
+Remotes: bioc::3.10/slingshot
 License: GPL-3 | file LICENSE
 URL: https://github.com/j-andrews7/EZscRNA
 BugReports: https://github.com/j-andrews7/EZscRNA/issues
