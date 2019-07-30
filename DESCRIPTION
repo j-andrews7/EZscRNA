@@ -30,7 +30,9 @@ Imports:
   enrichR (>= 2.0),
   scales, 
   slingshot (>= 1.3)
-Remotes: bioc::3.10/slingshot
+Remotes: 
+  bioc::3.10/slingshot,
+  satijalab/seurat@develop
 License: GPL-3 | file LICENSE
 URL: https://github.com/j-andrews7/EZscRNA
 BugReports: https://github.com/j-andrews7/EZscRNA/issues
