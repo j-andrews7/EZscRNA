@@ -38,7 +38,7 @@ VizEnrichments <- function(enrichments, outdir = "./",
 	colors = c("grey", "darkred")) {
 
 	if (length(colors) > 2) {
-		warning("Only two colors can be provided, get that fancy stuff outta here.")
+		stop("Only two colors can be provided, get that fancy stuff outta here.")
 	}
 
 	ind = 1
@@ -123,14 +123,11 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
 
 	# Check for necessary reductions.
 	if (is.null(scrna@reductions$tsne)) {
-		warning("TSNE not available in reductions, please run RunTSNE() on object.")
-		return()
+		stop("TSNE not available in reductions, please run RunTSNE() on object.")
 	} else if(is.null(scrna@reductions$umap)) {
-		warning("UMAP not available in reductions, please run RunUMAP() on object.")
-		return()
+		stop("UMAP not available in reductions, please run RunUMAP() on object.")
 	} else if(is.null(scrna@reductions$pca)) {
-		warning("PCA not available in reductions, please run RunPCA() on object.")
-		return()
+		stop("PCA not available in reductions, please run RunPCA() on object.")
 	}
 
 	dim.params <- list(...)

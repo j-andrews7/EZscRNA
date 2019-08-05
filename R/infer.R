@@ -17,15 +17,16 @@
 #' @param dataset Path to tab-delimited table of gene counts. First column must
 #'   be gene identifiers of same type as Seurat object. Each subsequent
 #'   column should contain counts for a cell type with the column header
-#'   denoting the cell type. Replicates should contain an underscore followed 
-#'   by the replicate number (e.g. BCell_1, BCell_2, etc).
+#'   denoting the cell type. Replicates should contain ":::" followed 
+#'   by the replicate number (e.g. BCell:::1, BCell:::2, etc). 
 #' @param outdir Path to output directory.
 #' @param lineage Boolean indicating whether or not column names are formatted
-#'   as lineage followed by more granular specifications (e.g. Tcell.CD4_1,
-#'   Tcell.CD8_1, etc). If TRUE, will assign the lineage (everything before the)
-#'   first '.' in the column name to a metadata column called "base.lineage".
-#'   Columns not containing a '.' will use the entire name, though replicate
-#'   indicators will be removed (e.g. NK_1 will just be NK).
+#'   as lineage followed by more granular specifications (e.g. 
+#'   Tcell.Tcell-CD4:::1, Tcell.CD8:::1, etc). If TRUE, will assign the lineage
+#'   (everything before the) first '.' in the column name to a metadata column 
+#'   called "base.lineage". Columns not containing a '.' will use the entire 
+#'   name, though replicate indicators will be removed (e.g. NK:::1 will just be
+#'   NK).
 #' @param assign Boolean indicating whether inferred cell types should actually
 #'   be assigned to seurat object or just returned as a table. TRUE by default.
 #' @param n.cores Number of cores to use for correlation. Linearly decreases 
@@ -104,15 +105,16 @@ AssignCellType <- function(scrna, dataset, outdir, lineage = FALSE,
 #' @param dataset Path to tab-delimited table of gene counts. First column must
 #'   be gene identifiers that match those of the Seurat object. Each subsequent
 #'   column should contain counts for a cell type with the column header
-#'   denoting the cell type. Replicates should contain an underscore followed 
-#'   by the replicate number (e.g. Bcell_1, Bcell_2, etc). 
+#'   denoting the cell type. Replicates should contain ':::' followed 
+#'   by the replicate number (e.g. Bcell:::1, Bcell:::2, etc). 
 #' @param outdir Path to output directory.
 #' @param lineage Boolean indicating whether or not column names are formatted
-#'   as lineage followed by more granular specifications (e.g. Tcell.CD4_1,
-#'   Tcell.CD8_1, etc). If TRUE, will assign the lineage (everything before the)
-#'   first '.' in the column name to a metadata column called "base.lineage".
-#'   Columns not containing a '.' will use the entire name, though replicate
-#'   indicators will be removed (e.g. NK_1 will just be NK).
+#'   as lineage followed by more granular specifications (e.g. 
+#'   Tcell.Tcell-CD4:::1, Tcell.TcellCD8:::1, etc). If TRUE, will assign the 
+#'   lineage (everything before the) first '.' in the column name to a metadata
+#'   column called "base.lineage". Columns not containing a '.' will use the 
+#'   entire name, though replicate indicators will be removed (e.g. NK:::1 will
+#'   just be NK).
 #' @param n.cores Number of cores to use for correlation. Linearly decreases 
 #'   computation time.
 #' @param top.var.genes Number of genes from reference dataset to use for 
@@ -138,7 +140,7 @@ InferCellType <- function(scrna, dataset, outdir, lineage = FALSE, n.cores = 1,
 	celltype.list <- colnames(data.sorted)
 
 	# Save the lineage types without potential replicate values
-	lineages <- gsub("_\\d+", "", names(data.sorted))
+	lineages <- gsub(":::\\d+", "", names(data.sorted))
 
 	# Set cores for doParallel.
 	registerDoParallel(cores = n.cores)
@@ -301,3 +303,4 @@ SplitIt <- function(x) {
   unlist(strsplit(as.character(x), ".", 
 		fixed = TRUE))[c(TRUE, FALSE, FALSE, FALSE)]
 }
+
