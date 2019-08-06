@@ -37,7 +37,7 @@ SimpleIntegration <- function(scrnas, split.by = NULL, skip.SCT = FALSE,
 				vars.to.regress = vars.to.regress)
 		}
 	} else if (is.null(split.by)) {
-		warning(paste0("split.by must be provided if a list of Seurat objects is,",
+		stop(paste0("split.by must be provided if a list of Seurat objects is,",
 			"not provided as input."))
 	} else {
 		scrnas <- SplitObject(scrnas, split.by = split.by)

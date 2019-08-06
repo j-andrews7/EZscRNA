@@ -73,6 +73,8 @@ ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8,
   	scrna <- SCTransform(scrna, vars.to.regress = regress, 
   		return.only.var.genes = FALSE )
 	}
+  scrna <- RunPCA(scrna, npcs = npcs, features = rownames(scrna),
+    reduction.name = "mono.pca")
 
   # Run PCA using just cell cycle genes if indicated. Saved as "cc".
   if (isTRUE(ccpca)) {
