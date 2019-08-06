@@ -2,7 +2,7 @@
 #'
 #' \code{RunQC} saves 3 QC plots showing gene counts, read counts, and percent 
 #' mitochondrial reads per cell to help determine filters. It returns a
-#' Seurat object with percent mitochondrial reads added to the metadata.
+#' Seurat object with percent mitochondrial reads added to the \code{meta.data}.
 #'
 #' @param scrna Seurat object.
 #' @param outdir Path to output directory.
@@ -40,8 +40,8 @@ RunQC <- function(scrna, outdir){
 #' for data normalization, scaling, and therefore, regression. 
 #'
 #' @param scrna Seurat object to score cell cycle genes for each cell.
-#' @return Seurat object with cell cycle scores (S.Score, G2M.Score) and 
-#'   Phase added to metadata for each cell.
+#' @return Seurat object with cell cycle scores ('S.Score', 'G2M.Score') and 
+#'   'Phase' added to \code{meta.data} for each cell.
 #'
 #' @importFrom Seurat NormalizeData CellCycleScoring
 #'
@@ -77,7 +77,7 @@ NormScoreCC <- function(scrna){
 #' @param outdir Path to output directory for plots.
 #' @param npcs Number of PCs to use for PCA and ElbowPlot. 50 by default.
 #' @param batch Boolean indicating whether \code{batch} should be investigated.
-#'   Requires \code{batch} metadata for each cell. FALSE by default.
+#'   Requires \code{batch} metadata for each cell. 
 #' @return A Seurat object with a PCA for cell cycle genes stored with
 #'   \code{reduction.name = "cc"}. 
 #'

@@ -11,13 +11,12 @@
 #' @param scrnas Either a list of Seurat objects or a single Seurat object, the
 #'   latter of which requires \code{split.by} to be provided as well.
 #' @param split.by String containing name of meta.data column to be used to 
-#'   split Seurat object into multiple samples. NULL by default.
+#'   split Seurat object into multiple samples. 
 #' @param skip.SCT Boolean indicating whether the \code{SCTransform} call for
 #'   each sample should be skipped or not. This should only be set to TRUE if
 #'   the samples if the samples have already undergone SCTransform. 
-#'   FALSE by default. 
 #' @param vars.to.regress Vector of meta.data variables to be regressed out
-#'   during \code{SCTransform}. NULL by default.
+#'   during \code{SCTransform}. 
 #' @param n.features Number of anchor features to use. 3000 by default.
 #' @return An integrated Seurat object with technical variation/batch effects
 #'   removed from the individual samples.
@@ -48,7 +47,6 @@ SimpleIntegration <- function(scrnas, split.by = NULL, skip.SCT = FALSE,
 	}
 
 	# Actual integration.
-	options(future.globals.maxSize = 4000 * 1024^2)
 	anch.features <- SelectIntegrationFeatures(object.list = scrnas, 
 		nfeatures = n.features)
 	scrnas <- PrepSCTIntegration(object.list = scrnas, 

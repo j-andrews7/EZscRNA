@@ -45,12 +45,13 @@
 #'   \code{\link[SingleR]{SingleR}}.
 #' @return If \code{assign = TRUE}, returns a \code{Seurat} object with inferred
 #'   cell type information in the \code{meta.data} slot named in 
-#'   \code{refset.labels.method} format. If FALSE, returns a dataframe of the 
-#'   inferred cell type/lineage information instead.
+#'   \code{refset.labels} format. If \code{method = "cluster"}, the resulting
+#'   \code{meta.data} column will be named in \code{clusters.refset.labels} 
+#'   format. If FALSE, returns a dataframe of the inferred cell type/lineage 
+#'   information instead.
 #'
 #' @importFrom Seurat AddMetaData as.SingleCellExperiment as.Seurat
 #' @importFrom SingleR getReferenceDataset SingleR
-#' @importFrom scater normalize
 #'
 #' @export
 #'
@@ -58,8 +59,8 @@
 #' preds <- AssignCellType(pbmc_small, refset = "hpca", labels = "main_types",
 #'   method = "single")
 #'
-#'
-#'
+#' preds2 <- AssignCellType(pbmc_small, refset = "hpca", labels = "types",
+#'   method = "cluster", clusters = pbmc_small@meta.data$RNA_snn_res.1)
 #'
 AssignCellType <- function(scrna, refset = c("hpca", "blueprint_encode", 
   "immgen", "mouse.rnaseq"), labels = c("types", "main_types"), method = 
@@ -110,12 +111,12 @@ AssignCellType <- function(scrna, refset = c("hpca", "blueprint_encode",
 
     if (method == "cluster") {
       annots$clusts <- rownames(annots)
-      scrna[[sprintf("%s.%s.%s", refset, labels, method)]] <- 
+      scrna[[sprintf("%s.%s.%s", clusters, refset, labels)]] <- 
         annots$labels[match(scrna@meta.data[[clusters]], 
           annots$clusts)]
 
     } else {
-		  scrna[[sprintf("%s.%s.%s", refset, labels, method)]] <- annots$labels
+		  scrna[[sprintf("%s.%s", refset, labels)]] <- annots$labels
     }
 
 	} else {

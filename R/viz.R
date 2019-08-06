@@ -141,9 +141,6 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
 
 		w <- 15 + (2 * ceiling((length(vars_found) / 12)))
 
-		# Plot.
-		pdf(sprintf("%s/PCA.TSNE.UMAP.%s.pdf", outdir, i), width = w, height = 5, 
-			useDingbats=FALSE)
 		p1 <- do.call(DimPlot, c(scrna, list(group.by = as.character(i), 
 			cols = cell_colors, reduction = "pca"), dim.params)) + NoLegend()
 		p2 <- do.call(DimPlot, c(scrna, list(group.by = as.character(i), 
@@ -163,6 +160,10 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
 		  rel_widths = c(1, 1, 1, leg.w),
 		  nrow = 1
 		)
+
+    # Plot.
+    pdf(sprintf("%s/PCA.TSNE.UMAP.%s.pdf", outdir, i), width = w, height = 5, 
+      useDingbats=FALSE)
 		print(c)
 		dev.off()
 	}
