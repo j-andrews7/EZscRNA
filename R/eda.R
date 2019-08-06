@@ -7,13 +7,13 @@
 #' @param scrna Seurat object.
 #' @param outdir Path to output directory.
 #' @return Seurat object with percent mitochondrial reads added to the
-#'   metadata for each cell.
+#'   \code{meta.data} for each cell.
 #'
 #' @importFrom Seurat PercentageFeatureSet VlnPlot
 #'
 #' @export
 #'
-RunQC <- function(scrna, outdir){
+RunQC <- function(scrna, outdir = "."){
   # Low-quality or dying cells often have mitochondrial contamination.
   scrna[["percent.mt"]] <- PercentageFeatureSet(scrna, pattern = "^MT-")
 
@@ -76,17 +76,17 @@ NormScoreCC <- function(scrna){
 #' @param scrna Seurat object.
 #' @param outdir Path to output directory for plots.
 #' @param npcs Number of PCs to use for PCA and ElbowPlot. 50 by default.
-#' @param batch Boolean indicating whether \code{batch} should be investigated.
-#'   Requires \code{batch} metadata for each cell. 
+#' @param batch String indicating \code{meta.data} column to be investigated for
+#'   batch effects. 
 #' @return A Seurat object with a PCA for cell cycle genes stored with
 #'   \code{reduction.name = "cc"}. 
 #'
-#' @import sctransform
-#' @import Seurat
+#' @importFrom Seurat SCTransform RunPCA ElbowPlot DimPlot
+#' @importFrom grDevices dev.off pdf
 #'
 #' @export
 #'
-BatchCCEDA <- function(scrna, outdir, npcs = 50, batch = FALSE){
+BatchCCEDA <- function(scrna, outdir, npcs = 50, batch = NULL){
 
   # A list of cell cycle markers, from Tirosh et al, 2015, is loaded with 
   # Seurat.  We can segregate this list into markers of G2/M and S phase.
@@ -105,10 +105,10 @@ BatchCCEDA <- function(scrna, outdir, npcs = 50, batch = FALSE){
   dev.off()
 
   # Take a look at PCA for variable genes across batch.
-  if(isTRUE(batch)) {
+  if(!is.null(batch)) {
 		pdf(sprintf("%s/PCA.Batch.NoRegression.pdf", outdir), height = 5, width = 7,
 			useDingbats = FALSE)
-		p <- DimPlot(scrna, group.by = "batch", pt.size = 0.3)
+		p <- DimPlot(scrna, group.by = batch, pt.size = 0.3)
 		print(p)
 		dev.off()
   }
