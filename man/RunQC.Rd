@@ -4,7 +4,7 @@
 \alias{RunQC}
 \title{Creates basic QC plots}
 \usage{
-RunQC(scrna, outdir)
+RunQC(scrna, outdir = ".")
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -13,10 +13,10 @@ RunQC(scrna, outdir)
 }
 \value{
 Seurat object with percent mitochondrial reads added to the
-  metadata for each cell.
+  \code{meta.data} for each cell.
 }
 \description{
 \code{RunQC} saves 3 QC plots showing gene counts, read counts, and percent 
 mitochondrial reads per cell to help determine filters. It returns a
-Seurat object with percent mitochondrial reads added to the metadata.
+Seurat object with percent mitochondrial reads added to the \code{meta.data}.
 }

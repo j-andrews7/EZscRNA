@@ -19,29 +19,29 @@ comma-delimited gene symbols associated with it.}
 \item{outdir}{Path to output directory.}
 
 \item{vln}{Boolean indicating whether to create Seurat VlnPlots for each set.
-Splits by cell idents. NULL by default.}
+Splits by cell idents.}
 
 \item{ridge}{Boolean indicating whether to create Seurat RidgePlots for each
-set. Splits by cell idents. NULL by default.}
+set. Splits by cell idents.}
 
 \item{dot}{Boolean indicating whether to create Seurat DotPlots for each
-set. Splits by cell idents. NULL by default.}
+set. Splits by cell idents.}
 
 \item{heatmap}{Boolean indicating whether to create a Seurat Heatmap for each
-set. Splits by cell idents. NULL by default.}
+set. Splits by cell idents.}
 
 \item{vln.params}{List of keyword arguments to be passed to Seurat
 \code{VlnPlot}. \code{features} are already defined and will throw
 an error if passed.}
 
 \item{ridge.params}{Boolean indicating whether to create Seurat RidgePlots 
-for each set. Splits by cell idents. NULL by default.}
+for each set. Splits by cell idents.}
 
 \item{dot.params}{Boolean indicating whether to create Seurat DotPlots for 
-each set. Splits by cell idents. NULL by default.}
+each set. Splits by cell idents.}
 
 \item{heatmap.params}{Boolean indicating whether to create a Seurat Heatmap 
-for each set. Splits by cell idents. NULL by default.}
+for each set. Splits by cell idents.}
 
 \item{...}{Arguments to be passed to Seurat \code{FeaturePlot}. \code{cols}, 
 \code{features}, \code{reduction}, and \code{ncol} are already defined and

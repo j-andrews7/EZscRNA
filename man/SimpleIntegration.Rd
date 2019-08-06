@@ -12,15 +12,14 @@ SimpleIntegration(scrnas, split.by = NULL, skip.SCT = FALSE,
 latter of which requires \code{split.by} to be provided as well.}
 
 \item{split.by}{String containing name of meta.data column to be used to 
-split Seurat object into multiple samples. NULL by default.}
+split Seurat object into multiple samples.}
 
 \item{skip.SCT}{Boolean indicating whether the \code{SCTransform} call for
 each sample should be skipped or not. This should only be set to TRUE if
-the samples if the samples have already undergone SCTransform. 
-FALSE by default.}
+the samples if the samples have already undergone SCTransform.}
 
 \item{vars.to.regress}{Vector of meta.data variables to be regressed out
-during \code{SCTransform}. NULL by default.}
+during \code{SCTransform}.}
 
 \item{n.features}{Number of anchor features to use. 3000 by default.}
 }

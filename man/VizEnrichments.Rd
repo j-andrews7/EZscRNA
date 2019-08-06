@@ -10,20 +10,20 @@ VizEnrichments(enrichments, outdir = "./", n.terms = 10,
 }
 \arguments{
 \item{enrichments}{Named list containing enrichment results as returned by
-\code{\link{RunEnrichr}}}
+\code{\link{RunEnrichr}}.}
 
 \item{outdir}{Path to the output directory.}
 
-\item{n.terms}{Number of terms to place on plot. 10 by default.}
+\item{n.terms}{Number of terms to place on plot.}
 
 \item{remove.insig}{Boolean indicating whether terms that don't meet the 
-\code{adj.p.thresh} should be removed from the plots. TRUE by default.}
+\code{adj.p.thresh} should be removed from the plots.}
 
 \item{adj.p.thresh}{Value indicating adjusted p-value threshold to filter 
-terms. 0.05 by default.}
+terms.}
 
 \item{colors}{Vector of two colors to use for coloring bars. First will be
-low, second will be high. "grey" and "darkred" by default.}
+low, second will be high.}
 }
 \description{
 \code{VizEnrichments} creates barcharts for enrichments returned by

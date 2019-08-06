@@ -21,7 +21,7 @@ within the group. Ignored if \code{g_by} is NULL. Should contain one
 instance of each potential value in \code{g_by} column if provided.}
 
 \item{n.clono.c}{Number of top clonotypes to plot for comparison barchart.
-Default is 10. Ignored if \code{g.by} is NULL.}
+Ignored if \code{g.by} is NULL.}
 
 \item{n.clono.g}{Number of clonotypes to show in group-specific histograms.
 All are shown by default.}

@@ -35,7 +35,9 @@ for large datasets.}
 \item{n.neighbors}{Integer that determines the number of neighboring points
 used in local approximations of manifold structure in \code{RunUMAP}.
 Altering it may be beneficial for large datasets (though it isn't stated
-how it should be changed). Values of 5-50 are considered sensical.}
+how it should be changed). Values of 5-50 are considered sensical. Larger
+values preserve more global structure while detailed local structure is 
+lost.}
 
 \item{regress}{Vector of \code{meta.data} variables to regress during data 
 scaling.}

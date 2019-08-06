@@ -4,60 +4,56 @@
 \alias{AssignCellType}
 \title{Infers and assigns cell type for each cell using SingleR}
 \usage{
-AssignCellType(scrna, dataset, outdir, lineage = FALSE, assign = TRUE,
-  n.cores = 1, top.var.genes = 3000)
+AssignCellType(scrna, refset = c("hpca", "blueprint_encode", "immgen",
+  "mouse.rnaseq"), labels = c("types", "main_types"),
+  method = c("single", "cluster"), clusters = NULL, assign = TRUE,
+  n.cores = 1, ...)
 }
 \arguments{
 \item{scrna}{Seurat object.}
 
-\item{dataset}{Path to tab-delimited table of gene counts. First column must
-be gene identifiers of same type as Seurat object. Each subsequent
-column should contain counts for a cell type with the column header
-denoting the cell type. Replicates should contain ":::" followed 
-by the replicate number (e.g. BCell:::1, BCell:::2, etc).}
+\item{refset}{String indicating which reference dataset to download and use
+as the training set.}
 
-\item{lineage}{Boolean indicating whether or not column names are formatted
-as lineage followed by more granular specifications (e.g. 
-Tcell.Tcell-CD4:::1, Tcell.CD8:::1, etc). If TRUE, will assign the lineage
-(everything before the) first '.' in the column name to a metadata column 
-called "base.lineage". Columns not containing a '.' will use the entire 
-name, though replicate indicators will be removed (e.g. NK:::1 will just be
-NK).}
+\item{labels}{If \code{TRUE}, use broad lineage-based labels 
+\code{main_types} for each reference sample. This is faster and can be more 
+informative depending on how specific your data is. If \code{FALSE}, more
+specific labels \code{types} will be used.}
+
+\item{method}{String specifying whether annotation should be applied to 
+each single cell \code{method = "single"} or aggregated into cluster-level 
+profiles \code{method = "cluster"} prior to annotation.}
+
+\item{clusters}{String defining the \code{meta.data} column in \code{scrna}
+that specify cluster identities for each cell. Only used if \code{method 
+= "cluster"}.}
 
 \item{assign}{Boolean indicating whether inferred cell types should actually
-be assigned to seurat object or just returned as a table. TRUE by default.}
+be assigned to \code{Seurat} object or just returned as a \code{dataframe}.}
 
 \item{n.cores}{Number of cores to use for correlation. Linearly decreases 
 computation time.}
-
-\item{top.var.genes}{Number of genes from reference dataset to use for 
-inference, ranked by most variable. 3000 by default. Set to NULL to use all
-genes. Fewer genes is significantly quicker. Generally, results won't 
-change using higher numbers of genes past a certain point (usually a few
-hundred genes, depending on the reference dataset).}
 
 \item{...}{Additional arguments to be passed to 
 \code{\link[SingleR]{SingleR}}.}
 }
 \value{
-If assign is TRUE, returns a seurat object with inferred cell type
-  information in the metadata. If FALSE, returns a dataframe of the 
-  inferred cell type/lineage information instead.
+If \code{assign = TRUE}, returns a \code{Seurat} object with inferred
+  cell type information in the \code{meta.data} slot named in 
+  \code{refset.labels} format. If \code{method = "cluster"}, the resulting
+  \code{meta.data} column will be named in \code{clusters.refset.labels} 
+  format. If FALSE, returns a dataframe of the inferred cell type/lineage 
+  information instead.
 }
 \description{
 \code{AssignCellType} performs correlation-based cell inference using a 
-reference dataset via \code{SingleR}. It returns either a seurat object with
-lineage, cell.type, corr, and (potentially) base.lineage columns added to the 
-metadata, or a dataframe containing the top three predicted cell types for 
-each cell along with their correlation values. This dataframe will be saved 
-in the output directory regardless, along with distribution statistics for 
-inferred cell types and lineages if set.
+reference dataset via \code{SingleR}.
 }
 \details{
 Reference datasets available for use by this function via \code{SingleR} 
 include:
 \describe{
-  \item{"hpca"}{Human Primary Cell Atlas (HPCA): a collection of Gene 
+  \item{"hpca"}{Human Primary Cell Atlas (HPCA): A collection of Gene 
     Expression Omnibus (GEO datasets), which contains 713 microarray 
     samples classified to 38 main cell types and further annotated to 169
     subtypes.}
@@ -73,6 +69,12 @@ include:
     courtesy of Bérénice Benayoun. This data set is especially useful for 
     brain-related samples.}
 }
-The reference dataset can be from any source, it should just be normalized so
-that columns (cell types) are comparable.
+}
+\examples{
+preds <- AssignCellType(pbmc_small, refset = "hpca", labels = "main_types",
+  method = "single")
+
+preds2 <- AssignCellType(pbmc_small, refset = "hpca", labels = "types",
+  method = "cluster", clusters = pbmc_small@meta.data$RNA_snn_res.1)
+
 }

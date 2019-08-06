@@ -4,7 +4,7 @@
 \alias{BatchCCEDA}
 \title{Exploratory data analysis plots}
 \usage{
-BatchCCEDA(scrna, outdir, npcs = 50, batch = FALSE)
+BatchCCEDA(scrna, outdir, npcs = 50, batch = NULL)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -13,8 +13,8 @@ BatchCCEDA(scrna, outdir, npcs = 50, batch = FALSE)
 
 \item{npcs}{Number of PCs to use for PCA and ElbowPlot. 50 by default.}
 
-\item{batch}{Boolean indicating whether \code{batch} should be investigated.
-Requires \code{batch} metadata for each cell. FALSE by default.}
+\item{batch}{String indicating \code{meta.data} column to be investigated for
+batch effects.}
 }
 \value{
 A Seurat object with a PCA for cell cycle genes stored with
