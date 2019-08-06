@@ -2,7 +2,7 @@
 % Please edit documentation in R/infer.R
 \name{AssignCellType}
 \alias{AssignCellType}
-\title{Infers and assigns cell type for each cell}
+\title{Infers and assigns cell type for each cell using SingleR}
 \usage{
 AssignCellType(scrna, dataset, outdir, lineage = FALSE, assign = TRUE,
   n.cores = 1, top.var.genes = 3000)
@@ -13,17 +13,16 @@ AssignCellType(scrna, dataset, outdir, lineage = FALSE, assign = TRUE,
 \item{dataset}{Path to tab-delimited table of gene counts. First column must
 be gene identifiers of same type as Seurat object. Each subsequent
 column should contain counts for a cell type with the column header
-denoting the cell type. Replicates should contain an underscore followed 
-by the replicate number (e.g. BCell_1, BCell_2, etc).}
-
-\item{outdir}{Path to output directory.}
+denoting the cell type. Replicates should contain ":::" followed 
+by the replicate number (e.g. BCell:::1, BCell:::2, etc).}
 
 \item{lineage}{Boolean indicating whether or not column names are formatted
-as lineage followed by more granular specifications (e.g. Tcell.CD4_1,
-Tcell.CD8_1, etc). If TRUE, will assign the lineage (everything before the)
-first '.' in the column name to a metadata column called "base.lineage".
-Columns not containing a '.' will use the entire name, though replicate
-indicators will be removed (e.g. NK_1 will just be NK).}
+as lineage followed by more granular specifications (e.g. 
+Tcell.Tcell-CD4:::1, Tcell.CD8:::1, etc). If TRUE, will assign the lineage
+(everything before the) first '.' in the column name to a metadata column 
+called "base.lineage". Columns not containing a '.' will use the entire 
+name, though replicate indicators will be removed (e.g. NK:::1 will just be
+NK).}
 
 \item{assign}{Boolean indicating whether inferred cell types should actually
 be assigned to seurat object or just returned as a table. TRUE by default.}
@@ -36,6 +35,9 @@ inference, ranked by most variable. 3000 by default. Set to NULL to use all
 genes. Fewer genes is significantly quicker. Generally, results won't 
 change using higher numbers of genes past a certain point (usually a few
 hundred genes, depending on the reference dataset).}
+
+\item{...}{Additional arguments to be passed to 
+\code{\link[SingleR]{SingleR}}.}
 }
 \value{
 If assign is TRUE, returns a seurat object with inferred cell type
@@ -44,7 +46,7 @@ If assign is TRUE, returns a seurat object with inferred cell type
 }
 \description{
 \code{AssignCellType} performs correlation-based cell inference using a 
-user-provided reference dataset. It returns either a seurat object with
+reference dataset via \code{SingleR}. It returns either a seurat object with
 lineage, cell.type, corr, and (potentially) base.lineage columns added to the 
 metadata, or a dataframe containing the top three predicted cell types for 
 each cell along with their correlation values. This dataframe will be saved 
@@ -52,8 +54,25 @@ in the output directory regardless, along with distribution statistics for
 inferred cell types and lineages if set.
 }
 \details{
+Reference datasets available for use by this function via \code{SingleR} 
+include:
+\describe{
+  \item{"hpca"}{Human Primary Cell Atlas (HPCA): a collection of Gene 
+    Expression Omnibus (GEO datasets), which contains 713 microarray 
+    samples classified to 38 main cell types and further annotated to 169
+    subtypes.}
+  \item{"blueprint_encode"}{Blueprint + ENCODE datasets: Blueprint 
+    Epigenomics, 144 RNA-seq pure immune samples annotated to 28 cell 
+    types. ENCODE, 115 RNA-seq pure stroma and immune samples annotated 
+    to 17 cell types. Altogether, 259 samples with 43 cell types.}
+  \item{"immgen"}{Immunological Genome Project (ImmGen): 830 microarray 
+    samples, which we classified to 20 main cell types and further
+    annotated to 253 subtypes.}
+  \item{"mouse.rnaseq"}{A dataset of 358 mouse RNA-seq samples annotated to
+    28 cell types. This dataset was collected, processed, and shared 
+    courtesy of Bérénice Benayoun. This data set is especially useful for 
+    brain-related samples.}
+}
 The reference dataset can be from any source, it should just be normalized so
-that columns (cell types) are comparable. The majority of this code was 
-written by Allegra Petti - the version here has just been made more generic
-and flexible.
+that columns (cell types) are comparable.
 }

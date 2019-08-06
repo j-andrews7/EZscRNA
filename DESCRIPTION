@@ -1,7 +1,7 @@
 Package: EZscRNA
 Title: Simple Convenience Functions for High-Level scRNA-Seq Analysis
 Version: 0.1.0
-Date: 2019-07-29
+Date: 2019-08-05
 Authors@R: person("Jared", "Andrews", email = "jared.andrews07@gmail.com", 
   role = c("aut", "cre"),
   comment = c(ORCID = "https://orcid.org/0000-0002-0780-6248"))
@@ -30,7 +30,8 @@ Imports:
   enrichR (>= 2.0),
   scales, 
   monocle3,
-  SingleR
+  SingleR,
+  scater
 Remotes: 
   cole-trapnell-lab/monocle3@develop,
   satijalab/seurat@develop,

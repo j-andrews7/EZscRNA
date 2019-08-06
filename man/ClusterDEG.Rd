@@ -4,26 +4,25 @@
 \alias{ClusterDEG}
 \title{Normalize, scale, and regress out wanted variation}
 \usage{
-ClusterDEG(scrna, outdir, npcs = 30, res = 0.8, skip.sct = FALSE,
-  min.dist = 0.3, n.neighbors = 30, regress = NULL, ccpca = FALSE,
-  test = "wilcox", logfc.thresh = 0.25, min.pct = 0.1)
+ClusterDEG(scrna, outdir = ".", npcs = 30, res = 0.8,
+  skip.sct = FALSE, min.dist = 0.3, n.neighbors = 30,
+  regress = NULL, ccpca = FALSE, test = "wilcox",
+  logfc.thresh = 0.25, min.pct = 0.1)
 }
 \arguments{
 \item{scrna}{Seurat object.}
 
 \item{outdir}{Path to output directory.}
 
-\item{npcs}{Number of principle components to use for UMAP and clustering.
-Default is 30, as \code{SCTransform} tends to do better with more.}
+\item{npcs}{Number of principle components to use for UMAP and clustering.}
 
-\item{res}{Numeric value denoting resolution to use for clustering. Default
-is 0.8 (Seurat default). Increasing this value will speed up clustering,
-but may decrease the numbers of distinct clusters. Values of 0.5-3 are 
-sensible. Multiple values may be entered as a vector - resulting clusters
-will be added as a meta.data column named "Cluster_res_npcs" where "res"
-and "npcs" will be the values for those arguments, respectively. The
-clusters derived from the last value in the list will be set as the
-default Ident for cells.}
+\item{res}{Numeric value denoting resolution to use for clustering. 
+Higher values generally mean fewer clusters. Values of 0.5-3 are sensible. 
+Multiple values may be entered as a vector - resulting clusters will be 
+added as a \code{meta.data} column named \code{Cluster_res_npcs} where 
+\code{res} and \code{npcs} will be the values for those arguments, 
+respectively. The clusters derived from the last value in the list will be 
+set as the default Ident for cells.}
 
 \item{skip.sct}{Boolean indicating whether to skip \code{SCTransform}. FALSE
 by default. Set to TRUE if \code{SimpleIntegration} was used to integrate
@@ -31,32 +30,33 @@ the Seurat object.}
 
 \item{min.dist}{Number that controls how tighly the embedding is allowed to
 compress points together in \code{RunUMAP}. Increasing may be beneficial
-for large datasets. Default is 0.3 (Seurat default).}
+for large datasets.}
 
 \item{n.neighbors}{Integer that determines the number of neighboring points
 used in local approximations of manifold structure in \code{RunUMAP}.
 Altering it may be beneficial for large datasets (though it isn't stated
-how it should be changed). Values of 5-50 are considered sensical.
-Default is 30 (Seurat default).}
+how it should be changed). Values of 5-50 are considered sensical.}
 
-\item{regress}{Vector of metadata variables to regress during data scaling.
-Must match column headers in meta.data.}
+\item{regress}{Vector of \code{meta.data} variables to regress during data 
+scaling.}
 
 \item{ccpca}{Boolean to indicate whether PCA using only cell cycle genes
-should be done. If so, it will saved as a reduction named "cc". FALSE by
-default.}
+should be done. If so, it will saved as a reduction named "cc". This is
+useful to compare to prior PCAs using the cell cycle genes if cell cycle
+scores were regressed out via \code{regress}.}
 
-\item{test}{Denotes which DE test to use for marker finding. Options are: 
-"wilcox" (default), "bimod", "roc", "t", "negbinom", "poisson", "LR", 
-"MAST", "DESeq2".}
+\item{test}{String indication which DE test to use for marker finding. 
+Options are: 
+  "wilcox", "bimod", "roc", "t", "negbinom", "poisson", "LR", 
+  "MAST", "DESeq2". See \code{\link[Seurat]{FindAllMarkers}}.}
 
 \item{logfc.thresh}{Value that limits DE testing to genes that show, 
 on average, at least X-fold difference (log-scale) between two groups of 
 cells. Increasing speeds up function at cost of potentially missing weaker 
-differences. Default is 0.25 (Seurat default).}
+differences.}
 
 \item{min.pct}{Value that limits DE testing to genes detected in a minimum
-fraction of cells in either population. Default is 0.1 (Seurat default).}
+fraction of cells in either population.}
 }
 \value{
 A Seurat object with normalized, scaled counts and assigned clusters.
@@ -64,13 +64,21 @@ A Seurat object with normalized, scaled counts and assigned clusters.
   present.
 }
 \description{
-\code{ClusterDEG} runs \code{SCTransform} on a Seurat object, followed by 
-PCA, TSNE, UMAP, and clustering. Also finds marker genes and saves the output 
-as a table along with a heatmap of the top 10 upregulated genes in each 
-cluster.
+\code{ClusterDEG} runs \code{SCTransform} on a \code{Seurat} object, followed
+by \code{RunPCA}, \code{RunTSNE}, \code{RunUMAP}, and clustering. Also finds 
+marker genes and saves the output as a table along with a heatmap of the top 
+10 upregulated genes in each cluster.
 }
 \details{
-If multiple \code{res} values are given, a table and heatmap will be make for
-each, along with saving the cluster numbers for each in their own meta.data
-columns.
+If multiple \code{res} values are given, a table and heatmap will be made for
+each, along with saving the cluster numbers for each in their own 
+\code{meta.data} columns.
+}
+\examples{
+# Default settings.
+scrna <- ClusterDEG(pbmc_small)
+
+# Multiple clustering resolutions
+scrna <- ClusterDEG(pbmc_small, res = c(0.8, 1, 1.2))
+
 }

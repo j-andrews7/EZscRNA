@@ -1,306 +1,127 @@
-#' Infers and assigns cell type for each cell
+#' Infers and assigns cell type for each cell using SingleR
 #'
 #' \code{AssignCellType} performs correlation-based cell inference using a 
-#' user-provided reference dataset. It returns either a seurat object with
-#' lineage, cell.type, corr, and (potentially) base.lineage columns added to the 
-#' metadata, or a dataframe containing the top three predicted cell types for 
-#' each cell along with their correlation values. This dataframe will be saved 
-#' in the output directory regardless, along with distribution statistics for 
-#' inferred cell types and lineages if set.
+#' reference dataset via \code{SingleR}.
 #'
-#' The reference dataset can be from any source, it should just be normalized so
-#' that columns (cell types) are comparable. The majority of this code was 
-#' written by Allegra Petti - the version here has just been made more generic
-#' and flexible.
+#' @details
+#' Reference datasets available for use by this function via \code{SingleR} 
+#' include:
+#' \describe{
+#'   \item{"hpca"}{Human Primary Cell Atlas (HPCA): A collection of Gene 
+#'     Expression Omnibus (GEO datasets), which contains 713 microarray 
+#'     samples classified to 38 main cell types and further annotated to 169
+#'     subtypes.}
+#'   \item{"blueprint_encode"}{Blueprint + ENCODE datasets: Blueprint 
+#'     Epigenomics, 144 RNA-seq pure immune samples annotated to 28 cell 
+#'     types. ENCODE, 115 RNA-seq pure stroma and immune samples annotated 
+#'     to 17 cell types. Altogether, 259 samples with 43 cell types.}
+#'   \item{"immgen"}{Immunological Genome Project (ImmGen): 830 microarray 
+#'     samples, which we classified to 20 main cell types and further
+#'     annotated to 253 subtypes.}
+#'   \item{"mouse.rnaseq"}{A dataset of 358 mouse RNA-seq samples annotated to
+#'     28 cell types. This dataset was collected, processed, and shared 
+#'     courtesy of Bérénice Benayoun. This data set is especially useful for 
+#'     brain-related samples.}
+#' }
 #'
 #' @param scrna Seurat object.
-#' @param dataset Path to tab-delimited table of gene counts. First column must
-#'   be gene identifiers of same type as Seurat object. Each subsequent
-#'   column should contain counts for a cell type with the column header
-#'   denoting the cell type. Replicates should contain ":::" followed 
-#'   by the replicate number (e.g. BCell:::1, BCell:::2, etc). 
-#' @param outdir Path to output directory.
-#' @param lineage Boolean indicating whether or not column names are formatted
-#'   as lineage followed by more granular specifications (e.g. 
-#'   Tcell.Tcell-CD4:::1, Tcell.CD8:::1, etc). If TRUE, will assign the lineage
-#'   (everything before the) first '.' in the column name to a metadata column 
-#'   called "base.lineage". Columns not containing a '.' will use the entire 
-#'   name, though replicate indicators will be removed (e.g. NK:::1 will just be
-#'   NK).
+#' @param refset String indicating which reference dataset to download and use
+#'   as the training set. 
+#' @param labels If \code{TRUE}, use broad lineage-based labels 
+#'   \code{main_types} for each reference sample. This is faster and can be more 
+#'   informative depending on how specific your data is. If \code{FALSE}, more
+#'   specific labels \code{types} will be used.
+#' @param method String specifying whether annotation should be applied to 
+#'   each single cell \code{method = "single"} or aggregated into cluster-level 
+#'   profiles \code{method = "cluster"} prior to annotation.
+#' @param clusters String defining the \code{meta.data} column in \code{scrna}
+#'   that specify cluster identities for each cell. Only used if \code{method 
+#'   = "cluster"}.
 #' @param assign Boolean indicating whether inferred cell types should actually
-#'   be assigned to seurat object or just returned as a table. TRUE by default.
+#'   be assigned to \code{Seurat} object or just returned as a \code{dataframe}. 
 #' @param n.cores Number of cores to use for correlation. Linearly decreases 
 #'   computation time.
-#' @param top.var.genes Number of genes from reference dataset to use for 
-#'   inference, ranked by most variable. 3000 by default. Set to NULL to use all
-#'   genes. Fewer genes is significantly quicker. Generally, results won't 
-#'   change using higher numbers of genes past a certain point (usually a few
-#'   hundred genes, depending on the reference dataset).
-#' @return If assign is TRUE, returns a seurat object with inferred cell type
-#'   information in the metadata. If FALSE, returns a dataframe of the 
+#' @param ... Additional arguments to be passed to 
+#'   \code{\link[SingleR]{SingleR}}.
+#' @return If \code{assign = TRUE}, returns a \code{Seurat} object with inferred
+#'   cell type information in the \code{meta.data} slot named in 
+#'   \code{refset.labels.method} format. If FALSE, returns a dataframe of the 
 #'   inferred cell type/lineage information instead.
 #'
-#' @importFrom Seurat AddMetaData
+#' @importFrom Seurat AddMetaData as.SingleCellExperiment as.Seurat
+#' @importFrom SingleR getReferenceDataset SingleR
+#' @importFrom scater normalize
 #'
 #' @export
 #'
-AssignCellType <- function(scrna, dataset, outdir, lineage = FALSE, 
-													 assign = TRUE, n.cores = 1, top.var.genes = 3000) {
-	predictions <- InferCellType(scrna, dataset, outdir, lineage, n.cores,
-		top.var.genes)
+#' @examples
+#' preds <- AssignCellType(pbmc_small, refset = "hpca", labels = "main_types",
+#'   method = "single")
+#'
+#'
+#'
+#'
+AssignCellType <- function(scrna, refset = c("hpca", "blueprint_encode", 
+  "immgen", "mouse.rnaseq"), labels = c("types", "main_types"), method = 
+  c("single", "cluster"), clusters = NULL, assign = TRUE, n.cores = 1, ...) {
+
+  # Arg matching.
+  refset <- match.arg(refset)
+  if (length(refset) > 1) {
+    stop("No reference dataset specified.")
+  }
+  labels <- match.arg(labels)
+  if (length(labels) > 1) {
+    stop("'labels' must be specified.")
+  }
+  method <- match.arg(method)
+  if (length(method) > 1) {
+    stop("'method' must be specified.")
+  }
+
+  message("Downloading reference dataset: ", refset)
+	dataset <- getReferenceDataset(dataset = refset)
+
+  # Convert to SCE object and get common genes.
+  sce <- as.SingleCellExperiment(scrna)
+  common <- intersect(rownames(sce), rownames(dataset$data))
+  sce <- sce[common,]
+  sce <- sce[,colSums(counts(sce)) > 0]
+  dataset$data <- dataset$data[common,]
+  
+  # Temporary workaround for sparse matrices throwing errors when 'cluster'
+  # method used.
+  if (method == "cluster") {
+    counts(sce) <- as.matrix(counts(sce))
+  }
+
+  # Reference datasets are log2 transformed rather than natural log transformed
+  # (Seurat). Scater normalization is log2. 
+  sce <- scater::normalize(sce)
+
+  message("Performing cell type inference.")
+  annots <- SingleR(test = sce, training = dataset$data, 
+    labels = hpca[[labels]], method = method, clusters = sce[[clusters]], 
+    assay.type = 2, ...)
 
 	if (isTRUE(assign)) {
 
-	  message("Incorporating inferred cell types.")
+	  message("Assigning inferred cell types.")
 
-	  if (lineage) {
-			names(predictions)  <- c("CellBarcode", "Lineage.1", "Lineage.2", 
-				"Lineage.3", "Celltype.1", "Celltype.2", "Celltype.3", "Max.1", "Max.2", 
-				"Max.3", "Linmed.1", "Linmed.2", "Linmed.3", "base.lineage")
+    if (method == "cluster") {
+      annots$clusts <- rownames(annots)
+      scrna[[sprintf("%s.%s.%s", refset, labels, method)]] <- 
+        annots$labels[match(scrna@meta.data[[clusters]], 
+          annots$clusts)]
 
-			# Most lenient version - take top prediction only.
-			final.predictions <- predictions[, c("CellBarcode", "Lineage.1", 
-				"Celltype.1", "Max.1", "base.lineage")] 
-
-			# Create metadata table and add to seurat object.
-			names(final.predictions) <- c("cell", "lineage", "celltype", "corr", 
-				"base.lineage")
-		} else {
-			# Same thing, but with no base lineage.
-			names(predictions)  <- c("CellBarcode", "Lineage.1", "Lineage.2", 
-				"Lineage.3", "Celltype.1", "Celltype.2", "Celltype.3", "Max.1", "Max.2", 
-				"Max.3", "Linmed.1", "Linmed.2", "Linmed.3")
-
-			final.predictions <- predictions[, c("CellBarcode", "Lineage.1", 
-				"Celltype.1", "Max.1")] 
-
-			names(final.predictions) <- c("cell", "lineage", "celltype", "corr")
-		}
-
-		rownames(final.predictions) <- final.predictions[, 1]
-		final.predictions[, 1] <- NULL
-		scrna <- AddMetaData(object = scrna, metadata = final.predictions)
+    } else {
+		  scrna[[sprintf("%s.%s.%s", refset, labels, method)]] <- annots$labels
+    }
 
 	} else {
-		scrna <- predictions
+		scrna <- annots
 	}
 
 	return(scrna)
-}
-
-
-# Internal======================================================================
-
-#' Infer cell type using reference dataset
-#'
-#' \code{InferType} utilizes a reference dataset to perform correlations of each
-#' cell in a seurat object with each sample in the reference dataset. It retuns
-#' a table containing the most likely cell type for each cell based on 
-#' correlation values from the reference dataset. 
-#'
-#' The reference dataset can be from any source, it should just be normalized so
-#' that columns (cell types) are comparable.
-#'
-#' @param scrna Seurat object.
-#' @param dataset Path to tab-delimited table of gene counts. First column must
-#'   be gene identifiers that match those of the Seurat object. Each subsequent
-#'   column should contain counts for a cell type with the column header
-#'   denoting the cell type. Replicates should contain ':::' followed 
-#'   by the replicate number (e.g. Bcell:::1, Bcell:::2, etc). 
-#' @param outdir Path to output directory.
-#' @param lineage Boolean indicating whether or not column names are formatted
-#'   as lineage followed by more granular specifications (e.g. 
-#'   Tcell.Tcell-CD4:::1, Tcell.TcellCD8:::1, etc). If TRUE, will assign the 
-#'   lineage (everything before the) first '.' in the column name to a metadata
-#'   column called "base.lineage". Columns not containing a '.' will use the 
-#'   entire name, though replicate indicators will be removed (e.g. NK:::1 will
-#'   just be NK).
-#' @param n.cores Number of cores to use for correlation. Linearly decreases 
-#'   computation time.
-#' @param top.var.genes Number of genes from reference dataset to use for 
-#'   inference, ranked by most variable. 3000 by default. Set to NULL to use all
-#'   genes.
-#' @return A table containing the top three predicted cell types for each cell.
-#'
-#' @importFrom foreach foreach
-#' @import doParallel
-#' @importFrom stats cor median reorder
-#' @importFrom utils read.csv read.table write.table
-#'
-InferCellType <- function(scrna, dataset, outdir, lineage = FALSE, n.cores = 1,
-	top.var.genes = 3000) {
-	message(paste("Preparing reference dataset and seurat object for cell type", 
-		" inference.", sep = ""))
-	x <- PrepRef(scrna, dataset, top.var.genes)
-	data.sorted <- x$ref
-	scrna.subset <- x$sc.sub
-
-	# Set up the dataframe to hold the results.
-	cell.barcodes <- colnames(scrna.subset)
-	celltype.list <- colnames(data.sorted)
-
-	# Save the lineage types without potential replicate values
-	lineages <- gsub(":::\\d+", "", names(data.sorted))
-
-	# Set cores for doParallel.
-	registerDoParallel(cores = n.cores)
-
-	# Perform correlation for each cell.
-	message("Performing cell type inference.")
-	results <- foreach(i = 1:length(cell.barcodes), .combine = rbind) %dopar% {
-	  if (i%%100 == 0) { 
-	    message(paste("Cells: ", i, sep=""))
-	  }
-
-	  cell.ind <- which(colnames(scrna.subset) == cell.barcodes[i])
-	  profile <- as.vector(scrna.subset[, cell.ind])
-	  # Vector of correlations, one for each column.
-	  corrs <- vector(length = ncol(data.sorted), mode = "numeric")
-	  k <- 0
-
-	  # Actually do correlation for each column/lineage.
-	  for (j in 1:ncol(data.sorted)) {
-	  	k <- k+1
-	    	corrs[k] <- cor(profile, data.sorted[,j], method = "spearman", 
-	    		use = "pairwise.complete.obs")
-	  }
-
-	  # Provide the indexes of the corrs vector in descreasing order.
-	  order.ind <- order(corrs, decreasing = TRUE)
-	  # Get the indices and values for the top three predictions.
-	  i1 <- order.ind[1]
-	  i2 <- order.ind[2]
-	  i3 <- order.ind[3]
-	  max1 <- corrs[i1]
-	  max2 <- corrs[i2]
-	  max3 <- corrs[i3]
-	  lineage1 <- as.character(lineages[i1])
-	  lineage2 <- as.character(lineages[i2])
-	  lineage3 <- as.character(lineages[i3])
-	  celltype1 <- as.character(celltype.list[i1])
-	  celltype2 <- as.character(celltype.list[i2])
-	  celltype3 <- as.character(celltype.list[i3])
-
-	  # Calculate median correlation for top 3 lineages for cell.
-	  medians <- vector(length = length(unique(lineages)), mode = "numeric")
-	  for (l in 1:length(unique(lineages))) {
-	  	lineage.ind <- which(lineages == unique(lineages)[l])
-	    medians[l] <- median(corrs[lineage.ind])
-	  }
-	  sorted.median.ind <- order(medians, decreasing = TRUE)
-
-	  j1 <- sorted.median.ind[1]
-	  j2 <- sorted.median.ind[2]
-	  j3 <- sorted.median.ind[3]
-	  linmed1 <- unique(lineages)[j1]
-	  linmed2 <- unique(lineages)[j2]
-	  linmed3 <- unique(lineages)[j3]
-
-	  # Stick results in a dataframe.
-	  results.temp <- data.frame(cell.barcodes[i], lineage1, lineage2, 
-	  	lineage3, celltype1, celltype2, celltype3, max1, max2, max3, 
-	    linmed1, linmed2, linmed3)
-	}
-
-	# Save output.
-	output.table <- table(results$lineage1)
-	output.table.pct <- 100 * (table(results$lineage1) / 
-		sum(table(results$lineage1)))
-	write.table(output.table, file = sprintf("%s/TopCelltype.Distribution.txt", 
-		outdir), quote = FALSE, sep = "\t", row.names = FALSE)
-	write.table(output.table.pct, 
-		file = sprintf("%s/TopCelltype.Distribution.Pct.txt", 
-		outdir), quote = FALSE, sep = "\t", row.names = FALSE)
-
-	# Get base lineages.
-	if(lineage) {
-
-		results$base.lineage <- lapply(results$lineage1, SplitIt)
-		results$base.lineage <- as.character(results$base.lineage)
-
-		# Save output.
-		output.table <- table(results$base.lineage)
-		output.table.pct <- 100 * (table(results$base.lineage) / 
-			sum(table(results$base.lineage)))
-		write.table(output.table, file = sprintf("%s/TopLineage.Distribution.txt", 
-			outdir), quote = FALSE, sep = "\t", row.names = FALSE)
-		write.table(output.table.pct, 
-			file = sprintf("%s/TopLineage.Distribution.Pct.txt", 
-			outdir), quote = FALSE, sep = "\t", row.names = FALSE)
-	}
-
-	write.table(results, file=sprintf("%s/CellType.Predictions.txt", outdir), 
-		sep = "\t", quote = FALSE, row.names = FALSE)
-
-	return(results)
-}
-
-
-#' Load and prepare reference dataset for cell type inference
-#'
-#' \code{PrepRef} processes a reference dataset of normalized gene counts for
-#' correlation analysis with a seurat object. Removes unnecessary genes from the
-#' reference dataset and matches the row ordering of the seurat object.
-#'
-#' @param scrna Seurat object.
-#' @param dataset Path to tab-delimited table of gene counts. First column must
-#'   be gene identifiers that match those of the Seurat object. Each subsequent
-#'   column should contain counts for a cell type with the column header
-#'   denoting the cell type. Replicates contain an underscore followed by the
-#'   replicate number (e.g. BCell_1, BCell_2, etc).
-#' @param top.var.genes Number of genes from reference dataset to use for 
-#'   inference, ranked by most variable. 3000 by default. Set to NULL to use all
-#'   genes.
-#' @return A list of two dataframes: "ref" - sorted genes from the reference 
-#'   dataset also found in the seurat object, and "sc.sub" - sorted genes from 
-#'   the seurat object also found in the reference dataset.
-#'
-#' @importFrom Seurat Cells FetchData
-#' @importFrom stats var
-#'
-PrepRef <- function(scrna, dataset, top.var.genes = 3000){
-	# Get both the genes and cells for the normalized seurat object.
-	genes <- rownames(x = scrna)
-	cells <- Cells(scrna)
-
-	# Load reference dataset.
-	data.all <- read.table(dataset, sep = "\t", row.names = 1, header = TRUE,
-		fill = TRUE, quote = '', check.names = FALSE)
-	# Only keep genes found in the seurat object as well.
-	data.unsorted <- data.all[which(rownames(data.all) %in% genes), ]
-
-	# Get only top n variable genes if necessary.
-	if (!is.null(top.var.genes)) {
-		data.unsorted$var_by_row <- apply(data.unsorted, 1, var)
-		data.unsorted <- data.unsorted[order(-data.unsorted$var_by_row), ]
-		data.unsorted <- data.unsorted[1:top.var.genes,]
-		check <- dim(data.unsorted)
-		data.unsorted$var_by_row <- NULL
-	}
-
-	# Extract signature genes from normalized seurat object.
-	g.ind = which(genes %in% rownames(data.unsorted))
-	scrna.subset = FetchData(object = scrna, vars = genes[g.ind])
-	# Transpose so rows are genes, columns are cells. 
-	scrna.subset = t(scrna.subset)
-
-	# Sort the data so the genes are in the same order as in the subsetted 
-	# seurat object.
-	new.indices = match(rownames(scrna.subset), rownames(data.unsorted))
-	data.sorted <- data.unsorted[new.indices,]
-
-	return(list("ref" = data.sorted, "sc.sub" = scrna.subset))
-}
-
-
-#' Split lineages to get base lineages
-#'
-#' For use with \code{lapply}. Returns only the first element of resulting list.
-#'
-#' @param x String to be split.
-#'
-SplitIt <- function(x) {
-  unlist(strsplit(as.character(x), ".", 
-		fixed = TRUE))[c(TRUE, FALSE, FALSE, FALSE)]
 }
 
