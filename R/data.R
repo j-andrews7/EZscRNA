@@ -1,6 +1,7 @@
 #' A small example version of the PBMC dataset
 #'
 #' A subsetted version of 10X Genomics' 3k PBMC dataset. This is the exact same
+#' as that supplied by Seurat, included only for examples.
 #'
 #' @format A Seurat object with the following slots filled
 #' \describe{
@@ -21,5 +22,6 @@
 #'   \item{version}{Seurat version used to create the object}
 #'   \item{commands}{Command history}
 #' }
-#' @source https://support.10xgenomics.com/single-cell-gene-expression/datasets/1.1.0/pbmc3k
+#' @source https://support.10xgenomics.com/single-cell-gene-expression/datasets
+#'   /1.1.0/pbmc3k
 "pbmc_small"

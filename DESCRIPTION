@@ -30,7 +30,8 @@ Imports:
   enrichR (>= 2.0),
   scales, 
   monocle3,
-  SingleR
+  SingleR,
+  scater
 Remotes: 
   cole-trapnell-lab/monocle3@develop,
   satijalab/seurat@develop,
