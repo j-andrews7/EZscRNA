@@ -6,15 +6,15 @@
 #' will be saved in a PDF named by library.
 #'
 #' @param enrichments Named list containing enrichment results as returned by
-#'   \code{\link{RunEnrichr}}
+#'   \code{\link{RunEnrichr}}.
 #' @param outdir Path to the output directory.
-#' @param n.terms Number of terms to place on plot. 10 by default.
+#' @param n.terms Number of terms to place on plot. 
 #' @param remove.insig Boolean indicating whether terms that don't meet the 
-#'   \code{adj.p.thresh} should be removed from the plots. TRUE by default.
+#'   \code{adj.p.thresh} should be removed from the plots. 
 #' @param adj.p.thresh Value indicating adjusted p-value threshold to filter 
-#'   terms. 0.05 by default.
+#'   terms. 
 #' @param colors Vector of two colors to use for coloring bars. First will be
-#'   low, second will be high. "grey" and "darkred" by default.
+#'   low, second will be high. 
 #'
 #' @import ggplot2
 #' @importFrom grDevices dev.off pdf
@@ -188,7 +188,7 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
 #'   within the group. Ignored if \code{g_by} is NULL. Should contain one 
 #'   instance of each potential value in \code{g_by} column if provided.
 #' @param n.clono.c Number of top clonotypes to plot for comparison barchart.
-#'   Default is 10. Ignored if \code{g.by} is NULL.
+#'   Ignored if \code{g.by} is NULL.
 #' @param n.clono.g Number of clonotypes to show in group-specific histograms.
 #'   All are shown by default.
 #'
@@ -300,22 +300,22 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 #'   comma-delimited gene symbols associated with it. 
 #' @param outdir Path to output directory.
 #' @param vln Boolean indicating whether to create Seurat VlnPlots for each set.
-#'   Splits by cell idents. NULL by default.
+#'   Splits by cell idents. 
 #' @param ridge Boolean indicating whether to create Seurat RidgePlots for each
-#'   set. Splits by cell idents. NULL by default.
+#'   set. Splits by cell idents.
 #' @param dot Boolean indicating whether to create Seurat DotPlots for each
-#'   set. Splits by cell idents. NULL by default.
+#'   set. Splits by cell idents. 
 #' @param heatmap Boolean indicating whether to create a Seurat Heatmap for each
-#'   set. Splits by cell idents. NULL by default.
+#'   set. Splits by cell idents.
 #' @param vln.params List of keyword arguments to be passed to Seurat
 #'   \code{VlnPlot}. \code{features} are already defined and will throw
 #'   an error if passed.
 #' @param ridge.params Boolean indicating whether to create Seurat RidgePlots 
-#'   for each set. Splits by cell idents. NULL by default.
+#'   for each set. Splits by cell idents.
 #' @param dot.params Boolean indicating whether to create Seurat DotPlots for 
-#'   each set. Splits by cell idents. NULL by default.
+#'   each set. Splits by cell idents.
 #' @param heatmap.params Boolean indicating whether to create a Seurat Heatmap 
-#'   for each set. Splits by cell idents. NULL by default.
+#'   for each set. Splits by cell idents. 
 #' @param ... Arguments to be passed to Seurat \code{FeaturePlot}. \code{cols}, 
 #'   \code{features}, \code{reduction}, and \code{ncol} are already defined and
 #'   will throw an error if passed.

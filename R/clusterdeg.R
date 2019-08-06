@@ -29,7 +29,9 @@
 #' @param n.neighbors Integer that determines the number of neighboring points
 #'   used in local approximations of manifold structure in \code{RunUMAP}.
 #'   Altering it may be beneficial for large datasets (though it isn't stated
-#'   how it should be changed). Values of 5-50 are considered sensical.
+#'   how it should be changed). Values of 5-50 are considered sensical. Larger
+#'   values preserve more global structure while detailed local structure is 
+#'   lost.
 #' @param regress Vector of \code{meta.data} variables to regress during data 
 #'   scaling.
 #' @param ccpca Boolean to indicate whether PCA using only cell cycle genes
@@ -87,7 +89,7 @@ ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8,
 
   message("Performing PCA/UMAP/TSNE on variable features.")
   scrna <- RunPCA(scrna, npcs = npcs)
-  scrna <- RunUMAP(scrna, dims = 1:npcs)
+  scrna <- RunUMAP(scrna, dims = 1:npcs, n.neighbors = n.neighbors)
   scrna <- RunTSNE(scrna, dims = 1:npcs)
 
   message("Performing clustering on variable features.")
