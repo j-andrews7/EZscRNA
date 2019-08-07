@@ -16,7 +16,7 @@
 #'
 #' @export
 #'
-AddClonotype <- function(vdj.dir, scrna){
+AddClonotype <- function(vdj.dir, scrna) {
 	message("Adding clonotype data.")
 	vdj <- read.csv(sprintf("%s/filtered_contig_annotations.csv", vdj.dir))
 

@@ -47,8 +47,8 @@
 #'   cell type information in the \code{meta.data} slot named in 
 #'   \code{refset.labels} format. If \code{method = "cluster"}, the resulting
 #'   \code{meta.data} column will be named in \code{clusters.refset.labels} 
-#'   format. If FALSE, returns a dataframe of the inferred cell type/lineage 
-#'   information instead.
+#'   format. If \code{assign = FALSE}, returns a dataframe of the inferred cell 
+#'   type/lineage information instead.
 #'
 #' @importFrom Seurat AddMetaData as.SingleCellExperiment as.Seurat
 #' @importFrom SingleR getReferenceDataset SingleR

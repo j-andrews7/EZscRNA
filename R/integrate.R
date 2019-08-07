@@ -33,7 +33,7 @@ SimpleIntegration <- function(scrnas, split.by = NULL, skip.SCT = FALSE,
 	if (length(scrnas) > 1 & !isTRUE(skip.SCT)) {
 		for (i in 1:length(scrnas)) {
 			scrnas[[i]] <- SCTransform(scrnas[[i]], verbose = FALSE, 
-				vars.to.regress = vars.to.regress)
+				vars.to.regress = vars.to.regress, return.only.var.genes = FALSE)
 		}
 	} else if (is.null(split.by)) {
 		stop(paste0("split.by must be provided if a list of Seurat objects is,",
@@ -42,7 +42,7 @@ SimpleIntegration <- function(scrnas, split.by = NULL, skip.SCT = FALSE,
 		scrnas <- SplitObject(scrnas, split.by = split.by)
 		for (i in 1:length(scrnas)) {
 			scrnas[[i]] <- SCTransform(scrnas[[i]], verbose = FALSE, 
-				vars.to.regress = vars.to.regress)
+				vars.to.regress = vars.to.regress, return.only.var.genes = FALSE)
 		}
 	}
 

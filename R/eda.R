@@ -13,7 +13,7 @@
 #'
 #' @export
 #'
-RunQC <- function(scrna, outdir = "."){
+RunQC <- function(scrna, outdir = ".") {
   # Low-quality or dying cells often have mitochondrial contamination.
   scrna[["percent.mt"]] <- PercentageFeatureSet(scrna, pattern = "^MT-")
 
@@ -47,7 +47,7 @@ RunQC <- function(scrna, outdir = "."){
 #'
 #' @export
 #'
-NormScoreCC <- function(scrna){
+NormScoreCC <- function(scrna) {
 	message("Scoring cell cycle genes.")
 	# A list of cell cycle markers, from Tirosh et al, 2015, is loaded with 
 	# Seurat. We can segregate this list into markers of G2/M and of S phase.
@@ -86,7 +86,7 @@ NormScoreCC <- function(scrna){
 #'
 #' @export
 #'
-BatchCCEDA <- function(scrna, outdir, npcs = 50, batch = NULL){
+BatchCCEDA <- function(scrna, outdir, npcs = 50, batch = NULL) {
 
   # A list of cell cycle markers, from Tirosh et al, 2015, is loaded with 
   # Seurat.  We can segregate this list into markers of G2/M and S phase.

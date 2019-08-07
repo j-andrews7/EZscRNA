@@ -13,11 +13,11 @@
 #'
 #' @param genes A vector of gene symbols that will be tested.
 #' @param libraries A vector of libraries to test the genes against.
-#' @param outdir Path to output directory. NULL by default (tables will not be
-#'   saved, just returned).
+#' @param outdir Path to output directory. If specified, tables for each library
+#'   will be saved.
 #' @return A named list of enrichment results for each library.
 #'
-#' @import enrichR
+#' @importFrom enrichR enrichr
 #' @importFrom utils write.table
 #'
 #' @export
