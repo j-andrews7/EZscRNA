@@ -4,7 +4,7 @@
 \alias{BatchCCEDA}
 \title{Exploratory data analysis plots}
 \usage{
-BatchCCEDA(scrna, outdir, npcs = 50, batch = NULL)
+BatchCCEDA(scrna, outdir = ".", npcs = 50, vars = NULL)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -13,8 +13,8 @@ BatchCCEDA(scrna, outdir, npcs = 50, batch = NULL)
 
 \item{npcs}{Number of PCs to use for PCA and ElbowPlot. 50 by default.}
 
-\item{batch}{String indicating \code{meta.data} column to be investigated for
-batch effects.}
+\item{vars}{Character vector indicating \code{meta.data} columns to be 
+investigated for batch effects and variance contributions.}
 }
 \value{
 A Seurat object with a PCA for cell cycle genes stored with
@@ -25,6 +25,9 @@ A Seurat object with a PCA for cell cycle genes stored with
 to use for PCA/clustering and whether or not cell cycle scores and batch
 effects should be addressed. Runs and plots an ElbowPlot to determine PCs
 for later use. Runs and plots PCA for cell cycle genes to show their impact.
-PCA on variable features can also be plotted by batch to view potential batch
-effects.
+}
+\details{
+Supplying \code{vars} will plot a PCA for from the variable genes for each. 
+It will also calculate and create a density plot of the variance explained 
+by each variable across all genes.
 }

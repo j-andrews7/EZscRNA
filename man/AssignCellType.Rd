@@ -20,7 +20,8 @@ as the training set.}
 informative depending on how specific your data is. If \code{FALSE}, more
 specific labels \code{types} will be used.}
 
-\item{outdir}{Path to output directory for annotation scores and heatmap.}
+\item{outdir}{Path to output directory for annotation scores, distributions,
+and heatmap.}
 
 \item{method}{String specifying whether annotation should be applied to 
 each single cell \code{method = "single"} or aggregated into cluster-level 

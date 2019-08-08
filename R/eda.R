@@ -85,13 +85,13 @@ NormScoreCC <- function(scrna) {
 #'   \code{reduction.name = "cc"}. 
 #'
 #' @importFrom Seurat SCTransform RunPCA ElbowPlot DimPlot 
-#'   as.SingleCellExperiment()
+#'   as.SingleCellExperiment
 #' @importFrom grDevices dev.off pdf
 #' @importFrom scater plotExplanatoryVariables
 #'
 #' @export
 #'
-BatchCCEDA <- function(scrna, outdir = ".", npcs = 50, var = NULL) {
+BatchCCEDA <- function(scrna, outdir = ".", npcs = 50, vars = NULL) {
 
   # A list of cell cycle markers, from Tirosh et al, 2015, is loaded with 
   # Seurat.  We can segregate this list into markers of G2/M and S phase.
@@ -110,7 +110,7 @@ BatchCCEDA <- function(scrna, outdir = ".", npcs = 50, var = NULL) {
   dev.off()
 
   # PCA for variable genes across vars.
-  if(!is.null(var)) {
+  if(!is.null(vars)) {
     for (i in vars) {
   		pdf(sprintf("%s/PCA.%s.NoRegression.pdf", outdir, i), height = 5, 
         width = 7, useDingbats = FALSE)
