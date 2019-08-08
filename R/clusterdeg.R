@@ -55,15 +55,19 @@
 #' @import Seurat
 #' @importFrom grDevices dev.off pdf
 #' @importFrom utils write.table
+#' @import sctransform
 #'
 #' @export
 #'
 #' @examples
-#' # Default settings.
+#' \dontrun{
 #' scrna <- ClusterDEG(pbmc_small)
+#' }
 #'
+#' \dontrun{
 #' # Multiple clustering resolutions
 #' scrna <- ClusterDEG(pbmc_small, res = c(0.8, 1, 1.2))
+#' }
 #'
 ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8, 
   skip.sct = FALSE, min.dist = 0.3, n.neighbors = 30, regress = NULL, 

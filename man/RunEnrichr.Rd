@@ -14,8 +14,8 @@ RunEnrichr(genes, libraries = c("GO_Molecular_Function_2018",
 
 \item{libraries}{A vector of libraries to test the genes against.}
 
-\item{outdir}{Path to output directory. NULL by default (tables will not be
-saved, just returned).}
+\item{outdir}{Path to output directory. If specified, tables for each library
+will be saved.}
 }
 \value{
 A named list of enrichment results for each library.

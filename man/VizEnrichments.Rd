@@ -4,7 +4,7 @@
 \alias{VizEnrichments}
 \title{Visualize GO/pathway enrichments}
 \usage{
-VizEnrichments(enrichments, outdir = "./", n.terms = 10,
+VizEnrichments(enrichments, outdir = NULL, n.terms = 10,
   remove.insig = TRUE, adj.p.thresh = 0.05, colors = c("grey",
   "darkred"))
 }
@@ -12,7 +12,8 @@ VizEnrichments(enrichments, outdir = "./", n.terms = 10,
 \item{enrichments}{Named list containing enrichment results as returned by
 \code{\link{RunEnrichr}}.}
 
-\item{outdir}{Path to the output directory.}
+\item{outdir}{Path to the output directory, will save plots as properly-sized
+PDFs if set. Otherwise, they will be printed.}
 
 \item{n.terms}{Number of terms to place on plot.}
 
@@ -28,8 +29,10 @@ low, second will be high.}
 \description{
 \code{VizEnrichments} creates barcharts for enrichments returned by
 \code{\link{RunEnrichr}}. Two plots will be created for each library - one 
-ranked by adj. p-value, the other by Enrichr's combined score metrics. Plots 
-will be saved in a PDF named by library.
+ranked by adj. p-value, the other by Enrichr's combined score metrics.
+}
+\details{
+Plots will be saved in a PDF named by library if \code{outdir} is set.
 }
 \examples{
 genes <- c("CD8A", "GZMA", "GZMK", "GZMB", "CD4", "CD3E", "GNLY")

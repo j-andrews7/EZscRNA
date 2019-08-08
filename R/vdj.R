@@ -13,6 +13,7 @@
 #'   added to the metadata for each cell.
 #'
 #' @importFrom Seurat AddMetaData
+#' @importFrom utils read.csv
 #'
 #' @export
 #'

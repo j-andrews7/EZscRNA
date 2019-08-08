@@ -77,10 +77,13 @@ each, along with saving the cluster numbers for each in their own
 \code{meta.data} columns.
 }
 \examples{
-# Default settings.
+\dontrun{
 scrna <- ClusterDEG(pbmc_small)
+}
 
+\dontrun{
 # Multiple clustering resolutions
 scrna <- ClusterDEG(pbmc_small, res = c(0.8, 1, 1.2))
+}
 
 }

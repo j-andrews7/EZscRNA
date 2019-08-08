@@ -2,12 +2,15 @@
 #'
 #' \code{VizEnrichments} creates barcharts for enrichments returned by
 #' \code{\link{RunEnrichr}}. Two plots will be created for each library - one 
-#' ranked by adj. p-value, the other by Enrichr's combined score metrics. Plots 
-#' will be saved in a PDF named by library.
+#' ranked by adj. p-value, the other by Enrichr's combined score metrics. 
+#' 
+#' @details
+#' Plots will be saved in a PDF named by library if \code{outdir} is set.
 #'
 #' @param enrichments Named list containing enrichment results as returned by
 #'   \code{\link{RunEnrichr}}.
-#' @param outdir Path to the output directory.
+#' @param outdir Path to the output directory, will save plots as properly-sized
+#'   PDFs if set. Otherwise, they will be printed.
 #' @param n.terms Number of terms to place on plot. 
 #' @param remove.insig Boolean indicating whether terms that don't meet the 
 #'   \code{adj.p.thresh} should be removed from the plots. 
@@ -19,6 +22,7 @@
 #' @import ggplot2
 #' @importFrom grDevices dev.off pdf
 #' @importFrom scales wrap_format
+#' @importFrom stats reorder
 #'
 #' @export
 #'
@@ -33,7 +37,7 @@
 #'
 #' @seealso \code{\link{VizEnrichments}} for visualization.
 #'
-VizEnrichments <- function(enrichments, outdir = "./", 
+VizEnrichments <- function(enrichments, outdir = NULL, 
 	n.terms = 10, remove.insig = TRUE, adj.p.thresh = 0.05, 
 	colors = c("grey", "darkred")) {
 
@@ -87,14 +91,20 @@ VizEnrichments <- function(enrichments, outdir = "./",
 			scale_fill_gradient(low = colors[1], high = colors[2]) + xlab("Term") +
 			ylab("Combined Score (Enrichr)")
 
-		h <- 1 + 0.4 * nrow(i.p)
-		pdf(sprintf("%s/%s.Enrichments.pdf", outdir, lib), height = h, width = 12)
-		c <- cowplot::plot_grid(
-		  p1, p2, rel_widths = c(1, 1),
-		  nrow = 1
-		)
-		print(c)
-		dev.off()
+    c <- cowplot::plot_grid(
+      p1, p2, rel_widths = c(1, 1),
+      nrow = 1
+    )
+
+		h <- 0.8 + (0.35 * nrow(i.p))
+
+    if (!is.null(outdir)) {
+		  pdf(sprintf("%s/%s.Enrichments.pdf", outdir, lib), height = h, width = 12)
+		  print(c)
+		  dev.off()
+    } else {
+      print(c)
+    }
 	}
 }
 
@@ -194,6 +204,7 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
 #'
 #' @import ggplot2
 #' @import dplyr
+#' @importFrom stats reorder
 #'
 #' @export
 #'

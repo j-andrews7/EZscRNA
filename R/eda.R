@@ -54,7 +54,7 @@ NormScoreCC <- function(scrna) {
 	s.genes <- cc.genes$s.genes
 	g2m.genes <- cc.genes$g2m.genes
 
-	scrna <- NormalizeData(scrna)
+	scrna <- SCTransform(scrna, return.only.var.genes = FALSE)
 
 	cc.seurat <- CellCycleScoring(scrna, s.features = s.genes, 
 		g2m.features = g2m.genes)
@@ -94,7 +94,7 @@ BatchCCEDA <- function(scrna, outdir, npcs = 50, batch = NULL) {
   g2m.genes <- cc.genes$g2m.genes
 
   # Scale and return all genes so cell cycle gene PCAs won't lie to use.
-  scrna <- SCTransform(scrna, vars.to.regress = "percent.mt",
+  scrna <- SCTransform(scrna, vars.to.regress = c("percent.mt", "nCount_RNA"),
   	return.only.var.genes = FALSE)
   scrna <- RunPCA(scrna, npcs = npcs)
 
@@ -106,8 +106,8 @@ BatchCCEDA <- function(scrna, outdir, npcs = 50, batch = NULL) {
 
   # Take a look at PCA for variable genes across batch.
   if(!is.null(batch)) {
-		pdf(sprintf("%s/PCA.Batch.NoRegression.pdf", outdir), height = 5, width = 7,
-			useDingbats = FALSE)
+		pdf(sprintf("%s/PCA.%s.NoRegression.pdf", outdir, batch), height = 5, 
+      width = 7, useDingbats = FALSE)
 		p <- DimPlot(scrna, group.by = batch, pt.size = 0.3)
 		print(p)
 		dev.off()
