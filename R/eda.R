@@ -104,12 +104,14 @@ BatchCCEDA <- function(scrna, outdir = ".", npcs = 50, vars = NULL) {
   scrna <- RunPCA(scrna, npcs = npcs)
 
   # Elbowplot to determine number of PCs to use later.
+  message("Creating ElbowPlot.")
   pdf(sprintf("%s/ElbowPlot.pdf", outdir), useDingbats = FALSE)
   p <- ElbowPlot(scrna, ndims = npcs)
   print(p)
   dev.off()
 
   # PCA for variable genes across vars.
+  message("Creating PCA/variance plots using variable genes.")
   if(!is.null(vars)) {
     for (i in vars) {
   		pdf(sprintf("%s/PCA.%s.NoRegression.pdf", outdir, i), height = 5, 
@@ -119,14 +121,21 @@ BatchCCEDA <- function(scrna, outdir = ".", npcs = 50, vars = NULL) {
   		dev.off()
     }
     sce <- as.SingleCellExperiment(scrna)
-    p <- plotExplanatoryVariables(sce, variables = vars)
+    var.feats <- VariableFeatures(scrna)
+    p1 <- plotExplanatoryVariables(sce, variables = vars) + ggtitle("All Genes")
+    p2 <- plotExplanatoryVariables(sce, variables = vars, 
+      subset_row = var.feats) + 
+      ggtitle(paste0("Top ", length(var.feats), " Variable Genes"))
+
     pdf(sprintf("%s/DensityPlot.variance.pdf", outdir), height = 5, 
-        width = 7, useDingbats = FALSE)
-    print(p)
+        width = 7, useDingbats = FALSE) 
+    print(p1)
+    print(p2)
     dev.off()
   }
 
   # Now take a look at the PCA for the cell cycle genes.
+  message("Performing cell cycle PCA.")
   scrna <- RunPCA(scrna, npcs = npcs, features = c(s.genes, g2m.genes),
   	reduction.name = "cc")
   pdf(sprintf("%s/PCA.CellCycle.NoRegression.pdf", outdir), height = 5, 
