@@ -24,6 +24,11 @@
 #'     brain-related samples.}
 #' }
 #'
+#' If \code{outdir} is specified, the annotation results will be written to a
+#' file named in \code{clusters.refset.labels.txt} format if 
+#' \code{method="cluster"} or \code{refset.labels} format if 
+#' \code{method="single"}.
+#'
 #' @param scrna Seurat object.
 #' @param refset String indicating which reference dataset to download and use
 #'   as the training set. 
@@ -31,6 +36,8 @@
 #'   \code{main_types} for each reference sample. This is faster and can be more 
 #'   informative depending on how specific your data is. If \code{FALSE}, more
 #'   specific labels \code{types} will be used.
+#' @param outdir Path to output directory for annotation scores, distributions,
+#'   and heatmap.
 #' @param method String specifying whether annotation should be applied to 
 #'   each single cell \code{method = "single"} or aggregated into cluster-level 
 #'   profiles \code{method = "cluster"} prior to annotation.
@@ -52,19 +59,23 @@
 #'
 #' @importFrom Seurat AddMetaData as.SingleCellExperiment as.Seurat
 #' @importFrom SingleR getReferenceDataset SingleR
+#' @importFrom SingleCellExperiment counts
+#' @importFrom utils write.table
 #'
 #' @export
 #'
 #' @examples
+#' pbmc_small
 #' preds <- AssignCellType(pbmc_small, refset = "hpca", labels = "main_types",
 #'   method = "single")
 #'
 #' preds2 <- AssignCellType(pbmc_small, refset = "hpca", labels = "types",
-#'   method = "cluster", clusters = pbmc_small@meta.data$RNA_snn_res.1)
+#'   method = "cluster", clusters = "RNA_snn_res.1")
 #'
 AssignCellType <- function(scrna, refset = c("hpca", "blueprint_encode", 
-  "immgen", "mouse.rnaseq"), labels = c("types", "main_types"), method = 
-  c("single", "cluster"), clusters = NULL, assign = TRUE, n.cores = 1, ...) {
+  "immgen", "mouse.rnaseq"), labels = c("types", "main_types"), outdir = NULL,
+  method = c("single", "cluster"), clusters = NULL, assign = TRUE, n.cores = 1, 
+  ...) {
 
   # Arg matching.
   refset <- match.arg(refset)
@@ -87,35 +98,59 @@ AssignCellType <- function(scrna, refset = c("hpca", "blueprint_encode",
   sce <- as.SingleCellExperiment(scrna)
   common <- intersect(rownames(sce), rownames(dataset$data))
   sce <- sce[common,]
-  sce <- sce[,colSums(counts(sce)) > 0]
   dataset$data <- dataset$data[common,]
-  
-  # Temporary workaround for sparse matrices throwing errors when 'cluster'
-  # method used.
-  if (method == "cluster") {
-    counts(sce) <- as.matrix(counts(sce))
-  }
 
   # Reference datasets are log2 transformed rather than natural log transformed
   # (Seurat). Scater normalization is log2. 
-  sce <- scater::normalize(sce)
+  sce <- scater::logNormCounts(sce)
 
   message("Performing cell type inference.")
   annots <- SingleR(test = sce, training = dataset$data, 
-    labels = hpca[[labels]], method = method, clusters = sce[[clusters]], 
-    assay.type = 2, ...)
+    labels = dataset[[labels]], method = method, clusters = sce[[clusters]], 
+    assay.type.test = "logcounts", assay.type.train = "logcounts", ...)
 
 	if (isTRUE(assign)) {
 
 	  message("Assigning inferred cell types.")
+    label.dists <- 100 * (table(annots$labels) / 
+      sum(table(annots$labels)))
 
     if (method == "cluster") {
-      annots$clusts <- rownames(annots)
+      clusts <- rownames(annots)
+      rownames(annots) <- NULL
+      annots <- cbind(clusts, annots)
+
+      if (!is.null(outdir)) {
+        write.table(annots, file = sprintf("%s/%s.%s.%s.txt", outdir, clusters, 
+          refset, labels), quote = FALSE, sep = "\t", row.names = FALSE)
+        write.table(label.dists, file = sprintf("%s/%s.%s.%s.dist.txt", outdir, 
+          clusters, refset, labels), quote = FALSE, sep = "\t", 
+          row.names = FALSE)
+        p <- plotScoreHeatmap(annots, clusters = annots$clusts, 
+          silent = TRUE)
+        pdf(sprintf("%s/%s.%s.%s.pdf", outdir, clusters, refset, labels))
+        print(p)
+        dev.off()
+      }
+
       scrna[[sprintf("%s.%s.%s", clusters, refset, labels)]] <- 
         annots$labels[match(scrna@meta.data[[clusters]], 
-          annots$clusts)]
+          annots$clusters)]
 
     } else {
+      cells <- rownames(annots)
+      rownames(annots) <- NULL
+      annots <- cbind(cells, annots)
+      if (!is.null(outdir)) {
+        write.table(annots, file = sprintf("%s/%s.%s.txt", outdir, refset, 
+          labels), quote = FALSE, sep = "\t", row.names = FALSE)
+        write.table(label.dists, file = sprintf("%s/%s.%s.dist.txt", outdir, 
+          refset, labels), quote = FALSE, sep = "\t", row.names = FALSE)
+        p <- plotScoreHeatmap(annots, clusters = sce[[clusters]], silent = TRUE)
+        pdf(sprintf("%s/%s.%s.pdf", outdir, refset, labels))
+        print(p)
+        dev.off()
+      }
 		  scrna[[sprintf("%s.%s", refset, labels)]] <- annots$labels
     }
 

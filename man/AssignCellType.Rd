@@ -5,7 +5,7 @@
 \title{Infers and assigns cell type for each cell using SingleR}
 \usage{
 AssignCellType(scrna, refset = c("hpca", "blueprint_encode", "immgen",
-  "mouse.rnaseq"), labels = c("types", "main_types"),
+  "mouse.rnaseq"), labels = c("types", "main_types"), outdir = NULL,
   method = c("single", "cluster"), clusters = NULL, assign = TRUE,
   n.cores = 1, ...)
 }
@@ -19,6 +19,8 @@ as the training set.}
 \code{main_types} for each reference sample. This is faster and can be more 
 informative depending on how specific your data is. If \code{FALSE}, more
 specific labels \code{types} will be used.}
+
+\item{outdir}{Path to output directory for annotation scores and heatmap.}
 
 \item{method}{String specifying whether annotation should be applied to 
 each single cell \code{method = "single"} or aggregated into cluster-level 
@@ -42,8 +44,8 @@ If \code{assign = TRUE}, returns a \code{Seurat} object with inferred
   cell type information in the \code{meta.data} slot named in 
   \code{refset.labels} format. If \code{method = "cluster"}, the resulting
   \code{meta.data} column will be named in \code{clusters.refset.labels} 
-  format. If FALSE, returns a dataframe of the inferred cell type/lineage 
-  information instead.
+  format. If \code{assign = FALSE}, returns a dataframe of the inferred cell 
+  type/lineage information instead.
 }
 \description{
 \code{AssignCellType} performs correlation-based cell inference using a 
@@ -69,12 +71,18 @@ include:
     courtesy of Bérénice Benayoun. This data set is especially useful for 
     brain-related samples.}
 }
+
+If \code{outdir} is specified, the annotation results will be written to a
+file named in \code{clusters.refset.labels.txt} format if 
+\code{method="cluster"} or \code{refset.labels} format if 
+\code{method="single"}.
 }
 \examples{
+pbmc_small
 preds <- AssignCellType(pbmc_small, refset = "hpca", labels = "main_types",
   method = "single")
 
 preds2 <- AssignCellType(pbmc_small, refset = "hpca", labels = "types",
-  method = "cluster", clusters = pbmc_small@meta.data$RNA_snn_res.1)
+  method = "cluster", clusters = "RNA_snn_res.1")
 
 }
