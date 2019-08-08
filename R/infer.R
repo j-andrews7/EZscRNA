@@ -58,7 +58,7 @@
 #'   type/lineage information instead.
 #'
 #' @importFrom Seurat AddMetaData as.SingleCellExperiment as.Seurat
-#' @importFrom SingleR getReferenceDataset SingleR
+#' @importFrom SingleR getReferenceDataset SingleR plotScoreHeatmap
 #' @importFrom SingleCellExperiment counts
 #' @importFrom utils write.table
 #'

@@ -70,23 +70,28 @@ NormScoreCC <- function(scrna) {
 #' to use for PCA/clustering and whether or not cell cycle scores and batch
 #' effects should be addressed. Runs and plots an ElbowPlot to determine PCs
 #' for later use. Runs and plots PCA for cell cycle genes to show their impact.
-#' PCA on variable features can also be plotted by batch to view potential batch
-#' effects.
+#'
+#' @details
+#' Supplying \code{vars} will plot a PCA for from the variable genes for each. 
+#' It will also calculate and create a density plot of the variance explained 
+#' by each variable across all genes.
 #'
 #' @param scrna Seurat object.
 #' @param outdir Path to output directory for plots.
 #' @param npcs Number of PCs to use for PCA and ElbowPlot. 50 by default.
-#' @param batch String indicating \code{meta.data} column to be investigated for
-#'   batch effects. 
+#' @param vars Character vector indicating \code{meta.data} columns to be 
+#'   investigated for batch effects and variance contributions.
 #' @return A Seurat object with a PCA for cell cycle genes stored with
 #'   \code{reduction.name = "cc"}. 
 #'
-#' @importFrom Seurat SCTransform RunPCA ElbowPlot DimPlot
+#' @importFrom Seurat SCTransform RunPCA ElbowPlot DimPlot 
+#'   as.SingleCellExperiment()
 #' @importFrom grDevices dev.off pdf
+#' @importFrom scater plotExplanatoryVariables
 #'
 #' @export
 #'
-BatchCCEDA <- function(scrna, outdir, npcs = 50, batch = NULL) {
+BatchCCEDA <- function(scrna, outdir = ".", npcs = 50, var = NULL) {
 
   # A list of cell cycle markers, from Tirosh et al, 2015, is loaded with 
   # Seurat.  We can segregate this list into markers of G2/M and S phase.
@@ -104,13 +109,21 @@ BatchCCEDA <- function(scrna, outdir, npcs = 50, batch = NULL) {
   print(p)
   dev.off()
 
-  # Take a look at PCA for variable genes across batch.
-  if(!is.null(batch)) {
-		pdf(sprintf("%s/PCA.%s.NoRegression.pdf", outdir, batch), height = 5, 
-      width = 7, useDingbats = FALSE)
-		p <- DimPlot(scrna, group.by = batch, pt.size = 0.3)
-		print(p)
-		dev.off()
+  # PCA for variable genes across vars.
+  if(!is.null(var)) {
+    for (i in vars) {
+  		pdf(sprintf("%s/PCA.%s.NoRegression.pdf", outdir, i), height = 5, 
+        width = 7, useDingbats = FALSE)
+  		p <- DimPlot(scrna, group.by = i, pt.size = 0.3)
+  		print(p)
+  		dev.off()
+    }
+    sce <- as.SingleCellExperiment(scrna)
+    p <- plotExplanatoryVariables(sce, variables = vars)
+    pdf(sprintf("%s/DensityPlot.variance.pdf", outdir), height = 5, 
+        width = 7, useDingbats = FALSE)
+    print(p)
+    dev.off()
   }
 
   # Now take a look at the PCA for the cell cycle genes.
