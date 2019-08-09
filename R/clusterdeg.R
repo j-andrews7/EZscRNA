@@ -97,9 +97,9 @@ ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8,
   scrna <- FindNeighbors(scrna, dims = 1:npcs)
 
   for (i in res) {
-  	message(paste0("Finding cluster markers using ", res, "resolution."))
-  	scrna <- FindClusters(scrna, resolution = res)
-  	scrna[[sprintf("Clusters.%.1fRes.%dPC", res, npcs)]] <- Idents(object = 
+  	message(paste0("Finding cluster markers using ", i, " resolution."))
+  	scrna <- FindClusters(scrna, resolution = i)
+  	scrna[[sprintf("Clusters.%.1fRes.%dPC", i, npcs)]] <- Idents(object = 
   		scrna) 
   
 	  markers <- FindAllMarkers(scrna, assay = "RNA", 
@@ -108,7 +108,7 @@ ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8,
 	   # Save markers as table.
 	  message("Saving cluster markers.")
 	  write.table(markers, file = sprintf("%s/Cluster.Markers.%.1fRes.%dPC.txt", 
-	  	outdir, res, npcs), sep = "\t", quote = FALSE, row.names = FALSE)
+	  	outdir, i, npcs), sep = "\t", quote = FALSE, row.names = FALSE)
 
 	  message("Visualizing cluster markers.")
 	  top10up <- markers %>% dplyr::group_by(cluster) %>% 
@@ -117,7 +117,7 @@ ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8,
 	  h <- 4 + (0.3 * length(top10up$gene))
 		w <- 3 + (0.4 * length(sort(unique(Idents(scrna)))))
 	  pdf(sprintf("%s/Top10.UpMarkers.Cluster.%.1fRes.%dPC.Heatmap.pdf", outdir, 
-	  	res, npcs), height = h, width = w)
+	  	i, npcs), height = h, width = w)
 	  DoHeatmap(scrna, features = top10up$gene)
 	  dev.off()
 	}
