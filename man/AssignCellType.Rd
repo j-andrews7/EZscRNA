@@ -28,8 +28,9 @@ each single cell \code{method = "single"} or aggregated into cluster-level
 profiles \code{method = "cluster"} prior to annotation.}
 
 \item{clusters}{String defining the \code{meta.data} column in \code{scrna}
-that specify cluster identities for each cell. Only used if \code{method 
-= "cluster"}.}
+that specify cluster identities for each cell. Only required if 
+\code{method = "cluster"}. If provided with \code{method = "single"}, will
+be used as an additional label in heatmap plotting.}
 
 \item{assign}{Boolean indicating whether inferred cell types should actually
 be assigned to \code{Seurat} object or just returned as a \code{dataframe}.}
@@ -49,7 +50,7 @@ If \code{assign = TRUE}, returns a \code{Seurat} object with inferred
   type/lineage information instead.
 }
 \description{
-\code{AssignCellType} performs correlation-based cell inference using a 
+\code{AssignCellType} performs correlation-based cell type inference using a 
 reference dataset via \code{SingleR}.
 }
 \details{
