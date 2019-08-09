@@ -4,7 +4,8 @@
 \alias{BatchCCEDA}
 \title{Exploratory data analysis plots}
 \usage{
-BatchCCEDA(scrna, outdir = ".", npcs = 50, vars = NULL)
+BatchCCEDA(scrna, outdir = ".", npcs = 50, vars = NULL,
+  skip.sct = NULL)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -15,6 +16,9 @@ BatchCCEDA(scrna, outdir = ".", npcs = 50, vars = NULL)
 
 \item{vars}{Character vector indicating \code{meta.data} columns to be 
 investigated for batch effects and variance contributions.}
+
+\item{skip.sct}{Boolean indicating whether to skip \code{SCTransform} call.
+Useful for integrated objects.}
 }
 \value{
 A Seurat object with a PCA for cell cycle genes stored with

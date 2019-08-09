@@ -105,9 +105,9 @@ AssignCellType <- function(scrna, refset = c("hpca", "blueprint_encode",
   sce <- scater::logNormCounts(sce)
 
   message("Performing cell type inference.")
-  annots <- SingleR(test = sce, training = dataset$data, 
-    labels = dataset[[labels]], method = method, clusters = sce[[clusters]], 
-    assay.type.test = "logcounts", assay.type.train = "logcounts", ...)
+  annots <- SingleR(test = sce, ref = dataset$data, 
+    labels = dataset[[labels]], method = method, clusters = sce[[clusters]],
+    ...)
 
 	if (isTRUE(assign)) {
 

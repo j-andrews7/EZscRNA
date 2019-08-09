@@ -40,6 +40,8 @@ RunQC <- function(scrna, outdir = ".") {
 #' for data normalization, scaling, and therefore, regression. 
 #'
 #' @param scrna Seurat object to score cell cycle genes for each cell.
+#' @param skip.sct Boolean indicating whether to skip \code{SCTransform} call.
+#'   Useful for integrated objects.
 #' @return Seurat object with cell cycle scores ('S.Score', 'G2M.Score') and 
 #'   'Phase' added to \code{meta.data} for each cell.
 #'
@@ -47,14 +49,16 @@ RunQC <- function(scrna, outdir = ".") {
 #'
 #' @export
 #'
-NormScoreCC <- function(scrna) {
+NormScoreCC <- function(scrna, skip.sct = NULL) {
 	message("Scoring cell cycle genes.")
 	# A list of cell cycle markers, from Tirosh et al, 2015, is loaded with 
 	# Seurat. We can segregate this list into markers of G2/M and of S phase.
 	s.genes <- cc.genes$s.genes
 	g2m.genes <- cc.genes$g2m.genes
 
-	scrna <- SCTransform(scrna, return.only.var.genes = FALSE)
+  if (!isTRUE(skip.sct)) {
+	  scrna <- SCTransform(scrna)
+  }
 
 	cc.seurat <- CellCycleScoring(scrna, s.features = s.genes, 
 		g2m.features = g2m.genes)
@@ -81,6 +85,8 @@ NormScoreCC <- function(scrna) {
 #' @param npcs Number of PCs to use for PCA and ElbowPlot. 50 by default.
 #' @param vars Character vector indicating \code{meta.data} columns to be 
 #'   investigated for batch effects and variance contributions.
+#' @param skip.sct Boolean indicating whether to skip \code{SCTransform} call.
+#'   Useful for integrated objects.
 #' @return A Seurat object with a PCA for cell cycle genes stored with
 #'   \code{reduction.name = "cc"}. 
 #'
@@ -91,7 +97,8 @@ NormScoreCC <- function(scrna) {
 #'
 #' @export
 #'
-BatchCCEDA <- function(scrna, outdir = ".", npcs = 50, vars = NULL) {
+BatchCCEDA <- function(scrna, outdir = ".", npcs = 50, vars = NULL, 
+  skip.sct = NULL) {
 
   # A list of cell cycle markers, from Tirosh et al, 2015, is loaded with 
   # Seurat.  We can segregate this list into markers of G2/M and S phase.
@@ -99,8 +106,11 @@ BatchCCEDA <- function(scrna, outdir = ".", npcs = 50, vars = NULL) {
   g2m.genes <- cc.genes$g2m.genes
 
   # Scale and return all genes so cell cycle gene PCAs won't lie to use.
-  scrna <- SCTransform(scrna, vars.to.regress = c("percent.mt", "nCount_RNA"),
-  	return.only.var.genes = FALSE)
+  if (!isTRUE(skip.sct)) {
+    scrna <- SCTransform(scrna, vars.to.regress = c("percent.mt", "nCount_RNA"),
+  	  return.only.var.genes = FALSE)
+  }
+
   scrna <- RunPCA(scrna, npcs = npcs)
 
   # Elbowplot to determine number of PCs to use later.

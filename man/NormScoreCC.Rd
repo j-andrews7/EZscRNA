@@ -4,10 +4,13 @@
 \alias{NormScoreCC}
 \title{Normalize counts and score cell cycle for each cell}
 \usage{
-NormScoreCC(scrna)
+NormScoreCC(scrna, skip.sct = NULL)
 }
 \arguments{
 \item{scrna}{Seurat object to score cell cycle genes for each cell.}
+
+\item{skip.sct}{Boolean indicating whether to skip \code{SCTransform} call.
+Useful for integrated objects.}
 }
 \value{
 Seurat object with cell cycle scores ('S.Score', 'G2M.Score') and 
