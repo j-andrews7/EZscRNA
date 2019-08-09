@@ -31,9 +31,13 @@ Imports:
   monocle3,
   SingleR,
   scater,
-  SingleCellExperiment
+  SingleCellExperiment,
+  BiocGenerics,
+  SummarizedExperiment,
+  igraph,
+  methods
 Remotes: 
-  cole-trapnell-lab/monocle3@develop,
+  cole-trapnell-lab/monocle3,
   satijalab/seurat@develop,
   LTLA/SingleR, 
   bioc::3.10/SummarizedExperiment,
