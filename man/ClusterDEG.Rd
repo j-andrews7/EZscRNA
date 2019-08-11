@@ -22,11 +22,12 @@ Multiple values may be entered as a vector - resulting clusters will be
 added as a \code{meta.data} column named \code{Cluster_res_npcs} where 
 \code{res} and \code{npcs} will be the values for those arguments, 
 respectively. The clusters derived from the last value in the list will be 
-set as the default Ident for cells.}
+set as the default Ident for cells and stored in \\code{meta.data} under
+'seurat_clusters'.}
 
 \item{skip.sct}{Boolean indicating whether to skip \code{SCTransform}. FALSE
-by default. Set to TRUE if \code{SimpleIntegration} was used to integrate
-the Seurat object.}
+by default. Set to TRUE if \code{\link{SimpleIntegration}} was used to 
+integrate the Seurat object.}
 
 \item{min.dist}{Number that controls how tighly the embedding is allowed to
 compress points together in \code{RunUMAP}. Increasing may be beneficial
@@ -73,8 +74,8 @@ marker genes and saves the output as a table along with a heatmap of the top
 }
 \details{
 If multiple \code{res} values are given, a table and heatmap will be made for
-each, along with saving the cluster numbers for each in their own 
-\code{meta.data} columns.
+each, along with saving the clusters for each in their own \code{meta.data} 
+columns.
 }
 \examples{
 \dontrun{

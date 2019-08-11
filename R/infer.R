@@ -45,6 +45,9 @@
 #'   that specify cluster identities for each cell. Only required if 
 #'   \code{method = "cluster"}. If provided with \code{method = "single"}, will
 #'   be used as an additional label in heatmap plotting.
+#' @param integrated Boolean indicating whether Seurat object was integrated via
+#'   \code{\link{SimpleIntegration}}. This must be set to \code{TRUE} if so,
+#'   as the normalized counts are not stored in the integrated assay.
 #' @param assign Boolean indicating whether inferred cell types should actually
 #'   be assigned to \code{Seurat} object or just returned as a \code{dataframe}. 
 #' @param n.cores Number of cores to use for correlation. Linearly decreases 
@@ -58,7 +61,7 @@
 #'   format. If \code{assign = FALSE}, returns a dataframe of the inferred cell 
 #'   type/lineage information instead.
 #'
-#' @importFrom Seurat AddMetaData as.SingleCellExperiment as.Seurat
+#' @importFrom Seurat AddMetaData as.SingleCellExperiment
 #' @importFrom SingleR getReferenceDataset SingleR plotScoreHeatmap
 #' @importFrom SingleCellExperiment counts
 #' @importFrom utils write.table
@@ -75,8 +78,8 @@
 #'
 AssignCellType <- function(scrna, refset = c("hpca", "blueprint_encode", 
   "immgen", "mouse.rnaseq"), labels = c("types", "main_types"), outdir = NULL,
-  method = c("single", "cluster"), clusters = NULL, assign = TRUE, n.cores = 1, 
-  ...) {
+  method = c("single", "cluster"), clusters = NULL, integrated = FALSE, 
+  assign = TRUE, n.cores = 1, ...) {
 
   # Arg matching.
   refset <- match.arg(refset)
@@ -96,7 +99,12 @@ AssignCellType <- function(scrna, refset = c("hpca", "blueprint_encode",
 	dataset <- getReferenceDataset(dataset = refset)
 
   # Convert to SCE object and get common genes.
-  sce <- as.SingleCellExperiment(scrna)
+  if (isTRUE(integrated)) {
+    sce <- as.SingleCellExperiment(scrna, assay = "SCT")
+  } else {
+    sce <- as.SingleCellExperiment(scrna)
+  }
+
   common <- intersect(rownames(sce), rownames(dataset$data))
   sce <- sce[common,]
   dataset$data <- dataset$data[common,]
@@ -141,9 +149,9 @@ AssignCellType <- function(scrna, refset = c("hpca", "blueprint_encode",
         dev.off()
       }
 
-      # Add labels as column to `meta.data`.
+      # Add labels as column to meta.data.
       scrna[[sprintf("%s.%s.%s", clusters, refset, labels)]] <- 
-        annots$labels[match(scrna@meta.data[[clusters]], 
+        annots$labels[match(scrna[[clusters]], 
           annots$clusters)]
 
     } else {
@@ -154,15 +162,18 @@ AssignCellType <- function(scrna, refset = c("hpca", "blueprint_encode",
       if (!is.null(outdir)) {
         if(!is.null(clusters)) {
           clusts <- sce[[clusters]]
+          clust.label <- clusters
         } else{
           clusts <- NULL
+          clust.label <- "NoClusters"
         }
         write.table(annots, file = sprintf("%s/%s.%s.txt", outdir, refset, 
           labels), quote = FALSE, sep = "\t", row.names = FALSE)
         write.table(label.dists, file = sprintf("%s/%s.%s.dist.txt", outdir, 
           refset, labels), quote = FALSE, sep = "\t", row.names = FALSE)
         p <- plotScoreHeatmap(annots, clusters = clusts, silent = TRUE)
-        pdf(sprintf("%s/%s.%s.pdf", outdir, refset, labels))
+        pdf(sprintf("%s/%s.%s.%s.%s.pdf", outdir, method, refset, labels,
+          clust.label))
         print(p)
         dev.off()
       }

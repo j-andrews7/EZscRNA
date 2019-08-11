@@ -6,8 +6,8 @@
 \usage{
 AssignCellType(scrna, refset = c("hpca", "blueprint_encode", "immgen",
   "mouse.rnaseq"), labels = c("types", "main_types"), outdir = NULL,
-  method = c("single", "cluster"), clusters = NULL, assign = TRUE,
-  n.cores = 1, ...)
+  method = c("single", "cluster"), clusters = NULL,
+  integrated = FALSE, assign = TRUE, n.cores = 1, ...)
 }
 \arguments{
 \item{scrna}{Seurat object.}
@@ -31,6 +31,10 @@ profiles \code{method = "cluster"} prior to annotation.}
 that specify cluster identities for each cell. Only required if 
 \code{method = "cluster"}. If provided with \code{method = "single"}, will
 be used as an additional label in heatmap plotting.}
+
+\item{integrated}{Boolean indicating whether Seurat object was integrated via
+\code{\link{SimpleIntegration}}. This must be set to \code{TRUE} if so,
+as the normalized counts are not stored in the integrated assay.}
 
 \item{assign}{Boolean indicating whether inferred cell types should actually
 be assigned to \code{Seurat} object or just returned as a \code{dataframe}.}
