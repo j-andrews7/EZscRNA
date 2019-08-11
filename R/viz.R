@@ -129,7 +129,7 @@ VizEnrichments <- function(enrichments, outdir = NULL,
 #' @export
 #'
 VizMetaData <- function(scrna, vars, outdir, ...) {
-	message("Plotting meta.data variables.")
+	message("Plotting metadata variables.")
 
 	# Check for necessary reductions.
 	if (is.null(scrna@reductions$tsne)) {
@@ -144,7 +144,7 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
 	for (i in vars) {
 		message("Plotting ", i)
 	  # Get all unique elements of variable.
-		vars_found <- sort(unique(scrna@meta.data[[as.character(i)]]))
+		vars_found <- sort(unique(scrna[[as.character(i)]]))
 		  
 		# Color with rainbow colors.
 		cell_colors <- rainbow(length(vars_found), s = 0.6, v = 0.9)
@@ -216,7 +216,7 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 	if (!is.null(g.by)) {
 
 		# Get clonotype frequencies.
-		df <- scrna@meta.data %>% dplyr::count((!!as.symbol(g.by)), cdr3s_aa) %>% 
+		df <- scrna[[]] %>% dplyr::count((!!as.symbol(g.by)), cdr3s_aa) %>% 
 			dplyr::group_by(!!as.symbol(g.by)) %>% dplyr::mutate(prop = prop.table(n))
 
 		# Sort by frequency.
@@ -275,7 +275,7 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 		}
 	} else {
 		# Get clonotype frequencies.
-		df <- scrna@meta.data %>% dplyr::count((!!as.symbol(g.by)), cdr3s_aa) %>% 
+		df <- scrna[[]] %>% dplyr::count((!!as.symbol(g.by)), cdr3s_aa) %>% 
 			dplyr::mutate(prop = prop.table(n))
 
 		# Subset df here for top clonotypes to show in specific groups.
@@ -463,7 +463,7 @@ VizScoredSets <- function(scrna, marker.df, outdir, vln = NULL,
     name <- paste0(j,".Score")
 
     # Move to next set if no score for current set in Seurat object.
-    if (is.null(scrna@meta.data[[name]])) {
+    if (is.null(scrna[[name]])) {
     	message("Skipping ", j, " as no score is present in Seurat object.")
     	next
     }
@@ -583,16 +583,16 @@ VizRidgePlot <- function(scrna, outfile, genes, ridge.params = NULL) {
 	ng <- length(genes)
 	if (ng == 1) {
 	    w <- 5
-	    h <- 0.3 * length(sort(unique(Idents(scrna))))
+	    h <- 0.33 * length(sort(unique(Idents(scrna))))
 	} else if (ng == 2) {
 	    w <- 10
-	    h <- 0.3 * length(sort(unique(Idents(scrna))))
+	    h <- 0.33 * length(sort(unique(Idents(scrna))))
 	} else if (ng == 3) {
 	    w <- 15
-	    h <- 0.3 * length(sort(unique(Idents(scrna))))
+	    h <- 0.33 * length(sort(unique(Idents(scrna))))
 	} else {
 	    w <- 15
-	    h <- 4 * (0.3 * length(sort(unique(Idents(scrna)))))
+	    h <- 4 * (0.33 * length(sort(unique(Idents(scrna)))))
 	}
 	pdf(outfile, useDingbats = FALSE, height = h, width = w)
 	# Check for additional kwargs.

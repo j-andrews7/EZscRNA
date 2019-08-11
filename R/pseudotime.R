@@ -78,7 +78,7 @@ SeuratToCDS <- function(scrna, clusters) {
   # Extract components to build CDS object.
   message("Creating cell_data_set object.")
   counts.data <- as(as.matrix(scrna@assays$RNA@data), 'sparseMatrix')
-  cell_metadata <- scrna@meta.data
+  cell_metadata <- scrna[[]]
   gene_annotation <- data.frame(gene_short_name = row.names(counts.data), 
     row.names = row.names(counts.data))
 
@@ -95,7 +95,7 @@ SeuratToCDS <- function(scrna, clusters) {
   cds <- cluster_cells(cds)
 
   # Map clusters to CDS object.
-  list_cluster <- scrna@meta.data[[clusters]]
+  list_cluster <- scrna[[clusters]]
   names(list_cluster) <- scrna@assays[["RNA"]]@data@Dimnames[[2]]
 
   cds@clusters@listData[["UMAP"]][["clusters"]] <- list_cluster
