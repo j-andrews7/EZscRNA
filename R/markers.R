@@ -44,7 +44,7 @@ ScoreAnnotatedMarkers <- function(scrna, marker.df) {
     	))
 
     # Remove random number from column header, annoys me.
-    colnames(scrna[[]])[colnames(scrna[[]]) == paste0(j, ".Score1"
+    colnames(scrna@meta.data)[colnames(scrna@meta.data) == paste0(j, ".Score1"
     	)] <- paste0(j, ".Score")
   }
 
