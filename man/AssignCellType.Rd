@@ -4,16 +4,15 @@
 \alias{AssignCellType}
 \title{Infers and assigns cell type for each cell using SingleR}
 \usage{
-AssignCellType(scrna, refset = c("hpca", "blueprint_encode", "immgen",
-  "mouse.rnaseq"), labels = c("types", "main_types"), outdir = NULL,
-  method = c("single", "cluster"), clusters = NULL,
+AssignCellType(scrna, refset, labels = c("types", "main_types"),
+  outdir = NULL, method = c("single", "cluster"), clusters = NULL,
   integrated = FALSE, assign = TRUE, n.cores = 1, ...)
 }
 \arguments{
 \item{scrna}{Seurat object.}
 
-\item{refset}{String indicating which reference dataset to download and use
-as the training set.}
+\item{refset}{Reference dataset as retrieved by 
+\code{\link[SingleR]{SingleR}}.}
 
 \item{labels}{If \code{TRUE}, use broad lineage-based labels 
 \code{main_types} for each reference sample. This is faster and can be more 
@@ -55,11 +54,11 @@ If \code{assign = TRUE}, returns a \code{Seurat} object with inferred
 }
 \description{
 \code{AssignCellType} performs correlation-based cell type inference using a 
-reference dataset via \code{SingleR}.
+reference dataset via \code{\link[SingleR]{SingleR}}.
 }
 \details{
-Reference datasets available for use by this function via \code{SingleR} 
-include:
+Reference datasets available for use by this function via 
+\code{\link[SingleR]{getReferenceDataset}} include:
 \describe{
   \item{"hpca"}{Human Primary Cell Atlas (HPCA): A collection of Gene 
     Expression Omnibus (GEO datasets), which contains 713 microarray 
@@ -84,11 +83,14 @@ file named in \code{clusters.refset.labels.txt} format if
 \code{method="single"}.
 }
 \examples{
-pbmc_small
-preds <- AssignCellType(pbmc_small, refset = "hpca", labels = "main_types",
+library("Seurat")
+library("SingleR")
+pbmc <- pbmc_small
+hpca <- getReferenceDataset(dataset = "hpca")
+preds <- AssignCellType(pbmc, refset = hpca, labels = "main_types",
   method = "single")
 
-preds2 <- AssignCellType(pbmc_small, refset = "hpca", labels = "types",
+preds2 <- AssignCellType(pbmc, refset = hpca, labels = "types",
   method = "cluster", clusters = "RNA_snn_res.1")
 
 }

@@ -1,11 +1,11 @@
 #' Infers and assigns cell type for each cell using SingleR
 #'
 #' \code{AssignCellType} performs correlation-based cell type inference using a 
-#' reference dataset via \code{SingleR}.
+#' reference dataset via \code{\link[SingleR]{SingleR}}.
 #'
 #' @details
-#' Reference datasets available for use by this function via \code{SingleR} 
-#' include:
+#' Reference datasets available for use by this function via 
+#' \code{\link[SingleR]{getReferenceDataset}} include:
 #' \describe{
 #'   \item{"hpca"}{Human Primary Cell Atlas (HPCA): A collection of Gene 
 #'     Expression Omnibus (GEO datasets), which contains 713 microarray 
@@ -30,8 +30,8 @@
 #' \code{method="single"}.
 #'
 #' @param scrna Seurat object.
-#' @param refset String indicating which reference dataset to download and use
-#'   as the training set. 
+#' @param refset Reference dataset as retrieved by 
+#'   \code{\link[SingleR]{SingleR}}.
 #' @param labels If \code{TRUE}, use broad lineage-based labels 
 #'   \code{main_types} for each reference sample. This is faster and can be more 
 #'   informative depending on how specific your data is. If \code{FALSE}, more
@@ -62,30 +62,28 @@
 #'   type/lineage information instead.
 #'
 #' @importFrom Seurat AddMetaData as.SingleCellExperiment
-#' @importFrom SingleR getReferenceDataset SingleR plotScoreHeatmap
+#' @importFrom SingleR SingleR plotScoreHeatmap
 #' @importFrom SingleCellExperiment counts
 #' @importFrom utils write.table
 #'
 #' @export
 #'
 #' @examples
-#' pbmc_small
-#' preds <- AssignCellType(pbmc_small, refset = "hpca", labels = "main_types",
+#' library("Seurat")
+#' library("SingleR")
+#' pbmc <- pbmc_small
+#' hpca <- getReferenceDataset(dataset = "hpca")
+#' preds <- AssignCellType(pbmc, refset = hpca, labels = "main_types",
 #'   method = "single")
 #'
-#' preds2 <- AssignCellType(pbmc_small, refset = "hpca", labels = "types",
+#' preds2 <- AssignCellType(pbmc, refset = hpca, labels = "types",
 #'   method = "cluster", clusters = "RNA_snn_res.1")
 #'
-AssignCellType <- function(scrna, refset = c("hpca", "blueprint_encode", 
-  "immgen", "mouse.rnaseq"), labels = c("types", "main_types"), outdir = NULL,
-  method = c("single", "cluster"), clusters = NULL, integrated = FALSE, 
-  assign = TRUE, n.cores = 1, ...) {
+AssignCellType <- function(scrna, refset, labels = c("types", "main_types"), 
+  outdir = NULL, method = c("single", "cluster"), clusters = NULL, 
+  integrated = FALSE, assign = TRUE, n.cores = 1, ...) {
 
   # Arg matching.
-  refset <- match.arg(refset)
-  if (length(refset) > 1) {
-    stop("'refset' must be specified.")
-  }
   labels <- match.arg(labels)
   if (length(labels) > 1) {
     stop("'labels' must be specified.")
@@ -95,9 +93,6 @@ AssignCellType <- function(scrna, refset = c("hpca", "blueprint_encode",
     stop("'method' must be specified.")
   }
 
-  message("Downloading reference dataset: ", refset)
-	dataset <- getReferenceDataset(dataset = refset)
-
   # Convert to SCE object and get common genes.
   if (isTRUE(integrated)) {
     sce <- as.SingleCellExperiment(scrna, assay = "SCT")
@@ -105,9 +100,9 @@ AssignCellType <- function(scrna, refset = c("hpca", "blueprint_encode",
     sce <- as.SingleCellExperiment(scrna)
   }
 
-  common <- intersect(rownames(sce), rownames(dataset$data))
+  common <- intersect(rownames(sce), rownames(refset$data))
   sce <- sce[common,]
-  dataset$data <- dataset$data[common,]
+  refset$data <- refset$data[common,]
 
   # Get clusters so subsetting by NULL isn't an issue.
   if (!is.null(clusters)) {
@@ -121,8 +116,8 @@ AssignCellType <- function(scrna, refset = c("hpca", "blueprint_encode",
   sce <- scater::logNormCounts(sce)
 
   message("Performing cell type inference.")
-  annots <- SingleR(test = sce, ref = dataset$data, 
-    labels = dataset[[labels]], method = method, clusters = clusts,
+  annots <- SingleR(test = sce, ref = refset$data, 
+    labels = refset[[labels]], method = method, clusters = clusts,
     ...)
 
 	if (isTRUE(assign)) {
@@ -138,19 +133,19 @@ AssignCellType <- function(scrna, refset = c("hpca", "blueprint_encode",
 
       if (!is.null(outdir)) {
         write.table(annots, file = sprintf("%s/%s.%s.%s.txt", outdir, clusters, 
-          refset, labels), quote = FALSE, sep = "\t", row.names = FALSE)
+          refset$name, labels), quote = FALSE, sep = "\t", row.names = FALSE)
         write.table(label.dists, file = sprintf("%s/%s.%s.%s.dist.txt", outdir, 
-          clusters, refset, labels), quote = FALSE, sep = "\t", 
+          clusters, refset$name, labels), quote = FALSE, sep = "\t", 
           row.names = FALSE)
         p <- plotScoreHeatmap(annots, clusters = annots$clusts, 
           silent = TRUE)
-        pdf(sprintf("%s/%s.%s.%s.pdf", outdir, clusters, refset, labels))
+        pdf(sprintf("%s/%s.%s.%s.pdf", outdir, clusters, refset$name, labels))
         print(p)
         dev.off()
       }
 
       # Add labels as column to meta.data.
-      scrna[[sprintf("%s.%s.%s", clusters, refset, labels)]] <- 
+      scrna[[sprintf("%s.%s.%s", clusters, refset$name, labels)]] <- 
         annots$labels[match(scrna@meta.data[[clusters]], annots$clusts)]
 
     } else {
@@ -166,17 +161,17 @@ AssignCellType <- function(scrna, refset = c("hpca", "blueprint_encode",
           clusts <- NULL
           clust.label <- "NoClusters"
         }
-        write.table(annots, file = sprintf("%s/%s.%s.txt", outdir, refset, 
+        write.table(annots, file = sprintf("%s/%s.%s.txt", outdir, refset$name, 
           labels), quote = FALSE, sep = "\t", row.names = FALSE)
         write.table(label.dists, file = sprintf("%s/%s.%s.dist.txt", outdir, 
-          refset, labels), quote = FALSE, sep = "\t", row.names = FALSE)
+          refset$name, labels), quote = FALSE, sep = "\t", row.names = FALSE)
         p <- plotScoreHeatmap(annots, clusters = clusts, silent = TRUE)
-        pdf(sprintf("%s/%s.%s.%s.%s.pdf", outdir, method, refset, labels,
+        pdf(sprintf("%s/%s.%s.%s.%s.pdf", outdir, method, refset$name, labels,
           clust.label))
         print(p)
         dev.off()
       }
-		  scrna[[sprintf("%s.%s", refset, labels)]] <- annots$labels
+		  scrna[[sprintf("%s.%s", refset$name, labels)]] <- annots$labels
     }
 
 	} else {

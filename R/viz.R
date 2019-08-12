@@ -129,7 +129,6 @@ VizEnrichments <- function(enrichments, outdir = NULL,
 #' @export
 #'
 VizMetaData <- function(scrna, vars, outdir, ...) {
-	message("Plotting metadata variables.")
 
 	# Check for necessary reductions.
 	if (is.null(scrna@reductions$tsne)) {
@@ -157,7 +156,8 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
 			cols = cell_colors, reduction = "tsne"), dim.params)) + NoLegend()
 		p3 <- do.call(DimPlot, c(scrna, list(group.by = as.character(i), 
 			cols = cell_colors, reduction = "umap"), dim.params)) + 
-			theme(legend.text = element_text(size = 7)) +
+			theme(legend.text = element_text(size = 7), 
+        legend.title = element_text(size = 8)) +
 			labs(color = as.character(i))
 
 		# Finicky garbage to get legends to not overlay plots.
@@ -370,10 +370,10 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL,
     h = 0
     w = 0
     if (ng > 1) {
-      w = 10 # two columns
+      w = 12 # two columns
       h = 5 * (floor(ng / 2) + ng %% 2) # number of rows
     } else {
-      w = 5 
+      w = 6 
       h = 5 
     }
     pdf(out.tsne, useDingbats = FALSE, height = h, width = w)
@@ -466,7 +466,7 @@ VizScoredSets <- function(scrna, marker.df, outdir, vln = NULL,
     name <- paste0(j,".Score")
 
     # Move to next set if no score for current set in Seurat object.
-    if (is.null(scrna[[name]])) {
+    if (is.null(scrna@meta.data[[name]])) {
     	message("Skipping ", j, " as no score is present in Seurat object.")
     	next
     }
@@ -653,8 +653,8 @@ VizDotPlot <- function(scrna, outfile, genes, dot.params = NULL) {
 #' @param outfile Path for output PDF.
 #' @param genes Vector of genes to plot.
 #' @param heatmap.params List of keyword arguments to be passed to Seurat
-#'   \code{DoHeatmap}. \code{features} are already defined and will throw
-#'   an error if passed. NULL by default.
+#'   \code{DoHeatmap}. \code{features} and \code{assay} are already defined and 
+#'   will throw an error if passed.
 #'
 #' @importFrom Seurat DotPlot
 #' @import ggplot2
@@ -670,24 +670,24 @@ VizHeatmap <- function(scrna, outfile, genes, heatmap.params = NULL) {
 	# Check for additional kwargs.
 	if (!is.null(heatmap.params)) {
 		p <- do.call(DoHeatmap, c(subset(scrna, downsample = 100), 
-			list(features = genes), heatmap.params)) + 
+			list(features = genes, assay = "RNA"), heatmap.params)) + 
 			ggtitle("Downsampled to 100 cells")
 		print(p)
 		p <- do.call(DoHeatmap, c(subset(scrna, downsample = 1000), 
-			list(features = genes), heatmap.params)) + 
+			list(features = genes, assay = "RNA"), heatmap.params)) + 
 			ggtitle("Downsampled to 1000 cells")
 		print(p)
-		p <- do.call(DoHeatmap, c(scrna, list (features = genes), heatmap.params)) + 
-			ggtitle("Downsampled to 100 cells")
+		p <- do.call(DoHeatmap, c(scrna, list(features = genes, assay = "RNA"), 
+      heatmap.params)) + ggtitle("Downsampled to 100 cells")
 		print(p)
 	} else {
 		p <- DoHeatmap(subset(scrna, downsample = 100), features = genes, 
-			size = 3) + ggtitle("Downsampled to 100 cells")
+			size = 3, assay = "RNA") + ggtitle("Downsampled to 100 cells")
 		print(p)
 		p <- DoHeatmap(subset(scrna, downsample = 1000), features = genes, 
-			size = 3) + ggtitle("Downsampled to 1000 cells")
+			size = 3, assay = "RNA") + ggtitle("Downsampled to 1000 cells")
 		print(p)
-		p <- DoHeatmap(scrna, features = genes, size = 3) + 
+		p <- DoHeatmap(scrna, features = genes, size = 3, assay = "RNA") + 
 			ggtitle("No Downsampling")
 		print(p)
 	}

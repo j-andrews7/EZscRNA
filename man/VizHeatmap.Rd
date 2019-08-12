@@ -14,8 +14,8 @@ VizHeatmap(scrna, outfile, genes, heatmap.params = NULL)
 \item{genes}{Vector of genes to plot.}
 
 \item{heatmap.params}{List of keyword arguments to be passed to Seurat
-\code{DoHeatmap}. \code{features} are already defined and will throw
-an error if passed. NULL by default.}
+\code{DoHeatmap}. \code{features} and \code{assay} are already defined and 
+will throw an error if passed.}
 }
 \description{
 Dynamically generates Seurat Heatmap for all genes in a given gene set as

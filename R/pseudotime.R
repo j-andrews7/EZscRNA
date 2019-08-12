@@ -95,7 +95,7 @@ SeuratToCDS <- function(scrna, clusters) {
   cds <- cluster_cells(cds)
 
   # Map clusters to CDS object.
-  list_cluster <- scrna[[clusters]]
+  list_cluster <- scrna@meta.data[[clusters]]
   names(list_cluster) <- scrna@assays[["RNA"]]@data@Dimnames[[2]]
 
   cds@clusters@listData[["UMAP"]][["clusters"]] <- list_cluster
