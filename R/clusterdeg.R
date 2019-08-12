@@ -119,7 +119,8 @@ ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8,
 		w <- 3 + (0.4 * length(sort(unique(Idents(scrna)))))
 	  pdf(sprintf("%s/Top10.UpMarkers.Cluster.%.1fRes.%dPC.Heatmap.pdf", outdir, 
 	  	i, npcs), height = h, width = w)
-	  DoHeatmap(scrna, features = top10up$gene, assay = "RNA")
+	  p <- DoHeatmap(scrna, features = top10up$gene, assay = "RNA")
+    print(p)
 	  dev.off()
 	}
 
