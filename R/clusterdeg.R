@@ -115,7 +115,7 @@ ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8,
 	  top10up <- markers %>% dplyr::group_by(cluster) %>% 
 			dplyr::top_n(n = 10, wt = avg_logFC) %>% dplyr::filter(avg_logFC > 0)
 	  # Make marker heatmap. Dynamic sizing.
-	  h <- 4 + (0.3 * length(top10up$gene))
+	  h <- 4 + (0.2 * length(top10up$gene))
 		w <- 3 + (0.4 * length(sort(unique(Idents(scrna)))))
 	  pdf(sprintf("%s/Top10.UpMarkers.Cluster.%.1fRes.%dPC.Heatmap.pdf", outdir, 
 	  	i, npcs), height = h, width = w)

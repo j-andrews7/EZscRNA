@@ -144,7 +144,7 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
 	for (i in vars) {
 		message("Plotting ", i)
 	  # Get all unique elements of variable.
-		vars_found <- sort(unique(scrna[[as.character(i)]]))
+		vars_found <- sort(unique(scrna@meta.data[[as.character(i)]]))
 		  
 		# Color with rainbow colors.
 		cell_colors <- rainbow(length(vars_found), s = 0.6, v = 0.9)
@@ -252,7 +252,8 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 			colour = "black") + scale_y_continuous(labels = scales::percent) +
 			xlab("Clonotype") + ylab("Frequency") + theme_classic() +
 			theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1), 
-			axis.line.x = element_line(size = 1, colour = "black"))
+			axis.line.x = element_line(size = 1, colour = "black")) + 
+      scale_x_discrete(labels = wrap_format(30)) 
 		print(p)
 
 		# Plot individual group frequencies.
@@ -270,7 +271,8 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 				colour = "black") + scale_y_continuous(labels = scales::percent) +
 				ggtitle(i) + xlab("Clonotype") + ylab("Frequency") + theme_classic() +
 				theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1), 
-				axis.line.x = element_line(size = 1, colour = "black"))
+				axis.line.x = element_line(size = 1, colour = "black")) + 
+        scale_x_discrete(labels = wrap_format(30)) 
 				print(p)
 		}
 	} else {
@@ -288,7 +290,8 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 			colour = "black") + scale_y_continuous(labels = scales::percent) +
 			xlab("Clonotype") + ylab("Frequency") + theme_classic() +
 			theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1), 
-			axis.line.x = element_line(size = 1, colour = "black")) 
+			axis.line.x = element_line(size = 1, colour = "black")) + 
+      scale_x_discrete(labels = wrap_format(30)) 
 			print(p)
 	}
 

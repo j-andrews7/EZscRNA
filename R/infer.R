@@ -151,8 +151,7 @@ AssignCellType <- function(scrna, refset = c("hpca", "blueprint_encode",
 
       # Add labels as column to meta.data.
       scrna[[sprintf("%s.%s.%s", clusters, refset, labels)]] <- 
-        annots$labels[match(scrna[[clusters]], 
-          annots$clusters)]
+        annots$labels[match(scrna@meta.data[[clusters]], annots$clusts)]
 
     } else {
       cells <- rownames(annots)
