@@ -1,4 +1,4 @@
-#' Infers and assigns cell type for each cell using SingleR
+#' Infers and assigns nearest cell type for each cell using SingleR
 #'
 #' \code{AssignCellType} performs correlation-based cell type inference using a 
 #' reference dataset via \code{\link[SingleR]{SingleR}}. 

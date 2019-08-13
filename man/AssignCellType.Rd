@@ -2,7 +2,7 @@
 % Please edit documentation in R/infer.R
 \name{AssignCellType}
 \alias{AssignCellType}
-\title{Infers and assigns cell type for each cell using SingleR}
+\title{Infers and assigns nearest cell type for each cell using SingleR}
 \usage{
 AssignCellType(scrna, refset, labels = c("types", "main_types"),
   outdir = NULL, method = c("single", "cluster"), clusters = NULL,
@@ -14,10 +14,11 @@ AssignCellType(scrna, refset, labels = c("types", "main_types"),
 \item{refset}{Reference dataset as retrieved by 
 \code{\link[SingleR]{SingleR}}.}
 
-\item{labels}{If \code{TRUE}, use broad lineage-based labels 
-\code{main_types} for each reference sample. This is faster and can be more 
-informative depending on how specific your data is. If \code{FALSE}, more
-specific labels \code{types} will be used.}
+\item{labels}{String indicating whether to use broad lineage-based labels 
+\code{labels="main_types"} for each reference sample or more fine-grained 
+labels (\code{labels="types"}. The former is quicker and can be informative
+enough if your sample has many cell types. The latter is best-suited for 
+purified cell types or if particular cellular subtypes are important.}
 
 \item{outdir}{Path to output directory for annotation scores, distributions,
 and heatmap.}
@@ -33,7 +34,7 @@ be used as an additional label in heatmap plotting.}
 
 \item{integrated}{Boolean indicating whether Seurat object was integrated via
 \code{\link{SimpleIntegration}}. This must be set to \code{TRUE} if so,
-as the normalized counts are not stored in the integrated assay.}
+as the normalized counts are not stored in the "integrated" assay.}
 
 \item{assign}{Boolean indicating whether inferred cell types should actually
 be assigned to \code{Seurat} object or just returned as a \code{dataframe}.}
@@ -80,7 +81,8 @@ Reference datasets available for use by this function via
 If \code{outdir} is specified, the annotation results will be written to a
 file named in \code{clusters.refset.labels.txt} format if 
 \code{method="cluster"} or \code{refset.labels} format if 
-\code{method="single"}.
+\code{method="single"}. Additionally, a heatmap will be made from the
+annotation results via \code{\link[SingleR]{plotScoreHeatmap}}.
 }
 \examples{
 library("Seurat")

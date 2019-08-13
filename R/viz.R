@@ -31,11 +31,9 @@
 #' libs <- c("Reactome_2016", "KEGG_2019_HUMAN")
 #' terms <- RunEnrichr(genes, libraries = libs)
 #'
-#' \dontrun{
 #' VizEnrichments(enrichments = terms)
-#' }
 #'
-#' @seealso \code{\link{VizEnrichments}} for visualization.
+#' @seealso \code{\link{RunEnrichr}} for running enrichment analysis.
 #'
 VizEnrichments <- function(enrichments, outdir = NULL, 
 	n.terms = 10, remove.insig = TRUE, adj.p.thresh = 0.05, 
@@ -146,7 +144,7 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
       stop(paste0(i, " not found in Seurat object.",
         " Check metadata and variable name."))
     }
-    
+
 	  # Get all unique elements of variable.
 		vars_found <- sort(unique(scrna@meta.data[[as.character(i)]]))
 		  

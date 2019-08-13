@@ -39,11 +39,9 @@ genes <- c("CD8A", "GZMA", "GZMK", "GZMB", "CD4", "CD3E", "GNLY")
 libs <- c("Reactome_2016", "KEGG_2019_HUMAN")
 terms <- RunEnrichr(genes, libraries = libs)
 
-\dontrun{
 VizEnrichments(enrichments = terms)
-}
 
 }
 \seealso{
-\code{\link{VizEnrichments}} for visualization.
+\code{\link{RunEnrichr}} for running enrichment analysis.
 }

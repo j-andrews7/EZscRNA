@@ -11,14 +11,17 @@
 #' @param marker.df Dataframe with the two columns called "Set" and "Marker". 
 #'   The "Set" column should contain a cell or process-type (e.g. Tcell, Bcell, 
 #'   Exhaustion markers, etc.) while the "Marker" column contains the 
-#'   comma-delimited gene symbols associated with it. 
+#'   comma-delimited gene symbols associated with it.
+#' @param assay Assay to use tp snag expression for each gene. "SCT" is the 
+#'   preferred option, as "integrated" sets usually only have a few thousand
+#'   genes and "RNA" isn't normalized for any regressed variables.
 #' @return Seurat object with scores for each "Set" added to meta.data.
 #'
 #' @importFrom Seurat AddModuleScore
 #' 
 #' @export
 #'
-ScoreAnnotatedMarkers <- function(scrna, marker.df) {
+ScoreAnnotatedMarkers <- function(scrna, marker.df, assay = "SCT") {
 
   # Plot individual genes in various classes.
   for (i in unique(marker.df$Set)) {
@@ -41,7 +44,7 @@ ScoreAnnotatedMarkers <- function(scrna, marker.df) {
 
     # Score set.
     scrna <- AddModuleScore(scrna, features = genes, name = paste0(j, ".Score"
-    	))
+    	), assay = assay)
 
     # Remove random number from column header, annoys me.
     colnames(scrna@meta.data)[colnames(scrna@meta.data) == paste0(j, ".Score1"

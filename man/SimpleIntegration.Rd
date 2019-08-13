@@ -4,8 +4,8 @@
 \alias{SimpleIntegration}
 \title{Integrate Seurat objects simply and easily}
 \usage{
-SimpleIntegration(scrnas, split.by = NULL, skip.SCT = FALSE,
-  vars.to.regress = NULL, n.features = 3000)
+SimpleIntegration(scrnas, split.by = NULL, vars.to.regress = NULL,
+  n.features = 3000)
 }
 \arguments{
 \item{scrnas}{Either a list of Seurat objects or a single Seurat object, the
@@ -13,11 +13,6 @@ latter of which requires \code{split.by} to be provided as well.}
 
 \item{split.by}{String containing name of meta.data column to be used to 
 split Seurat object into multiple samples.}
-
-\item{skip.SCT}{Boolean indicating whether the 
-\code{\link[Seurat]{SCTransform}} call for each sample should be skipped or
-not. This should only be set to TRUE if the samples have already undergone
-\code{SCTransform}.}
 
 \item{vars.to.regress}{Vector of meta.data variables to be regressed out
 during \code{\link[Seurat]{SCTransform}}.}
@@ -44,6 +39,5 @@ library(Seurat)
 # Will error due to too few cells.
 pbmc.int <- SimpleIntegration(pbmc_small, split.by = "groups")
 }
-
 
 }
