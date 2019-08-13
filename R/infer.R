@@ -168,33 +168,37 @@ AssignCellType <- function(scrna, refset, labels = c("types", "main_types"),
       annots <- cbind(cells, annots)
 
       if (!is.null(outdir)) {
-        if(!is.null(clusters)) {
-          clust.label <- "ClusterLabels"
-        } else {
+        if(is.null(clusters)) {
           clusts <- NULL
           clust.label <- "NoClusters"
-        }
+        } 
+        
         # Create output tables/plots.
         write.table(annots, file = sprintf("%s/%s.%s.txt", outdir, refset$name, 
           labels), quote = FALSE, sep = "\t", row.names = FALSE)
         write.table(label.dists, file = sprintf("%s/%s.%s.dist.txt", outdir, 
           refset$name, labels), quote = FALSE, sep = "\t", row.names = FALSE)
 
-        # This section is big gross.
+        # This section is big gross. Mostly because pheatmap seems to print to
+        # the same page of a PDF over and over or something.
         if (nrow(annots) < 65500) {
-          pdf(sprintf("%s/%s.%s.%s.%s.pdf", outdir, method, refset$name, labels,
-            clust.label))
-          if(!is.null(clusters)) {
+          if (!is.null(clusters)) {
             for (x in clusters) {
+              message(x)
+              pdf(sprintf("%s/%s.%s.%s.%s.pdf", outdir, method, refset$name, 
+                labels, x))
               clusts <- sce[[x]]
               p <- plotScoreHeatmap(annots, clusters = clusts, silent = TRUE)
               print(p)
+              dev.off()
             }
           } else {
+            pdf(sprintf("%s/%s.%s.%s.%s.pdf", outdir, method, refset$name, 
+              labels, clust.label))
             p <- plotScoreHeatmap(annots, clusters = clusts, silent = TRUE)
             print(p)
+            dev.off()
           }
-          dev.off()
         } else {
           message(paste0("Skipping `plotScoreHeatmap()`, as it can't cluster", 
             " more than 65000 cells."))
