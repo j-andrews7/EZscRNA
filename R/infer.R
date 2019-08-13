@@ -28,7 +28,9 @@
 #' file named in \code{clusters.refset.labels.txt} format if 
 #' \code{method="cluster"} or \code{refset.labels} format if 
 #' \code{method="single"}. Additionally, a heatmap will be made from the
-#' annotation results via \code{\link[SingleR]{plotScoreHeatmap}}.
+#' annotation results via \code{\link[SingleR]{plotScoreHeatmap}} if there are
+#' fewer than 65500 cells (the hclust method used fails with more cells than 
+#' that).
 #'
 #' @param scrna Seurat object.
 #' @param refset Reference dataset as retrieved by 
@@ -45,8 +47,11 @@
 #'   profiles \code{method = "cluster"} prior to annotation.
 #' @param clusters String defining the \code{meta.data} column in \code{scrna}
 #'   that specify cluster identities for each cell. Only required if 
-#'   \code{method = "cluster"}. If provided with \code{method = "single"}, will
-#'   be used as an additional label in heatmap plotting.
+#'   \code{method = "cluster"}. 
+#'   
+#'   If provided with \code{method = "single"}, will be used as an additional 
+#'   label in heatmap plotting. A vector can be provided if multiple heatmaps
+#'   with different labels is wanted.
 #' @param integrated Boolean indicating whether Seurat object was integrated via
 #'   \code{\link{SimpleIntegration}}. This must be set to \code{TRUE} if so,
 #'   as the normalized counts are not stored in the "integrated" assay.
@@ -108,7 +113,11 @@ AssignCellType <- function(scrna, refset, labels = c("types", "main_types"),
 
   # Get clusters so subsetting by NULL isn't an issue.
   if (!is.null(clusters)) {
-    clusts <- sce[[clusters]]
+    if (method == "cluster" & length(clusters) > 1) {
+      stop("Only 1 column containing clusters allowed for `method='cluster'`.")
+    } else {
+      clusts <- sce[[clusters]]
+    }
   } else {
     clusts <- NULL
   }
@@ -158,9 +167,8 @@ AssignCellType <- function(scrna, refset, labels = c("types", "main_types"),
 
       if (!is.null(outdir)) {
         if(!is.null(clusters)) {
-          clusts <- sce[[clusters]]
-          clust.label <- clusters
-        } else{
+          clust.label <- "ClusterLabels"
+        } else {
           clusts <- NULL
           clust.label <- "NoClusters"
         }
@@ -169,11 +177,21 @@ AssignCellType <- function(scrna, refset, labels = c("types", "main_types"),
           labels), quote = FALSE, sep = "\t", row.names = FALSE)
         write.table(label.dists, file = sprintf("%s/%s.%s.dist.txt", outdir, 
           refset$name, labels), quote = FALSE, sep = "\t", row.names = FALSE)
+
+        # This section is big gross.
         if (nrow(annots) < 65500) {
-          p <- plotScoreHeatmap(annots, clusters = clusts, silent = TRUE)
           pdf(sprintf("%s/%s.%s.%s.%s.pdf", outdir, method, refset$name, labels,
             clust.label))
-          print(p)
+          if(!is.null(clusters)) {
+            for (x in clusters) {
+              clusts <- sce[[clusters]]
+              p <- plotScoreHeatmap(annots, clusters = clusts, silent = TRUE)
+              print(p)
+            }
+          } else {
+            p <- plotScoreHeatmap(annots, clusters = clusts, silent = TRUE)
+            print(p)
+          }
           dev.off()
         } else {
           message(paste0("Skipping `plotScoreHeatmap()`, as it can't cluster", 

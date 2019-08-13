@@ -29,8 +29,11 @@ profiles \code{method = "cluster"} prior to annotation.}
 
 \item{clusters}{String defining the \code{meta.data} column in \code{scrna}
 that specify cluster identities for each cell. Only required if 
-\code{method = "cluster"}. If provided with \code{method = "single"}, will
-be used as an additional label in heatmap plotting.}
+\code{method = "cluster"}. 
+
+If provided with \code{method = "single"}, will be used as an additional 
+label in heatmap plotting. A vector can be provided if multiple heatmaps
+with different labels is wanted.}
 
 \item{integrated}{Boolean indicating whether Seurat object was integrated via
 \code{\link{SimpleIntegration}}. This must be set to \code{TRUE} if so,
@@ -82,7 +85,9 @@ If \code{outdir} is specified, the annotation results will be written to a
 file named in \code{clusters.refset.labels.txt} format if 
 \code{method="cluster"} or \code{refset.labels} format if 
 \code{method="single"}. Additionally, a heatmap will be made from the
-annotation results via \code{\link[SingleR]{plotScoreHeatmap}}.
+annotation results via \code{\link[SingleR]{plotScoreHeatmap}} if there are
+fewer than 65500 cells (the hclust method used fails with more cells than 
+that).
 }
 \examples{
 library("Seurat")
