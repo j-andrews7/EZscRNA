@@ -142,6 +142,11 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
 	dim.params <- list(...)
 	for (i in vars) {
 		message("Plotting ", i)
+    if (is.null(scrna@meta.data[[as.character(i)]])) {
+      stop(paste0(i, " not found in Seurat object.",
+        " Check metadata and variable name."))
+    }
+    
 	  # Get all unique elements of variable.
 		vars_found <- sort(unique(scrna@meta.data[[as.character(i)]]))
 		  

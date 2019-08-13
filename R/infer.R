@@ -1,7 +1,7 @@
 #' Infers and assigns cell type for each cell using SingleR
 #'
 #' \code{AssignCellType} performs correlation-based cell type inference using a 
-#' reference dataset via \code{\link[SingleR]{SingleR}}.
+#' reference dataset via \code{\link[SingleR]{SingleR}}. 
 #'
 #' @details
 #' Reference datasets available for use by this function via 
@@ -27,15 +27,17 @@
 #' If \code{outdir} is specified, the annotation results will be written to a
 #' file named in \code{clusters.refset.labels.txt} format if 
 #' \code{method="cluster"} or \code{refset.labels} format if 
-#' \code{method="single"}.
+#' \code{method="single"}. Additionally, a heatmap will be made from the
+#' annotation results via \code{\link[SingleR]{plotScoreHeatmap}}.
 #'
 #' @param scrna Seurat object.
 #' @param refset Reference dataset as retrieved by 
 #'   \code{\link[SingleR]{SingleR}}.
-#' @param labels If \code{TRUE}, use broad lineage-based labels 
-#'   \code{main_types} for each reference sample. This is faster and can be more 
-#'   informative depending on how specific your data is. If \code{FALSE}, more
-#'   specific labels \code{types} will be used.
+#' @param labels String indicating whether to use broad lineage-based labels 
+#'   \code{labels="main_types"} for each reference sample or more fine-grained 
+#'   labels (\code{labels="types"}. The former is quicker and can be informative
+#'   enough if your sample has many cell types. The latter is best-suited for 
+#'   purified cell types or if particular cellular subtypes are important.
 #' @param outdir Path to output directory for annotation scores, distributions,
 #'   and heatmap.
 #' @param method String specifying whether annotation should be applied to 
@@ -47,7 +49,7 @@
 #'   be used as an additional label in heatmap plotting.
 #' @param integrated Boolean indicating whether Seurat object was integrated via
 #'   \code{\link{SimpleIntegration}}. This must be set to \code{TRUE} if so,
-#'   as the normalized counts are not stored in the integrated assay.
+#'   as the normalized counts are not stored in the "integrated" assay.
 #' @param assign Boolean indicating whether inferred cell types should actually
 #'   be assigned to \code{Seurat} object or just returned as a \code{dataframe}. 
 #' @param n.cores Number of cores to use for correlation. Linearly decreases 
@@ -132,6 +134,7 @@ AssignCellType <- function(scrna, refset, labels = c("types", "main_types"),
       annots <- cbind(clusts, annots)
 
       if (!is.null(outdir)) {
+        # Create output tables/plots.
         write.table(annots, file = sprintf("%s/%s.%s.%s.txt", outdir, clusters, 
           refset$name, labels), quote = FALSE, sep = "\t", row.names = FALSE)
         write.table(label.dists, file = sprintf("%s/%s.%s.%s.dist.txt", outdir, 
@@ -161,15 +164,21 @@ AssignCellType <- function(scrna, refset, labels = c("types", "main_types"),
           clusts <- NULL
           clust.label <- "NoClusters"
         }
+        # Create output tables/plots.
         write.table(annots, file = sprintf("%s/%s.%s.txt", outdir, refset$name, 
           labels), quote = FALSE, sep = "\t", row.names = FALSE)
         write.table(label.dists, file = sprintf("%s/%s.%s.dist.txt", outdir, 
           refset$name, labels), quote = FALSE, sep = "\t", row.names = FALSE)
-        p <- plotScoreHeatmap(annots, clusters = clusts, silent = TRUE)
-        pdf(sprintf("%s/%s.%s.%s.%s.pdf", outdir, method, refset$name, labels,
-          clust.label))
-        print(p)
-        dev.off()
+        if (nrow(annots) < 65500) {
+          p <- plotScoreHeatmap(annots, clusters = clusts, silent = TRUE)
+          pdf(sprintf("%s/%s.%s.%s.%s.pdf", outdir, method, refset$name, labels,
+            clust.label))
+          print(p)
+          dev.off()
+        } else {
+          message(paste0("Skipping `plotScoreHeatmap()`, as it can't cluster", 
+            " more than 65000 cells."))
+        }
       }
 		  scrna[[sprintf("%s.%s", refset$name, labels)]] <- annots$labels
     }

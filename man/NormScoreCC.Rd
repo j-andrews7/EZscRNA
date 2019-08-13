@@ -26,3 +26,10 @@ that counts should always be normalized before cell cycle or module scoring.
 This is particularly important if one is using the \code{SCTranform} function
 for data normalization, scaling, and therefore, regression.
 }
+\examples{
+\dontrun{
+library(Seurat)
+pbmc_small <- NormScoreCC(pbmc_small)
+}
+
+}

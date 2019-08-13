@@ -20,3 +20,8 @@ Seurat object with percent mitochondrial reads added to the
 mitochondrial reads per cell to help determine filters. It returns a
 Seurat object with percent mitochondrial reads added to the \code{meta.data}.
 }
+\examples{
+library(Seurat)
+pbmc_small <- RunQC(pbmc_small)
+
+}

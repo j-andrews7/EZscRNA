@@ -13,6 +13,10 @@
 #'
 #' @export
 #'
+#' @examples
+#' library(Seurat)
+#' pbmc_small <- RunQC(pbmc_small)
+#'
 RunQC <- function(scrna, outdir = ".") {
   # Low-quality or dying cells often have mitochondrial contamination.
   scrna[["percent.mt"]] <- PercentageFeatureSet(scrna, pattern = "^MT-")
@@ -49,6 +53,12 @@ RunQC <- function(scrna, outdir = ".") {
 #'
 #' @export
 #'
+#' @examples
+#' \dontrun{
+#' library(Seurat)
+#' pbmc_small <- NormScoreCC(pbmc_small)
+#' }
+#'
 NormScoreCC <- function(scrna, skip.sct = NULL) {
 	message("Scoring cell cycle genes.")
 	# A list of cell cycle markers, from Tirosh et al, 2015, is loaded with 
@@ -76,13 +86,14 @@ NormScoreCC <- function(scrna, skip.sct = NULL) {
 #' for later use. Runs and plots PCA for cell cycle genes to show their impact.
 #'
 #' @details
-#' Supplying \code{vars} will plot a PCA for from the variable genes for each. 
-#' It will also calculate and create a density plot of the variance explained 
-#' by each variable across all genes.
+#' Supplying \code{vars} will plot a PCA from the variable genes for each 
+#' variable. It will also calculate and create a density plot of the variance 
+#' explained by each variable across all genes using 
+#' \code{\link[scater]{plotExplantoryVariables}}.
 #'
 #' @param scrna Seurat object.
 #' @param outdir Path to output directory for plots.
-#' @param npcs Number of PCs to use for PCA and ElbowPlot. 50 by default.
+#' @param npcs Number of PCs to use for PCA and ElbowPlot. 
 #' @param vars Character vector indicating \code{meta.data} columns to be 
 #'   investigated for batch effects and variance contributions.
 #' @param skip.sct Boolean indicating whether to skip \code{SCTransform} call.
@@ -96,6 +107,21 @@ NormScoreCC <- function(scrna, skip.sct = NULL) {
 #' @importFrom scater plotExplanatoryVariables
 #'
 #' @export
+#'
+#' @examples
+#' library(Seurat)
+#' \dontrun{
+#' pbmc_small <- RunQC(pbmc_small)
+#' pbmc_small <- NormScoreCC(pbmc_small)
+#'
+#' # Skip SCT normalization - should only be done if object has been integrated.
+#' pbmc_small <- BatchCCEDA(pbmc_small, skip.sct = TRUE)
+#'
+#' # Can explore other variables as well.
+#' pbmc_small <- BatchCCEDA(pbmc_small, skip.sct = TRUE, vars = "group")
+#' }
+#'
+#'
 #'
 BatchCCEDA <- function(scrna, outdir = ".", npcs = 50, vars = NULL, 
   skip.sct = NULL) {
