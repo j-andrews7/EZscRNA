@@ -115,6 +115,8 @@ AssignCellType <- function(scrna, refset, labels = c("types", "main_types"),
   if (!is.null(clusters)) {
     if (method == "cluster" & length(clusters) > 1) {
       stop("Only 1 column containing clusters allowed for `method='cluster'`.")
+    } else if (method == "single") {
+      clusts <- NULL
     } else {
       clusts <- sce[[clusters]]
     }
@@ -184,7 +186,7 @@ AssignCellType <- function(scrna, refset, labels = c("types", "main_types"),
             clust.label))
           if(!is.null(clusters)) {
             for (x in clusters) {
-              clusts <- sce[[clusters]]
+              clusts <- sce[[x]]
               p <- plotScoreHeatmap(annots, clusters = clusts, silent = TRUE)
               print(p)
             }
