@@ -5,7 +5,8 @@
 #' Seurat object with percent mitochondrial reads added to the \code{meta.data}.
 #'
 #' @param scrna Seurat object.
-#' @param outdir Path to output directory.
+#' @param outdir Path to output directory for QC plots. Will not plot if not 
+#'   set.
 #' @return Seurat object with percent mitochondrial reads added to the
 #'   \code{meta.data} for each cell.
 #'
@@ -17,17 +18,19 @@
 #' library(Seurat)
 #' pbmc_small <- RunQC(pbmc_small)
 #'
-RunQC <- function(scrna, outdir = ".") {
+RunQC <- function(scrna, outdir = NULL) {
   # Low-quality or dying cells often have mitochondrial contamination.
   scrna[["percent.mt"]] <- PercentageFeatureSet(scrna, pattern = "^MT-")
 
-  message("Creating QC plots.")
-  pdf(sprintf("%s/Vln.QC.Metrics.pdf", outdir), height = 12, width = 8, 
-  	useDingbats = FALSE)
-  p <- VlnPlot(scrna, features = c("nFeature_RNA", "nCount_RNA", 
-		"percent.mt"), ncol = 1)
-  print(p)
-  dev.off()
+  if (!is.null(outdir)) {
+    message("Creating QC plots.")
+    pdf(sprintf("%s/Vln.QC.Metrics.pdf", outdir), height = 12, width = 8, 
+    	useDingbats = FALSE)
+    p <- VlnPlot(scrna, features = c("nFeature_RNA", "nCount_RNA", 
+  		"percent.mt"), ncol = 1)
+    print(p)
+    dev.off()
+  }
 
   return(scrna)
 }
@@ -120,8 +123,6 @@ NormScoreCC <- function(scrna, skip.sct = NULL) {
 #' # Can explore other variables as well.
 #' pbmc_small <- BatchCCEDA(pbmc_small, skip.sct = TRUE, vars = "group")
 #' }
-#'
-#'
 #'
 BatchCCEDA <- function(scrna, outdir = ".", npcs = 50, vars = NULL, 
   skip.sct = NULL) {
