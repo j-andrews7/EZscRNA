@@ -103,7 +103,7 @@ ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8,
   	scrna <- FindClusters(scrna, resolution = i)
   	scrna[[sprintf("Clusters.%.1fRes.%dPC", i, npcs)]] <- Idents(scrna) 
   
-	  markers <- FindAllMarkers(scrna, assay = "SCT", 
+	  markers <- FindAllMarkers(scrna, assay = "RNA", 
 			logfc.threshold = logfc.thresh, min.pct = min.pct, test.use = test)
 		
 	   # Save markers as table.
