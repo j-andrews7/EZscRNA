@@ -3,25 +3,23 @@
 #' \code{ScoreAnnotatedMarkers} creates Seurat FeaturePlots for lists of 
 #' marker genes associated with a given annotation.
 #'
+#' @details
 #' Plots for each annotation set will be output to a PDF that will be
 #' dynamically sized and named based on the name and number of markers for the
 #' set. New directories will be created for each set in the output directory.
 #'
 #' @param scrna Seurat object.
-#' @param marker.df Dataframe with the two columns called "Set" and "Marker". 
+#' @param marker.df Dataframe two columns named "Set" and "Marker". 
 #'   The "Set" column should contain a cell or process-type (e.g. Tcell, Bcell, 
 #'   Exhaustion markers, etc.) while the "Marker" column contains the 
 #'   comma-delimited gene symbols associated with it.
-#' @param assay Assay to use tp snag expression for each gene. "SCT" is the 
-#'   preferred option, as "integrated" sets usually only have a few thousand
-#'   genes and "RNA" isn't normalized for any regressed variables.
-#' @return Seurat object with scores for each "Set" added to meta.data.
+#' @return Seurat object with scores for each "Set" added to \code{meta.data}.
 #'
 #' @importFrom Seurat AddModuleScore
 #' 
 #' @export
 #'
-ScoreAnnotatedMarkers <- function(scrna, marker.df, assay = "SCT") {
+ScoreAnnotatedMarkers <- function(scrna, marker.df) {
 
   # Plot individual genes in various classes.
   for (i in unique(marker.df$Set)) {
@@ -44,7 +42,7 @@ ScoreAnnotatedMarkers <- function(scrna, marker.df, assay = "SCT") {
 
     # Score set.
     scrna <- AddModuleScore(scrna, features = genes, name = paste0(j, ".Score"
-    	), assay = assay)
+    	), assay = "RNA")
 
     # Remove random number from column header, annoys me.
     colnames(scrna@meta.data)[colnames(scrna@meta.data) == paste0(j, ".Score1"

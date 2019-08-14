@@ -4,22 +4,18 @@
 \alias{ScoreAnnotatedMarkers}
 \title{Score annotated marker lists}
 \usage{
-ScoreAnnotatedMarkers(scrna, marker.df, assay = "SCT")
+ScoreAnnotatedMarkers(scrna, marker.df)
 }
 \arguments{
 \item{scrna}{Seurat object.}
 
-\item{marker.df}{Dataframe with the two columns called "Set" and "Marker". 
+\item{marker.df}{Dataframe two columns named "Set" and "Marker". 
 The "Set" column should contain a cell or process-type (e.g. Tcell, Bcell, 
 Exhaustion markers, etc.) while the "Marker" column contains the 
 comma-delimited gene symbols associated with it.}
-
-\item{assay}{Assay to use tp snag expression for each gene. "SCT" is the 
-preferred option, as "integrated" sets usually only have a few thousand
-genes and "RNA" isn't normalized for any regressed variables.}
 }
 \value{
-Seurat object with scores for each "Set" added to meta.data.
+Seurat object with scores for each "Set" added to \code{meta.data}.
 }
 \description{
 \code{ScoreAnnotatedMarkers} creates Seurat FeaturePlots for lists of 

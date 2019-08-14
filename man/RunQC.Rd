@@ -4,12 +4,13 @@
 \alias{RunQC}
 \title{Creates basic QC plots}
 \usage{
-RunQC(scrna, outdir = ".")
+RunQC(scrna, outdir = NULL)
 }
 \arguments{
 \item{scrna}{Seurat object.}
 
-\item{outdir}{Path to output directory.}
+\item{outdir}{Path to output directory for QC plots. Will not plot if not 
+set.}
 }
 \value{
 Seurat object with percent mitochondrial reads added to the
