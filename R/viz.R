@@ -674,21 +674,21 @@ VizHeatmap <- function(scrna, outfile, genes, heatmap.params = NULL) {
 	if (!is.null(heatmap.params)) {
 		p <- do.call(DoHeatmap, c(subset(scrna, downsample = 100), 
 			list(features = genes, assay = "RNA"), heatmap.params)) + 
-			ggtitle("Downsampled to 100 cells")
+			ggtitle("Downsampled to 100 cells per class")
 		print(p)
 		p <- do.call(DoHeatmap, c(subset(scrna, downsample = 1000), 
 			list(features = genes, assay = "RNA"), heatmap.params)) + 
-			ggtitle("Downsampled to 1000 cells")
+			ggtitle("Downsampled to 1000 cells per class")
 		print(p)
 		p <- do.call(DoHeatmap, c(scrna, list(features = genes, assay = "RNA"), 
-      heatmap.params)) + ggtitle("Downsampled to 100 cells")
+      heatmap.params)) + ggtitle("No Downsampling")
 		print(p)
 	} else {
 		p <- DoHeatmap(subset(scrna, downsample = 100), features = genes, 
-			size = 3, assay = "RNA") + ggtitle("Downsampled to 100 cells")
+			size = 3, assay = "RNA") + ggtitle("Downsampled to 100 cells per class")
 		print(p)
 		p <- DoHeatmap(subset(scrna, downsample = 1000), features = genes, 
-			size = 3, assay = "RNA") + ggtitle("Downsampled to 1000 cells")
+			size = 3, assay = "RNA") + ggtitle("Downsampled to 1000 cells per class")
 		print(p)
 		p <- DoHeatmap(scrna, features = genes, size = 3, assay = "RNA") + 
 			ggtitle("No Downsampling")

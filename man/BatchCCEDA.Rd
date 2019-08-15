@@ -34,7 +34,7 @@ for later use. Runs and plots PCA for cell cycle genes to show their impact.
 Supplying \code{vars} will plot a PCA from the variable genes for each 
 variable. It will also calculate and create a density plot of the variance 
 explained by each variable across all genes using 
-\code{\link[scater]{plotExplantoryVariables}}.
+\code{\link[scater]{plotExplanatoryVariables}}.
 }
 \examples{
 library(Seurat)

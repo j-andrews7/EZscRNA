@@ -92,7 +92,7 @@ NormScoreCC <- function(scrna, skip.sct = NULL) {
 #' Supplying \code{vars} will plot a PCA from the variable genes for each 
 #' variable. It will also calculate and create a density plot of the variance 
 #' explained by each variable across all genes using 
-#' \code{\link[scater]{plotExplantoryVariables}}.
+#' \code{\link[scater]{plotExplanatoryVariables}}.
 #'
 #' @param scrna Seurat object.
 #' @param outdir Path to output directory for plots.

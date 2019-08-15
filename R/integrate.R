@@ -31,7 +31,6 @@
 #' pbmc.int <- SimpleIntegration(pbmc_small, split.by = "groups")
 #' }
 #'
-
 SimpleIntegration <- function(scrnas, split.by = NULL, vars.to.regress = NULL, 
   n.features = 3000) {
 

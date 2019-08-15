@@ -10,7 +10,7 @@ ClusterDEG(scrna, outdir = ".", npcs = 30, res = 0.8,
   logfc.thresh = 0.25, min.pct = 0.1)
 }
 \arguments{
-\item{scrna}{Seurat object.}
+\item{scrna}{\code{Seurat} object.}
 
 \item{outdir}{Path to output directory.}
 
@@ -22,26 +22,26 @@ Multiple values may be entered as a vector - resulting clusters will be
 added as a \code{meta.data} column named \code{Cluster_res_npcs} where 
 \code{res} and \code{npcs} will be the values for those arguments, 
 respectively. The clusters derived from the last value in the list will be 
-set as the default Ident for cells and stored in \\code{meta.data} under
-'seurat_clusters'.}
+set as the default Ident for cells and stored in \code{meta.data} under
+'seurat_clusters' in addition to the aforementioned format.}
 
-\item{skip.sct}{Boolean indicating whether to skip \code{SCTransform}. FALSE
-by default. Set to TRUE if \code{\link{SimpleIntegration}} was used to 
-integrate the Seurat object.}
+\item{skip.sct}{Boolean indicating whether to skip 
+\code{\link{SCTransform}}. Set to TRUE if 
+\code{\link{SimpleIntegration()}} was used to integrate the \code{Seurat} 
+ object.}
 
 \item{min.dist}{Number that controls how tighly the embedding is allowed to
-compress points together in \code{RunUMAP}. Increasing may be beneficial
-for large datasets.}
+compress points together in \code{\link{RunUMAP()}}. Increasing may 
+be beneficial for large datasets.}
 
 \item{n.neighbors}{Integer that determines the number of neighboring points
-used in local approximations of manifold structure in \code{RunUMAP}.
-Altering it may be beneficial for large datasets (though it isn't stated
-how it should be changed). Values of 5-50 are considered sensical. Larger
-values preserve more global structure while detailed local structure is 
-lost.}
+used in local approximations of manifold structure in 
+\code{\link{RunUMAP()}}. Values of 5-50 
+are considered sensical. Larger values preserve more global structure while 
+detailed local structure is lost.}
 
-\item{regress}{Vector of \code{meta.data} variables to regress during data 
-scaling.}
+\item{regress}{Character vector of \code{meta.data} variables to regress 
+during data scaling.}
 
 \item{ccpca}{Boolean to indicate whether PCA using only cell cycle genes
 should be done. If so, it will saved as a reduction named "cc". This is
@@ -51,7 +51,7 @@ scores were regressed out via \code{regress}.}
 \item{test}{String indication which DE test to use for marker finding. 
 Options are: 
   "wilcox", "bimod", "roc", "t", "negbinom", "poisson", "LR", 
-  "MAST", "DESeq2". See \code{\link[Seurat]{FindAllMarkers}}.}
+  "MAST", "DESeq2". See \code{\link{FindAllMarkers()}}.}
 
 \item{logfc.thresh}{Value that limits DE testing to genes that show, 
 on average, at least X-fold difference (log-scale) between two groups of 
@@ -67,18 +67,23 @@ A Seurat object with normalized, scaled counts and assigned clusters.
   present.
 }
 \description{
-\code{ClusterDEG} runs \code{SCTransform} on a \code{Seurat} object, followed
-by \code{RunPCA}, \code{RunTSNE}, \code{RunUMAP}, and clustering. Also finds 
-marker genes and saves the output as a table along with a heatmap of the top 
+\code{ClusterDEG()} runs \code{\link{SCTransform()}} on a \code{Seurat} 
+object, followed by \code{\link{RunPCA()}}, \code{\link{RunTSNE()}}, 
+\code{\link{RunUMAP()}}, and clustering. Also finds marker genes for 
+each cluster and saves the output as a table along with a heatmap of the top 
 10 upregulated genes in each cluster.
 }
 \details{
 If multiple \code{res} values are given, a table and heatmap will be made for
 each, along with saving the clusters for each in their own \code{meta.data} 
-columns.
+columns. 
+
+Heatmaps created by \code{ClusterDEG()} have each identity class downsampled 
+to a max of 100 cells - this makes smaller clusters much more visible.
 }
 \examples{
 \dontrun{
+library(Seurat)
 scrna <- ClusterDEG(pbmc_small)
 }
 
