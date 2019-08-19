@@ -52,9 +52,6 @@
 #'   If provided with \code{method = "single"}, will be used as an additional 
 #'   label in heatmap plotting. A vector can be provided if multiple heatmaps
 #'   with different labels is wanted.
-#' @param integrated Boolean indicating whether Seurat object was integrated via
-#'   \code{\link{SimpleIntegration}}. This must be set to \code{TRUE} if so,
-#'   as the normalized counts are not stored in the "integrated" assay.
 #' @param assign Boolean indicating whether inferred cell types should actually
 #'   be assigned to \code{Seurat} object or just returned as a \code{dataframe}. 
 #' @param n.cores Number of cores to use for correlation. Linearly decreases 
@@ -88,7 +85,7 @@
 #'
 AssignCellType <- function(scrna, refset, labels = c("types", "main_types"), 
   outdir = NULL, method = c("single", "cluster"), clusters = NULL, 
-  integrated = FALSE, assign = TRUE, n.cores = 1, ...) {
+  assign = TRUE, n.cores = 1, ...) {
 
   # Arg matching.
   labels <- match.arg(labels)
@@ -100,12 +97,8 @@ AssignCellType <- function(scrna, refset, labels = c("types", "main_types"),
     stop("'method' must be specified.")
   }
 
-  # Convert to SCE object and get common genes.
-  if (isTRUE(integrated)) {
-    sce <- as.SingleCellExperiment(scrna, assay = "SCT")
-  } else {
-    sce <- as.SingleCellExperiment(scrna)
-  }
+  # Convert to SingleCellExperiment.
+  sce <- as.SingleCellExperiment(scrna, assay = "RNA")
 
   common <- intersect(rownames(sce), rownames(refset$data))
   sce <- sce[common,]
@@ -172,7 +165,7 @@ AssignCellType <- function(scrna, refset, labels = c("types", "main_types"),
           clusts <- NULL
           clust.label <- "NoClusters"
         } 
-        
+
         # Create output tables/plots.
         write.table(annots, file = sprintf("%s/%s.%s.txt", outdir, refset$name, 
           labels), quote = FALSE, sep = "\t", row.names = FALSE)
