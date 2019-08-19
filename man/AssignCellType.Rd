@@ -2,41 +2,98 @@
 % Please edit documentation in R/infer.R
 \name{AssignCellType}
 \alias{AssignCellType}
-\title{Infers and assigns cell type for each cell}
+\title{Infers and assigns nearest cell type for each cell using SingleR}
 \usage{
-AssignCellType(scrna, dataset, outdir, assign = TRUE, n_cores = 1)
+AssignCellType(scrna, refset, labels = c("types", "main_types"),
+  outdir = NULL, method = c("single", "cluster"), clusters = NULL,
+  assign = TRUE, n.cores = 1, ...)
 }
 \arguments{
 \item{scrna}{Seurat object.}
 
-\item{dataset}{Path to tab-delimited table of gene counts. First column must
-be gene identifiers of same type as Seurat object. Each subsequent
-column should contain counts for a cell type with the column header
-denoting the cell type. Replicates should contain an underscore followed 
-by the replicate number (e.g. BCell_1, BCell_2, etc).}
+\item{refset}{Reference dataset as retrieved by 
+\code{\link[SingleR]{SingleR}}.}
 
-\item{outdir}{Path to output directory.}
+\item{labels}{String indicating whether to use broad lineage-based labels 
+\code{labels="main_types"} for each reference sample or more fine-grained 
+labels (\code{labels="types"}. The former is quicker and can be informative
+enough if your sample has many cell types. The latter is best-suited for 
+purified cell types or if particular cellular subtypes are important.}
+
+\item{outdir}{Path to output directory for annotation scores, distributions,
+and heatmap.}
+
+\item{method}{String specifying whether annotation should be applied to 
+each single cell \code{method = "single"} or aggregated into cluster-level 
+profiles \code{method = "cluster"} prior to annotation.}
+
+\item{clusters}{String defining the \code{meta.data} column in \code{scrna}
+that specify cluster identities for each cell. Only required if 
+\code{method = "cluster"}. 
+
+If provided with \code{method = "single"}, will be used as an additional 
+label in heatmap plotting. A vector can be provided if multiple heatmaps
+with different labels is wanted.}
 
 \item{assign}{Boolean indicating whether inferred cell types should actually
-be assigned to seurat object or just returned as a table. TRUE by default.}
+be assigned to \code{Seurat} object or just returned as a \code{dataframe}.}
 
-\item{n_cores}{Number of cores to use for correlation. Linearly decreases 
+\item{n.cores}{Number of cores to use for correlation. Linearly decreases 
 computation time.}
+
+\item{...}{Additional arguments to be passed to 
+\code{\link[SingleR]{SingleR}}.}
 }
 \value{
-If assign is TRUE, returns a seurat object with inferred cell type
-  information in the metadata. If FALSE, returns a dataframe
+If \code{assign = TRUE}, returns a \code{Seurat} object with inferred
+  cell type information in the \code{meta.data} slot named in 
+  \code{refset.labels} format. If \code{method = "cluster"}, the resulting
+  \code{meta.data} column will be named in \code{clusters.refset.labels} 
+  format. If \code{assign = FALSE}, returns a dataframe of the inferred cell 
+  type/lineage information instead.
 }
 \description{
-\code{AssignCellType} performs correlation-based cell inference using a 
-user-provided reference dataset. It returns either a seurat object with
-lineage, cell.type, and corr columns added to the metadata, or a dataframe 
-containing the top three predicted cell types for each cell along with their 
-correlation values. This dataframe will be saved in the output directory 
-regardless, along with distribution statistics for inferred cell types.
+\code{AssignCellType} performs correlation-based cell type inference using a 
+reference dataset via \code{\link[SingleR]{SingleR}}.
 }
 \details{
-The reference dataset can be from any source, it should just be normalized so
-that columns (cell types) are comparable. The meat of this code was written
-by Allegra Petti - the version here has just been made more generic.
+Reference datasets available for use by this function via 
+\code{\link[SingleR]{getReferenceDataset}} include:
+\describe{
+  \item{"hpca"}{Human Primary Cell Atlas (HPCA): A collection of Gene 
+    Expression Omnibus (GEO datasets), which contains 713 microarray 
+    samples classified to 38 main cell types and further annotated to 169
+    subtypes.}
+  \item{"blueprint_encode"}{Blueprint + ENCODE datasets: Blueprint 
+    Epigenomics, 144 RNA-seq pure immune samples annotated to 28 cell 
+    types. ENCODE, 115 RNA-seq pure stroma and immune samples annotated 
+    to 17 cell types. Altogether, 259 samples with 43 cell types.}
+  \item{"immgen"}{Immunological Genome Project (ImmGen): 830 microarray 
+    samples, which we classified to 20 main cell types and further
+    annotated to 253 subtypes.}
+  \item{"mouse.rnaseq"}{A dataset of 358 mouse RNA-seq samples annotated to
+    28 cell types. This dataset was collected, processed, and shared 
+    courtesy of Bérénice Benayoun. This data set is especially useful for 
+    brain-related samples.}
+}
+
+If \code{outdir} is specified, the annotation results will be written to a
+file named in \code{clusters.refset.labels.txt} format if 
+\code{method="cluster"} or \code{refset.labels} format if 
+\code{method="single"}. Additionally, a heatmap will be made from the
+annotation results via \code{\link[SingleR]{plotScoreHeatmap}} if there are
+fewer than 65500 cells (the hclust method used fails with more cells than 
+that).
+}
+\examples{
+library("Seurat")
+library("SingleR")
+pbmc <- pbmc_small
+hpca <- getReferenceDataset(dataset = "hpca")
+preds <- AssignCellType(pbmc, refset = hpca, labels = "main_types",
+  method = "single")
+
+preds2 <- AssignCellType(pbmc, refset = hpca, labels = "types",
+  method = "cluster", clusters = "RNA_snn_res.1")
+
 }

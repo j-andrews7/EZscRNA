@@ -4,10 +4,10 @@
 \alias{AddClonotype}
 \title{Add 10X clonotype data to seurat object}
 \usage{
-AddClonotype(vdj_dir, scrna)
+AddClonotype(vdj.dir, scrna)
 }
 \arguments{
-\item{vdj_dir}{String containing path to TCR (VDJ) directory.}
+\item{vdj.dir}{String containing path to TCR (VDJ) directory.}
 
 \item{scrna}{Seurat object.}
 }

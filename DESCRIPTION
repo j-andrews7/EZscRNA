@@ -1,25 +1,55 @@
 Package: EZscRNA
 Title: Simple Convenience Functions for High-Level scRNA-Seq Analysis
-Version: 0.0.0.9000
+Version: 0.1.0.9000
+Date: 2019-08-19
 Authors@R: person("Jared", "Andrews", email = "jared.andrews07@gmail.com", 
-    role = c("aut", "cre"),
-    comment = c(ORCID = "https://orcid.org/0000-0002-0780-6248"))
-Description: This package serves as a (hopefully) convenient wrapper for 
-    EZ(-er) scRNA-seq analysis using best practices. It uses Seurat (v3+),
-    sctransform, and Monocle (v3+) for most analysis steps. It provides a 
-    number of high-level functions spanning QC/preprocessing, exploratory 
-    data analysis, clustering, cell type inference using user-provided 
-    reference data sets, pseudotime trajectories, and visualizations.
-Depends: R (>= 3.5.1),
-    Seurat (>= 3.0.0),
-    sctransform (>= 0.2.0)
+  role = c("aut", "cre"),
+  comment = c(ORCID = "https://orcid.org/0000-0002-0780-6248"))
+Author: Jared Andrews [aut, cre]
+Maintainer: Jared Andrews <jared.andrews07@gmail.com>
+Description: Serves as a convenient wrapper for 
+  EZ(-er), high-level scRNA-seq analysis using best practices. It provides a 
+  number of high-level functions spanning QC/preprocessing, exploratory 
+  data analysis, clustering & marker finding, cell type inference using  
+  reference data sets, pseudotime trajectories, and dynamic 
+  visualizations.
+Depends: 
+  R (>= 3.6.0),
+  Seurat (>= 3.0.2),
+  sctransform (>= 0.2.0)
 Imports: 
-    dplyr,
-    ggplot2,
-    foreach,
-    doParallel,
-    RColorBrewer
-License: GPL-3
+  dplyr,
+  cowplot,
+  ggplot2,
+  stats,
+  utils,
+  grDevices,
+  future,
+  enrichR (>= 2.0),
+  scales, 
+  monocle3,
+  SingleR,
+  scater,
+  SingleCellExperiment,
+  BiocGenerics,
+  SummarizedExperiment,
+  igraph,
+  methods
+Remotes: 
+  cole-trapnell-lab/monocle3,
+  satijalab/seurat@develop,
+  LTLA/SingleR, 
+  bioc::3.10/SummarizedExperiment,
+  bioc::3.10/BiocGenerics,
+  bioc::3.10/DelayedArray,
+  bioc::3.10/DelayedMatrixStats,
+  bioc::3.10/limma,
+  bioc::3.10/S4Vectors,
+  bioc::3.10/SingleCellExperiment,
+  bioc::3.10/SummarizedExperiment
+License: GPL-3 | file LICENSE
+URL: https://github.com/j-andrews7/EZscRNA
+BugReports: https://github.com/j-andrews7/EZscRNA/issues
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1

@@ -7,18 +7,19 @@
 #' does not include specific VDJ genes for each cell, rather just using the
 #' final amino acid sequence for inter-sample comparison.
 #'
-#' @param vdj_dir String containing path to TCR (VDJ) directory.
+#' @param vdj.dir String containing path to TCR (VDJ) directory.
 #' @param scrna Seurat object.
 #' @return Seurat object with clonotype data (clonotype_id and cdr3s_aa) 
 #'   added to the metadata for each cell.
 #'
 #' @importFrom Seurat AddMetaData
+#' @importFrom utils read.csv
 #'
 #' @export
 #'
-AddClonotype <- function(vdj_dir, scrna){
-	print("Adding clonotype data.")
-	vdj <- read.csv(sprintf("%s/filtered_contig_annotations.csv", vdj_dir))
+AddClonotype <- function(vdj.dir, scrna) {
+	message("Adding clonotype data.")
+	vdj <- read.csv(sprintf("%s/filtered_contig_annotations.csv", vdj.dir))
 
 	# Remove the -1 at the end of each barcode added by cellranger aggr fuction.
 	# Subsets so only the first line of each barcode is kept,
@@ -32,7 +33,7 @@ AddClonotype <- function(vdj_dir, scrna){
 	names(vdj)[names(vdj) == "raw_clonotype_id"] <- "clonotype_id"
 
 	# Clonotype-centric info.
-	clono <- read.csv(sprintf("%s/clonotypes.csv", vdj_dir))
+	clono <- read.csv(sprintf("%s/clonotypes.csv", vdj.dir))
 
 	# Slap the AA sequences onto our original table by clonotype_id.
 	vdj <- merge(vdj, clono[, c("clonotype_id", "cdr3s_aa")])
@@ -43,107 +44,9 @@ AddClonotype <- function(vdj_dir, scrna){
 	vdj[, 1] <- NULL
 
 	# Add to the Seurat object's metadata.
-	clono_seurat <- AddMetaData(object = scrna, metadata = vdj)
-	print("Clonotype data added.")
+	clono.seurat <- AddMetaData(object = scrna, metadata = vdj)
+	message("Clonotype data added.")
 		
-	return(clono_seurat)
+	return(clono.seurat)
 }
 
-#' Visualize clonotype distributions
-#'
-#' \code{VizVDJDist} visualizes clonotype distributions for each sample in a
-#' seurat object as histograms as well as barcharts comparing clonotype 
-#' proportions between them.
-#'
-#' Rows with 
-#'
-#' @param scrna Seurat object with clonotype data added to metadata with 
-#'   \code{AddClonotype}.
-#' @param outdir Path to output directory.
-#' @param g_by Metadata column to group samples by. If not provided, only
-#'   histograms of clonotypes will be saved.
-#' @param o_by Vector containing names of members of each group to sort by 
-#'   within the group. Ignored if g_by is NULL. Should contain one instance of
-#'   each potential value in g_by column if provided.
-#' @param n_clono_c Number of top clonotypes to plot for comparison barchart.
-#'   Default is 10. Ignored if \code(group_by) is NULL.
-#' @param n_clono_g Number of clonotypes to show in group-specific histograms.
-#'   All are shown by default.
-#'
-#' @import ggplot2
-#' @import dplyr
-#'
-#' @export
-#'
-VizVDJDist <- function(scrna, outdir, g_by = NULL, o_by = NULL, n_clono_c = 10,
-	n_clono_g = NULL) {
-
-	# Get clonotype frequencies.
-	df <- scrna@meta.data %>% count((!!as.symbol(g_by)), cdr3s_aa) %>% 
-		group_by(!!as.symbol(g_by)) %>% mutate(prop = prop.table(n))
-
-	if (!is.null(g_by)) {
-
-		# Sort by frequency.
-		df <- df[order(-df$prop),]
-
-		# Remove rows with no TCR data.
-		df <- df[!is.na(df$cdr3s_aa),]
-
-		# Get the top n TCR sequences by frequency. Sample agnostic.
-		c_df <- df[!duplicated(df$cdr3s_aa),]
-		c_df <- c_df[1:as.numeric(n_clono_c),]
-
-		# Get all rows for the the top TCR AA sequences in original df.
-		cdr3 <- c_df$cdr3s_aa
-		x_df <- df[(df$cdr3s_aa %in% cdr3),]
-
-		# Order 
-		index <- 1:length(o_by)
-		z = 1
-		x_df$ord <- 1
-		for (i in o_by) {
-		    x_df$ord[x_df[g_by] == i] <- z
-		    z = z + 1
-		}
-		
-
-		pdf(sprintf("%s/Clonotype.Distributions.pdf", outdir), height = 9, 
-			width = 9)
-
-		# Plot grouped barchart for top clonotypes.
-		p <- ggplot(x_df, aes(x = reorder(cdr3s_aa, -prop), prop, 
-			group = ord,  fill = !!as.symbol(g_by))) + 
-			geom_col(position = position_dodge(preserve = "single"), 
-			colour = "black") + scale_y_continuous(labels = scales::percent) +
-			xlab("Clonotype") + ylab("Frequency") +
-			theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
-		print(p)
-
-		# Plot individual group frequencies.
-		groups <- unique(df[[g_by]])
-		for (i in groups) {
-			g_spec <- df[which(df[g_by] == i), ]
-
-			# Subset df here for top clonotypes to show in specific groups.
-			if (!is.null(n_clono_g)) {
-				g_spec <- g_spec[order(-g_spec$prop),]
-				g_spec <- g_spec[1:as.numeric(n_clono_g),]
-			}
-
-			p <- ggplot(g_spec, aes(x = reorder(cdr3s_aa, -prop), prop)) + geom_col(
-				colour = "black") + scale_y_continuous(labels = scales::percent) +
-				ggtitle(i) + xlab("Clonotype") + ylab("Frequency") +
-				theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
-				print(p)
-		}
-	} else {
-		p <- ggplot(g_spec, aes(x = reorder(cdr3s_aa, -prop), prop)) + geom_col(
-			colour = "black") + scale_y_continuous(labels = scales::percent) +
-			xlab("Clonotype") + ylab("Frequency") +
-			theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
-			print(p)
-	}
-
-	dev.off()
-}
