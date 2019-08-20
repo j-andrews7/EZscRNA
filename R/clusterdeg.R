@@ -1,17 +1,17 @@
 #' Normalize, scale, and regress out wanted variation
 #'
-#' \code{ClusterDEG()} runs \code{\link{SCTransform()}} on a \code{Seurat} 
-#' object, followed by \code{\link{RunPCA()}}, \code{\link{RunTSNE()}}, 
-#' \code{\link{RunUMAP()}}, and clustering. Also finds marker genes for 
-#' each cluster and saves the output as a table along with a heatmap of the top 
-#' 10 upregulated genes in each cluster.
+#' \code{ClusterDEG} runs \code{\link[Seurat]{SCTransform}} on a 
+#' \code{Seurat} object, followed by \code{\link[Seurat]{RunPCA}}, 
+#' \code{\link[Seurat]{RunTSNE}}, \code{\link[Seurat]{RunUMAP}}, and 
+#' clustering. Also finds marker genes for each cluster and saves the output as
+#' a table along with a heatmap of the top 10 upregulated genes in each cluster.
 #'
 #' @details
 #' If multiple \code{res} values are given, a table and heatmap will be made for
 #' each, along with saving the clusters for each in their own \code{meta.data} 
 #' columns. 
 #'
-#' Heatmaps created by \code{ClusterDEG()} have each identity class downsampled 
+#' Heatmaps created by \code{ClusterDEG} have each identity class downsampled 
 #' to a max of 100 cells - this makes smaller clusters much more visible.
 #'
 #' @param scrna \code{Seurat} object.
@@ -26,15 +26,15 @@
 #'   set as the default Ident for cells and stored in \code{meta.data} under
 #'   'seurat_clusters' in addition to the aforementioned format.
 #' @param skip.sct Boolean indicating whether to skip 
-#'   \code{\link{SCTransform}}. Set to TRUE if 
-#'   \code{\link{SimpleIntegration()}} was used to integrate the \code{Seurat} 
-#'    object.
+#'   \code{\link[Seurat]{SCTransform}}. Set to TRUE if 
+#'   \code{\link{SimpleIntegration}} was used to integrate the 
+#'   \code{Seurat} object.
 #' @param min.dist Number that controls how tighly the embedding is allowed to
-#'   compress points together in \code{\link{RunUMAP()}}. Increasing may 
+#'   compress points together in \code{\link[Seurat]{RunUMAP}}. Increasing may 
 #'   be beneficial for large datasets.
 #' @param n.neighbors Integer that determines the number of neighboring points
 #'   used in local approximations of manifold structure in 
-#'   \code{\link{RunUMAP()}}. Values of 5-50 
+#'   \code{\link[Seurat]{RunUMAP}}. Values of 5-50 
 #'   are considered sensical. Larger values preserve more global structure while 
 #'   detailed local structure is lost.
 #' @param regress Character vector of \code{meta.data} variables to regress 
@@ -46,7 +46,7 @@
 #' @param test String indication which DE test to use for marker finding. 
 #'   Options are: 
 #'     "wilcox", "bimod", "roc", "t", "negbinom", "poisson", "LR", 
-#'     "MAST", "DESeq2". See \code{\link{FindAllMarkers()}}.
+#'     "MAST", "DESeq2". See \code{\link[Seurat]{FindAllMarkers}}.
 #' @param logfc.thresh Value that limits DE testing to genes that show, 
 #'   on average, at least X-fold difference (log-scale) between two groups of 
 #'   cells. Increasing speeds up function at cost of potentially missing weaker 

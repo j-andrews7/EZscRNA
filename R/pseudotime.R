@@ -52,14 +52,14 @@ GetRootNodes <- function(cds, order.var, order.start, partitions = NULL) {
 
 #' Convert a Seurat object to a cell data set object
 #'
-#' \code{SeuratToCDS()} converts a \code{Seurat} object to a 
+#' \code{SeuratToCDS} converts a \code{Seurat} object to a 
 #' \code{cell_data_set} object with a trajectory graph.
 #'
 #' @details
 #' This function preserves the UMAP coordinates and clustering from the
 #' \code{Seurat} object. This means any plots created from the 
 #' \code{cell_data_set} will be comparable to those from 
-#' \code{\link{DimPlot()}}.
+#' \code{\link[Seurat]{DimPlot}}.
 #'
 #' @param scrna A Seurat object with UMAP mappings.
 #' @param clusters String indicating column in \code{scrna@meta.data} that 

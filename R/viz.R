@@ -116,9 +116,9 @@ VizEnrichments <- function(enrichments, outdir = NULL,
 #' @param scrna Seurat object.
 #' @param vars Vector of meta.data column names to plot.
 #' @param outdir Path to output directory.
-#' @param ... Arguments to be passed to Seurat \code{DimPlot}. \code{cols}, 
-#'   \code{reduction}, and \code{group.by} are already defined and will throw
-#'   an error if passed.
+#' @param ... Arguments to be passed to \code{\link[Seurat]{DimPlot}}. 
+#'   \code{cols}, \code{reduction}, and \code{group.by} are already defined and 
+#'   will throw an error if passed.
 #'
 #' @importFrom Seurat DimPlot
 #' @importFrom grDevices dev.off pdf rainbow
@@ -198,8 +198,8 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
 #' @param g.by Metadata column to group samples by. If not provided, only
 #'   histograms of clonotypes will be saved.
 #' @param o.by Vector containing names of members of each group to sort by 
-#'   within the group. Ignored if \code{g_by} is NULL. Should contain one 
-#'   instance of each potential value in \code{g_by} column if provided.
+#'   within the group. Ignored if \code{g.by} is NULL. Should contain one 
+#'   instance of each potential value in \code{g.by} column if provided.
 #' @param n.clono.c Number of top clonotypes to plot for comparison barchart.
 #'   Ignored if \code{g.by} is NULL.
 #' @param n.clono.g Number of clonotypes to show in group-specific histograms.
@@ -447,9 +447,9 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL,
 #'   for each set. Splits by cell idents. NULL by default.
 #' @param dot.params Boolean indicating whether to create Seurat DotPlots for 
 #'   each set. Splits by cell idents. NULL by default.
-#' @param ... Arguments to be passed to Seurat \code{FeaturePlot}. \code{cols}, 
-#'   \code{features}, \code{reduction}, and \code{ncol} are already defined and
-#'   will throw an error if passed.
+#' @param ... Arguments to be passed to \code{\link[Seurat]{FeaturePlot}}. 
+#'   \code{cols}, \code{features}, \code{reduction}, and \code{ncol} are already 
+#'   defined and will throw an error if passed.
 #'
 #' @import Seurat
 #' @import ggplot2
@@ -537,9 +537,9 @@ VizScoredSets <- function(scrna, marker.df, outdir, vln = NULL,
 #' @param scrna Seurat object.
 #' @param outfile Path for output PDF.
 #' @param genes Vector of genes to plot.
-#' @param vln.params List of keyword arguments to be passed to Seurat
-#'   \code{VlnPlot}. \code{features} are already defined and will throw
-#'   an error if passed. NULL by default.
+#' @param vln.params List of keyword arguments to be passed to 
+#'   \code{\link[Seurat]{VlnPlot}}. \code{features} are already defined and will 
+#'   throw an error if passed. 
 #'
 #' @importFrom Seurat VlnPlot
 #' @import ggplot2
@@ -578,9 +578,9 @@ VizVlnPlot <- function(scrna, outfile, genes, vln.params = NULL) {
 #' @param scrna Seurat object.
 #' @param outfile Path for output PDF.
 #' @param genes Vector of genes to plot.
-#' @param ridge.params List of keyword arguments to be passed to Seurat
-#'   \code{RidgePlot}. \code{features} are already defined and will throw
-#'   an error if passed. NULL by default.
+#' @param ridge.params List of keyword arguments to be passed to 
+#'   \code{\link[Seurat]{RidgePlot}}. \code{features} are already defined and 
+#'   will throw an error if passed. 
 #'
 #' @importFrom Seurat RidgePlot
 #' @import ggplot2
@@ -621,9 +621,9 @@ VizRidgePlot <- function(scrna, outfile, genes, ridge.params = NULL) {
 #' @param scrna Seurat object.
 #' @param outfile Path for output PDF.
 #' @param genes Vector of genes to plot.
-#' @param dot.params List of keyword arguments to be passed to Seurat
-#'   \code{DotPlot}. \code{features} are already defined and will throw
-#'   an error if passed. NULL by default.
+#' @param dot.params List of keyword arguments to be passed to 
+#'   \code{\link[Seurat]{DotPlot}}. \code{features} are already defined and will 
+#'   throw an error if passed. 
 #'
 #' @importFrom Seurat DotPlot
 #' @import ggplot2
@@ -655,9 +655,9 @@ VizDotPlot <- function(scrna, outfile, genes, dot.params = NULL) {
 #' @param scrna Seurat object.
 #' @param outfile Path for output PDF.
 #' @param genes Vector of genes to plot.
-#' @param heatmap.params List of keyword arguments to be passed to Seurat
-#'   \code{DoHeatmap}. \code{features} and \code{assay} are already defined and 
-#'   will throw an error if passed.
+#' @param heatmap.params List of keyword arguments to be passed to 
+#'   \code{\link[Seurat]{DoHeatmap}}. \code{features} and \code{assay} are 
+#'   already defined and will throw an error if passed.
 #'
 #' @importFrom Seurat DotPlot
 #' @import ggplot2

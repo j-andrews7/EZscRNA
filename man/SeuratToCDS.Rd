@@ -17,12 +17,12 @@ A \code{cell_data_set} object with trajectory information calculated.
   Retains the same UMAP mappings and cluster information as \code{scrna}.
 }
 \description{
-\code{SeuratToCDS()} converts a \code{Seurat} object to a 
+\code{SeuratToCDS} converts a \code{Seurat} object to a 
 \code{cell_data_set} object with a trajectory graph.
 }
 \details{
 This function preserves the UMAP coordinates and clustering from the
 \code{Seurat} object. This means any plots created from the 
 \code{cell_data_set} will be comparable to those from 
-\code{\link{DimPlot()}}.
+\code{\link[Seurat]{DimPlot}}.
 }

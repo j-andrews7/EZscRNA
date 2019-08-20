@@ -13,9 +13,9 @@ VizMetaData(scrna, vars, outdir, ...)
 
 \item{outdir}{Path to output directory.}
 
-\item{...}{Arguments to be passed to Seurat \code{DimPlot}. \code{cols}, 
-\code{reduction}, and \code{group.by} are already defined and will throw
-an error if passed.}
+\item{...}{Arguments to be passed to \code{\link[Seurat]{DimPlot}}. 
+\code{cols}, \code{reduction}, and \code{group.by} are already defined and 
+will throw an error if passed.}
 }
 \description{
 \code{VizDimMetaData} creates Seurat DimPlots for the given meta.data columns

@@ -17,8 +17,8 @@ VizVDJDist(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 histograms of clonotypes will be saved.}
 
 \item{o.by}{Vector containing names of members of each group to sort by 
-within the group. Ignored if \code{g_by} is NULL. Should contain one 
-instance of each potential value in \code{g_by} column if provided.}
+within the group. Ignored if \code{g.by} is NULL. Should contain one 
+instance of each potential value in \code{g.by} column if provided.}
 
 \item{n.clono.c}{Number of top clonotypes to plot for comparison barchart.
 Ignored if \code{g.by} is NULL.}
