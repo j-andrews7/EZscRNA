@@ -13,3 +13,4 @@ before_script:
 
 apt_packages:
   - libudunits2-dev
+  - libgdal-dev
