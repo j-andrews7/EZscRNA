@@ -7,3 +7,8 @@ r:
   - bioc-devel
   #- release
   #- devel
+
+before_script:
+  # ensure bioc-devel is being used
+  - R -e 'BiocManager::install(version = "devel", ask=FALSE)'
+  - R -e 'BiocManager::valid()'
