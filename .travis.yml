@@ -7,6 +7,13 @@ r:
   - bioc-devel
   - release
   - devel
+
+# Attempt to get past time limit by having separate step for preparing cache.
+jobs:
+  include:
+    - stage: prepare cache
+      script: true
+
 before_script:
   - R -e 'BiocManager::install(version = "devel", ask=FALSE)'
   - R -e 'BiocManager::valid()'
@@ -14,20 +21,3 @@ before_script:
 apt_packages:
   - libudunits2-dev
   - libgdal-dev
-
-r_packages:
-  - dplyr
-  - cowplot
-  - ggplot2
-  - future
-  - scales
-
-bioc_packages:
-  - scater
-  - BiocGenerics
-  - SingleCellExperiment
-  - SummarizedExperiment
-  - S4Vectors
-
-r_github_packages:
-  - cole-trapnell-lab/monocle3

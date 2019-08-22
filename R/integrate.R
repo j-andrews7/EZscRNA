@@ -2,9 +2,9 @@
 #'
 #' \code{SimpleIntegration} integrates \linkS4class{Seurat} objects using 
 #' default Seurat parameters that should work for most cases. This is useful for 
-#' removing batch effects. It can take either a list of Seurat objects or a 
-#' \code{meta.data} variable to split a single Seurat object by prior to 
-#' integration. 
+#' removing batch effects. It can take either a list of \linkS4class{Seurat} 
+#' objects or a \code{meta.data} variable to split a single \linkS4class{Seurat} 
+#' object by prior to integration. 
 #'
 #' @details
 #' Performs \code{\link[Seurat]{SCTransform}} on each Seurat object 
