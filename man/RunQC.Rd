@@ -7,7 +7,7 @@
 RunQC(scrna, outdir = NULL)
 }
 \arguments{
-\item{scrna}{Seurat object.}
+\item{scrna}{\code{Seurat} object.}
 
 \item{outdir}{Path to output directory for QC plots. Will not plot if not 
 set.}
@@ -19,10 +19,14 @@ Seurat object with percent mitochondrial reads added to the
 \description{
 \code{RunQC} saves 3 QC plots showing gene counts, read counts, and percent 
 mitochondrial reads per cell to help determine filters. It returns a
-Seurat object with percent mitochondrial reads added to the \code{meta.data}.
+\code{Seurat} object with percent mitochondrial reads added to the 
+\code{meta.data}.
 }
 \examples{
 library(Seurat)
 pbmc_small <- RunQC(pbmc_small)
 
+}
+\author{
+Jared Andrews
 }

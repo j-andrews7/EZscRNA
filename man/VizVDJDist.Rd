@@ -35,3 +35,6 @@ proportions between them.
 Cells with no clonotypes are still included in determining clonotype
 frequencies, but NA is removed from subsequent graphs.
 }
+\author{
+Jared Andrews
+}

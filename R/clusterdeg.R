@@ -75,6 +75,8 @@
 #' scrna <- ClusterDEG(pbmc_small, res = c(0.8, 1, 1.2))
 #' }
 #'
+#' @author Jared Andrews
+#'
 ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8, 
   skip.sct = FALSE, min.dist = 0.3, n.neighbors = 30, regress = NULL, 
 	ccpca = FALSE, test = "wilcox", logfc.thresh = 0.25, min.pct = 0.1) {

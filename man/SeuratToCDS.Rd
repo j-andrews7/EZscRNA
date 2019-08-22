@@ -26,3 +26,6 @@ This function preserves the UMAP coordinates and clustering from the
 \code{cell_data_set} will be comparable to those from 
 \code{\link[Seurat]{DimPlot}}.
 }
+\author{
+Jared Andrews
+}

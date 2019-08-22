@@ -20,7 +20,6 @@
 #'   removed from the individual samples.
 #'
 #' @import Seurat
-#' @import future
 #'
 #' @export
 #'
@@ -31,36 +30,38 @@
 #' pbmc.int <- SimpleIntegration(pbmc_small, split.by = "groups")
 #' }
 #'
+#' @author Jared Andrews
+#'
 SimpleIntegration <- function(scrnas, split.by = NULL, vars.to.regress = NULL, 
   n.features = 3000) {
 
 	# Parameter checking.
 	if (length(scrnas) > 1) {
 		for (i in 1:length(scrnas)) {
-			scrnas[[i]] <- SCTransform(scrnas[[i]], verbose = FALSE, 
+			scrnas[[i]] <- Seurat::SCTransform(scrnas[[i]], verbose = FALSE, 
 				vars.to.regress = vars.to.regress, return.only.var.genes = FALSE)
 		}
 	} else if (is.null(split.by)) {
 		stop(paste0("split.by must be provided if a list of Seurat objects is,",
 			"not provided as input."))
 	} else {
-		scrnas <- SplitObject(scrnas, split.by = split.by)
+		scrnas <- Seurat::SplitObject(scrnas, split.by = split.by)
 		for (i in 1:length(scrnas)) {
-			scrnas[[i]] <- SCTransform(scrnas[[i]], verbose = FALSE, 
+			scrnas[[i]] <- Seurat::SCTransform(scrnas[[i]], verbose = FALSE, 
 				vars.to.regress = vars.to.regress, return.only.var.genes = FALSE)
 		}
 	}
 
 	# Actual integration.
-	anch.features <- SelectIntegrationFeatures(object.list = scrnas, 
+	anch.features <- Seurat::SelectIntegrationFeatures(object.list = scrnas, 
 		nfeatures = n.features)
-	scrnas <- PrepSCTIntegration(object.list = scrnas, 
+	scrnas <- Seurat::PrepSCTIntegration(object.list = scrnas, 
 		anchor.features = anch.features, verbose = FALSE)
 
-	anchors <- FindIntegrationAnchors(object.list = scrnas, 
+	anchors <- Seurat::FindIntegrationAnchors(object.list = scrnas, 
 		normalization.method = "SCT", anchor.features = anch.features, 
 		verbose = FALSE)
-	scrna <- IntegrateData(anchorset = anchors, 
+	scrna <- Seurat::IntegrateData(anchorset = anchors, 
 		normalization.method = "SCT", verbose = FALSE)
 
 	return(scrna)

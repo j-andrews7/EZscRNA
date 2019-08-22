@@ -35,6 +35,8 @@
 #'
 #' @seealso \code{\link{RunEnrichr}} for running enrichment analysis.
 #'
+#' @author Jared Andrews
+#'
 VizEnrichments <- function(enrichments, outdir = NULL, 
 	n.terms = 10, remove.insig = TRUE, adj.p.thresh = 0.05, 
 	colors = c("grey", "darkred")) {
@@ -126,6 +128,8 @@ VizEnrichments <- function(enrichments, outdir = NULL,
 #'
 #' @export
 #'
+#' @author Jared Andrews
+#'
 VizMetaData <- function(scrna, vars, outdir, ...) {
 
 	# Check for necessary reductions.
@@ -210,6 +214,8 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
 #' @importFrom stats reorder
 #'
 #' @export
+#'
+#' @author Jared Andrews
 #'
 VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 	n.clono.g = NULL) {
@@ -342,6 +348,8 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 #' 
 #' @export
 #'
+#' @author Jared Andrews
+#'
 VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL, 
 	ridge = NULL, dot = NULL, heatmap = NULL, vln.params = NULL, 
 	ridge.params = NULL, dot.params = NULL, heatmap.params = NULL, ...) {
@@ -456,6 +464,8 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL,
 #' 
 #' @export
 #'
+#' @author Jared Andrews
+#'
 VizScoredSets <- function(scrna, marker.df, outdir, vln = NULL, 
 	ridge = NULL, dot = NULL, vln.params = NULL, 
 	ridge.params = NULL, dot.params = NULL, ...) {
@@ -544,6 +554,8 @@ VizScoredSets <- function(scrna, marker.df, outdir, vln = NULL,
 #' @importFrom Seurat VlnPlot
 #' @import ggplot2
 #'
+#' @author Jared Andrews
+#'
 VizVlnPlot <- function(scrna, outfile, genes, vln.params = NULL) {
 	ng <- length(genes)
 	if (ng == 1) {
@@ -584,6 +596,8 @@ VizVlnPlot <- function(scrna, outfile, genes, vln.params = NULL) {
 #'
 #' @importFrom Seurat RidgePlot
 #' @import ggplot2
+#'
+#' @author Jared Andrews
 #'
 VizRidgePlot <- function(scrna, outfile, genes, ridge.params = NULL) {
 	ng <- length(genes)
@@ -628,6 +642,8 @@ VizRidgePlot <- function(scrna, outfile, genes, ridge.params = NULL) {
 #' @importFrom Seurat DotPlot
 #' @import ggplot2
 #'
+#' @author Jared Andrews
+#'
 VizDotPlot <- function(scrna, outfile, genes, dot.params = NULL) {
 	ng <- length(genes)
 	w <- 5 + (0.3 * ng)
@@ -661,6 +677,8 @@ VizDotPlot <- function(scrna, outfile, genes, dot.params = NULL) {
 #'
 #' @importFrom Seurat DotPlot
 #' @import ggplot2
+#'
+#' @author Jared Andrews
 #'
 VizHeatmap <- function(scrna, outfile, genes, heatmap.params = NULL) {
 	ng <- length(genes)

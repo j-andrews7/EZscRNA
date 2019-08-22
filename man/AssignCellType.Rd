@@ -58,24 +58,28 @@ Reference datasets available for use by this function include:
     samples classified to 38 main cell types and further annotated to 169
     subtypes. Download from ExperimentHub as a 
     \linkS4class{SummarizedExperiment} object via 
-    \code{\link[SingleR]{HumanPrimaryCellAtlasData}}.}
+    \code{\link[SingleR]{HumanPrimaryCellAtlasData}}. See dataset details via 
+    \code{?HumanPrimaryCellAtlasData}.}
   \item{"Blueprint_Encode"}{Blueprint + ENCODE datasets: Blueprint 
     Epigenomics, 144 RNA-seq pure human immune samples annotated to 28 cell 
     types. ENCODE, 115 RNA-seq pure stroma and immune samples annotated 
     to 17 cell types. Altogether, 259 samples with 43 cell types. Download 
     from ExperimentHub as a \linkS4class{SummarizedExperiment} object via 
-    \code{\link[SingleR]{BlueprintEncodeData}}.}
+    \code{\link[SingleR]{BlueprintEncodeData}}. See dataset details via 
+    \code{?BlueprintEncodeData}.}
   \item{"ImmGen"}{Immunological Genome Project (ImmGen): 830 microarray 
     samples, which we classified to 20 main cell types and further
     annotated to 253 subtypes. Download from ExperimentHub as a 
     \linkS4class{SummarizedExperiment} object via 
-    \code{\link[SingleR]{ImmGenData}}.}
+    \code{\link[SingleR]{ImmGenData}}. See dataset details via 
+    \code{?ImmGeneData}.}
   \item{"MouseRNAseq"}{A dataset of 358 mouse RNA-seq samples annotated to
     28 cell types. This dataset was collected, processed, and shared 
     courtesy of Bérénice Benayoun. This data set is especially useful for 
     brain-related samples. Download from ExperimentHub as a 
     \linkS4class{SummarizedExperiment} object via 
-    \code{\link[SingleR]{MouseRNAseqData}}.}
+    \code{\link[SingleR]{MouseRNAseqData}}. See dataset details via 
+    \code{?MouseRNAseqData}.}
 }
 
 If \code{outdir} is specified, the annotation results will be written to a
@@ -93,7 +97,7 @@ pbmc <- pbmc_small
 # Download reference data from ExperimentHub.
 hpca <- HumanPrimaryCellAtlasData()
 # Always give the reference set a name.
-hpca@metadata$name <- "HPCA"
+metadata(hpca)$name <- "HPCA"
 pbmc.pred <- AssignCellType(pbmc, refsets = list(hpca), 
   labels = "label.main", method = "single")
 
@@ -104,9 +108,12 @@ pbmc.clusters.pred <- AssignCellType(pbmc, refsets = list(hpca),
 # Use both broad and fine labels, 'Single' and 'cluster' method, multiple 
 # reference sets, and multiple cluster annotations.
 bp <- BlueprintEncodeData()
-bp@metadata$name <- "Blueprint_Encode"
+metadata(bp)$name <- "Blueprint_Encode"
 pbmc.all.anno <- AssignCellType(pbmc, refsets = list(hpca, bp), 
   clusters = c("RNA_snn_res.0.8", "RNA_snn_res.1"))
 }
 
+}
+\author{
+Jared Andrews
 }

@@ -15,7 +15,7 @@ Description: Serves as a convenient wrapper for
   visualizations.
 Depends: 
   R (>= 3.6.0),
-  Seurat (>= 3.0.2),
+  Seurat (>= 3.1.0),
   sctransform (>= 0.2.0)
 Imports: 
   dplyr,
@@ -34,10 +34,10 @@ Imports:
   BiocGenerics,
   SummarizedExperiment,
   igraph,
-  methods
+  methods,
+  S4Vectors
 Remotes: 
   cole-trapnell-lab/monocle3,
-  satijalab/seurat@develop,
   LTLA/SingleR, 
   bioc::3.10/SummarizedExperiment,
   bioc::3.10/BiocGenerics,
@@ -46,7 +46,7 @@ Remotes:
   bioc::3.10/limma,
   bioc::3.10/S4Vectors,
   bioc::3.10/SingleCellExperiment,
-  bioc::3.10/SummarizedExperiment
+  bioc::3.10/S4Vectors
 License: GPL-3 | file LICENSE
 URL: https://github.com/j-andrews7/EZscRNA
 BugReports: https://github.com/j-andrews7/EZscRNA/issues

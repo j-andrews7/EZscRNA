@@ -22,3 +22,6 @@ will throw an error if passed.}
 using UMAP, TSNE, and PCA reductions. These plots are automatically saved in 
 a PDF in the specified output directory.
 }
+\author{
+Jared Andrews
+}

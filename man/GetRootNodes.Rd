@@ -29,3 +29,6 @@ Character vector containing the names of the root nodes for each
 partition. This will allow for the cells to be ordered according to the 
 supplied variable (\code{order.var}) and start point \code{order.start}.
 }
+\author{
+Jared Andrews
+}

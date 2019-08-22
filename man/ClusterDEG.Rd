@@ -93,3 +93,6 @@ scrna <- ClusterDEG(pbmc_small, res = c(0.8, 1, 1.2))
 }
 
 }
+\author{
+Jared Andrews
+}

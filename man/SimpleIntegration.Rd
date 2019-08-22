@@ -41,3 +41,6 @@ pbmc.int <- SimpleIntegration(pbmc_small, split.by = "groups")
 }
 
 }
+\author{
+Jared Andrews
+}

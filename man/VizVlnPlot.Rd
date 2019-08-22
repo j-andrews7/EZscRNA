@@ -21,3 +21,6 @@ throw an error if passed.}
 Dynamically generates Seurat VlnPlots for all genes in a given gene set as a
 PDF.
 }
+\author{
+Jared Andrews
+}

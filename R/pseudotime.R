@@ -23,6 +23,8 @@
 #'
 #' @export
 #'
+#' @author Jared Andrews
+#'
 GetRootNodes <- function(cds, order.var, order.start, partitions = NULL) {
   root.nodes <- c()
 
@@ -73,6 +75,8 @@ GetRootNodes <- function(cds, order.var, order.start, partitions = NULL) {
 #' @import methods
 #'
 #' @export
+#'
+#' @author Jared Andrews
 #' 
 SeuratToCDS <- function(scrna, clusters) {
   # Extract components to build CDS object.

@@ -21,3 +21,6 @@ will throw an error if passed.}
 Dynamically generates Seurat RidgePlots for all genes in a given gene set as
 a PDF.
 }
+\author{
+Jared Andrews
+}

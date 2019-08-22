@@ -7,7 +7,7 @@
 NormScoreCC(scrna, skip.sct = NULL)
 }
 \arguments{
-\item{scrna}{Seurat object to score cell cycle genes for each cell.}
+\item{scrna}{\code{Seurat} object to score cell cycle genes for each cell.}
 
 \item{skip.sct}{Boolean indicating whether to skip \code{SCTransform} call.
 Useful for integrated objects.}
@@ -17,14 +17,8 @@ Seurat object with cell cycle scores ('S.Score', 'G2M.Score') and
   'Phase' added to \code{meta.data} for each cell.
 }
 \description{
-\code{NormScoreCC} returns a Seurat object with normalized counts and adds 
-cell cycle scores for each gene based on Seurat's cell cycle gene lists.
-}
-\details{
-The Seurat authors state (https://github.com/satijalab/seurat/issues/1679) 
-that counts should always be normalized before cell cycle or module scoring.
-This is particularly important if one is using the \code{SCTranform} function
-for data normalization, scaling, and therefore, regression.
+\code{NormScoreCC} returns a \code{Seurat} object with normalized counts and 
+adds cell cycle scores for each gene based on Seurat's cell cycle gene lists.
 }
 \examples{
 \dontrun{
@@ -32,4 +26,7 @@ library(Seurat)
 pbmc_small <- NormScoreCC(pbmc_small)
 }
 
+}
+\author{
+Jared Andrews
 }

@@ -11,24 +11,28 @@
 #'     samples classified to 38 main cell types and further annotated to 169
 #'     subtypes. Download from ExperimentHub as a 
 #'     \linkS4class{SummarizedExperiment} object via 
-#'     \code{\link[SingleR]{HumanPrimaryCellAtlasData}}.}
+#'     \code{\link[SingleR]{HumanPrimaryCellAtlasData}}. See dataset details via 
+#'     \code{?HumanPrimaryCellAtlasData}.}
 #'   \item{"Blueprint_Encode"}{Blueprint + ENCODE datasets: Blueprint 
 #'     Epigenomics, 144 RNA-seq pure human immune samples annotated to 28 cell 
 #'     types. ENCODE, 115 RNA-seq pure stroma and immune samples annotated 
 #'     to 17 cell types. Altogether, 259 samples with 43 cell types. Download 
 #'     from ExperimentHub as a \linkS4class{SummarizedExperiment} object via 
-#'     \code{\link[SingleR]{BlueprintEncodeData}}.}
+#'     \code{\link[SingleR]{BlueprintEncodeData}}. See dataset details via 
+#'     \code{?BlueprintEncodeData}.}
 #'   \item{"ImmGen"}{Immunological Genome Project (ImmGen): 830 microarray 
 #'     samples, which we classified to 20 main cell types and further
 #'     annotated to 253 subtypes. Download from ExperimentHub as a 
 #'     \linkS4class{SummarizedExperiment} object via 
-#'     \code{\link[SingleR]{ImmGenData}}.}
+#'     \code{\link[SingleR]{ImmGenData}}. See dataset details via 
+#'     \code{?ImmGeneData}.}
 #'   \item{"MouseRNAseq"}{A dataset of 358 mouse RNA-seq samples annotated to
 #'     28 cell types. This dataset was collected, processed, and shared 
 #'     courtesy of Bérénice Benayoun. This data set is especially useful for 
 #'     brain-related samples. Download from ExperimentHub as a 
 #'     \linkS4class{SummarizedExperiment} object via 
-#'     \code{\link[SingleR]{MouseRNAseqData}}.}
+#'     \code{\link[SingleR]{MouseRNAseqData}}. See dataset details via 
+#'     \code{?MouseRNAseqData}.}
 #' }
 #'
 #' If \code{outdir} is specified, the annotation results will be written to a
@@ -79,7 +83,7 @@
 #' # Download reference data from ExperimentHub.
 #' hpca <- HumanPrimaryCellAtlasData()
 #' # Always give the reference set a name.
-#' hpca@metadata$name <- "HPCA"
+#' metadata(hpca)$name <- "HPCA"
 #' pbmc.pred <- AssignCellType(pbmc, refsets = list(hpca), 
 #'   labels = "label.main", method = "single")
 #'
@@ -90,10 +94,12 @@
 #' # Use both broad and fine labels, 'Single' and 'cluster' method, multiple 
 #' # reference sets, and multiple cluster annotations.
 #' bp <- BlueprintEncodeData()
-#' bp@metadata$name <- "Blueprint_Encode"
+#' metadata(bp)$name <- "Blueprint_Encode"
 #' pbmc.all.anno <- AssignCellType(pbmc, refsets = list(hpca, bp), 
 #'   clusters = c("RNA_snn_res.0.8", "RNA_snn_res.1"))
 #' }
+#'
+#' @author Jared Andrews
 #'
 AssignCellType <- function(scrna, refsets, labels = c("label.main", 
   "label.fine"), outdir = NULL, method = c("single", "cluster"), 
@@ -149,9 +155,41 @@ AssignCellType <- function(scrna, refsets, labels = c("label.main",
 	return(scrna)
 }
 
-
+#' Performs SingleR inference
+#'
+#' \code{PerformCellInference} performs correlation-based cell type inference 
+#' using a reference dataset via \code{\link[SingleR]{SingleR}}. 
+#'
+#' @param scrna \code{Seurat} object.
+#' @param sce \code{SingleCellExperiment} object.
+#' @param method String or character vector specifying whether annotation should 
+#'   be applied to each single cell \code{method = "single"} or aggregated into 
+#'   cluster-level profiles \code{method = "cluster"} prior to annotation. If
+#'   both are supplied, predictions will be performed for both methods.
+#' @param refset Reference dataset as \linkS4class{SummarizedExperiment}. 
+#' @param labels String indicating whether to use broad lineage-based labels 
+#'   \code{labels="label.main"} for each reference sample or more fine-grained 
+#'   labels (\code{labels="label.fine"}. 
+#' @param outdir Path to output directory for annotation scores, distributions,
+#'   and heatmap.
+#' @param clusts.name String indicating clusters column.
+#' @param clusts Vector of cluster assignments for each cell.
+#' @param singler.params List of arguments to be passed to 
+#'   \code{\link[SingleR]{SingleR}}.
+#' @return A \code{Seurat} object with inferred
+#'   cell type information in the \code{meta.data} slot named in 
+#'   \code{refset.labels} format. If \code{method = "cluster"}, the resulting
+#'   \code{meta.data} column will be named in \code{clusters.refset.labels} 
+#'   format. 
+#'
+#' @importFrom utils write.table
+#' @importFrom grDevices dev.off pdf
+#' @importFrom S4Vectors metadata
+#'
+#' @author Jared Andrews
+#'
 PerformCellInference <- function(scrna, sce, method, refset, labels, 
-  clusts.name = "NoClusters", clusts = NULL, outdir, singler.params = NULL) {
+  outdir, clusts.name = "NoClusters", clusts = NULL, singler.params = NULL) {
 
   message("Performing cell type inference.")
   
@@ -164,7 +202,7 @@ PerformCellInference <- function(scrna, sce, method, refset, labels,
   elapsed <- end - start
   message("Took: ", round(elapsed, digits = 3), " seconds with:\n", 
     paste0("labels: ", labels, "; method: ", method, "; ref: ", 
-      refset@metadata$name, "; clusters: ", clusts.name))
+      metadata(refset)$name, "; clusters: ", clusts.name))
 
   label.dists <- 100 * (table(annots$labels) / 
     sum(table(annots$labels)))
@@ -177,21 +215,21 @@ PerformCellInference <- function(scrna, sce, method, refset, labels,
     if (!is.null(outdir)) {
       # Create output tables/plots.
       write.table(annots, file = sprintf("%s/%s.%s.%s.txt", outdir, clusts.name, 
-        refset@metadata$name, labels), quote = FALSE, sep = "\t", 
+        metadata(refset)$name, labels), quote = FALSE, sep = "\t", 
         row.names = FALSE)
       write.table(label.dists, file = sprintf("%s/%s.%s.%s.dist.txt", outdir, 
-        clusts.name, refset@metadata$name, labels), quote = FALSE, sep = "\t", 
+        clusts.name, metadata(refset)$name, labels), quote = FALSE, sep = "\t", 
         row.names = FALSE)
       p <- SingleR::plotScoreHeatmap(annots, clusters = annots$clusts, 
         silent = TRUE)
-      pdf(sprintf("%s/%s.%s.%s.pdf", outdir, clusts.name, refset@metadata$name, 
+      pdf(sprintf("%s/%s.%s.%s.pdf", outdir, clusts.name, metadata(refset)$name, 
         labels))
       print(p)
       dev.off()
     }
 
     # Add labels as column to meta.data.
-    scrna[[sprintf("%s.%s.%s", clusts.name, refset@metadata$name, labels)]] <- 
+    scrna[[sprintf("%s.%s.%s", clusts.name, metadata(refset)$name, labels)]] <- 
       annots$labels[match(scrna@meta.data[[clusts.name]], annots$clusters)]
 
   } else {
@@ -203,10 +241,10 @@ PerformCellInference <- function(scrna, sce, method, refset, labels,
 
       # Create output tables/plots.
       write.table(annots, file = sprintf("%s/%s.%s.txt", outdir, 
-        refset@metadata$name, labels), quote = FALSE, sep = "\t", 
+        metadata(refset)$name, labels), quote = FALSE, sep = "\t", 
         row.names = FALSE)
       write.table(label.dists, file = sprintf("%s/%s.%s.dist.txt", outdir, 
-        refset@metadata$name, labels), quote = FALSE, sep = "\t", 
+        metadata(refset)$name, labels), quote = FALSE, sep = "\t", 
         row.names = FALSE)
 
       # pheatmap clustering can't handle tons of cells.
@@ -222,7 +260,7 @@ PerformCellInference <- function(scrna, sce, method, refset, labels,
           " more than 65000 cells."))
       }
     }
-    scrna[[sprintf("%s.%s", refset@metadata$name, labels)]] <- annots$labels
+    scrna[[sprintf("%s.%s", metadata(refset)$name, labels)]] <- annots$labels
   }
 
   return(scrna)

@@ -21,3 +21,6 @@ already defined and will throw an error if passed.}
 Dynamically generates Seurat Heatmap for all genes in a given gene set as
 a PDF.
 }
+\author{
+Jared Andrews
+}

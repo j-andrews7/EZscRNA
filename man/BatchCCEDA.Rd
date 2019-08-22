@@ -50,3 +50,6 @@ pbmc_small <- BatchCCEDA(pbmc_small, skip.sct = TRUE, vars = "group")
 }
 
 }
+\author{
+Jared Andrews
+}

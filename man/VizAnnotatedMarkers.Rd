@@ -56,3 +56,6 @@ Plots for each annotation set will be output to a PDF that will be
 dynamically sized and named based on the name and number of markers for the
 set. New directories will be created for each set in the output directory.
 }
+\author{
+Jared Andrews
+}
