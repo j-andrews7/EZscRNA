@@ -14,3 +14,20 @@ before_script:
 apt_packages:
   - libudunits2-dev
   - libgdal-dev
+
+r_packages:
+  - dplyr
+  - cowplot
+  - ggplot2
+  - future
+  - scales
+
+bioc_packages:
+  - scater
+  - BiocGenerics
+  - SingleCellExperiment
+  - SummarizedExperiment
+  - S4Vectors
+
+r_github_packages:
+  - cole-trapnell-lab/monocle3
