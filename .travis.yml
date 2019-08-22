@@ -10,3 +10,6 @@ r:
 before_script:
   - R -e 'BiocManager::install(version = "devel", ask=FALSE)'
   - R -e 'BiocManager::valid()'
+
+apt_packages:
+  - libudunits2-dev
