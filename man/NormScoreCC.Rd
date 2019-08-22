@@ -7,14 +7,15 @@
 NormScoreCC(scrna, skip.sct = NULL)
 }
 \arguments{
-\item{scrna}{\code{Seurat} object to score cell cycle genes for each cell.}
+\item{scrna}{\linkS4class{Seurat} object to score cell cycle genes for each 
+cell.}
 
 \item{skip.sct}{Boolean indicating whether to skip \code{SCTransform} call.
 Useful for integrated objects.}
 }
 \value{
-Seurat object with cell cycle scores ('S.Score', 'G2M.Score') and 
-  'Phase' added to \code{meta.data} for each cell.
+\linkS4class{Seurat} object with cell cycle scores ('S.Score', 
+  G2M.Score') and Phase' added to \code{meta.data} for each cell.
 }
 \description{
 \code{NormScoreCC} returns a \code{Seurat} object with normalized counts and 

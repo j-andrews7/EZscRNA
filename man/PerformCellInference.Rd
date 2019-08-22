@@ -8,7 +8,7 @@ PerformCellInference(scrna, sce, method, refset, labels, outdir,
   clusts.name = "NoClusters", clusts = NULL, singler.params = NULL)
 }
 \arguments{
-\item{scrna}{\code{Seurat} object.}
+\item{scrna}{\linkS4class{Seurat} object.}
 
 \item{sce}{\code{SingleCellExperiment} object.}
 
@@ -34,7 +34,7 @@ and heatmap.}
 \code{\link[SingleR]{SingleR}}.}
 }
 \value{
-A \code{Seurat} object with inferred
+A \linkS4class{Seurat} object with inferred
   cell type information in the \code{meta.data} slot named in 
   \code{refset.labels} format. If \code{method = "cluster"}, the resulting
   \code{meta.data} column will be named in \code{clusters.refset.labels} 

@@ -43,7 +43,7 @@
 #' fewer than 65500 cells (the hclust method used fails with more cells than 
 #' that). 
 #'
-#' @param scrna Seurat object.
+#' @param scrna \linkS4class{Seurat} object.
 #' @param refsets List of reference dataset(s). Multiple can be provided.
 #' @param labels String indicating whether to use broad lineage-based labels 
 #'   \code{labels="label.main"} for each reference sample or more fine-grained 
@@ -66,7 +66,7 @@
 #'   label in heatmap plotting. 
 #' @param singler.params List of arguments to be passed to 
 #'   \code{\link[SingleR]{SingleR}}.
-#' @return A \code{Seurat} object with inferred
+#' @return A \linkS4class{Seurat} object with inferred
 #'   cell type information in the \code{meta.data} slot named in 
 #'   \code{refset.labels} format. If \code{method = "cluster"}, the resulting
 #'   \code{meta.data} column will be named in \code{clusters.refset.labels} 
@@ -110,7 +110,7 @@ AssignCellType <- function(scrna, refsets, labels = c("label.main",
   method <- match.arg(method, several.ok = TRUE)
 
   for (ref in refsets) {
-    if(is.null(ref@metadata$name)) {
+    if(is.null(metadata(ref)$name)) {
       stop("The refset object must have a name", 
         " (e.g. hpca@metadata$name <- 'HPCA'")
     }
@@ -128,7 +128,7 @@ AssignCellType <- function(scrna, refsets, labels = c("label.main",
   sce <- scater::logNormCounts(sce)
 
   for (ref in refsets) {
-    message("Get common genes in ", ref@metadata$name)
+    message("Get common genes in ", metadata(ref)$name)
     common <- intersect(rownames(sce), rownames(ref))
     sce.com <- sce[common,]
     ref <- ref[common,]
@@ -160,7 +160,7 @@ AssignCellType <- function(scrna, refsets, labels = c("label.main",
 #' \code{PerformCellInference} performs correlation-based cell type inference 
 #' using a reference dataset via \code{\link[SingleR]{SingleR}}. 
 #'
-#' @param scrna \code{Seurat} object.
+#' @param scrna \linkS4class{Seurat} object.
 #' @param sce \code{SingleCellExperiment} object.
 #' @param method String or character vector specifying whether annotation should 
 #'   be applied to each single cell \code{method = "single"} or aggregated into 
@@ -176,7 +176,7 @@ AssignCellType <- function(scrna, refsets, labels = c("label.main",
 #' @param clusts Vector of cluster assignments for each cell.
 #' @param singler.params List of arguments to be passed to 
 #'   \code{\link[SingleR]{SingleR}}.
-#' @return A \code{Seurat} object with inferred
+#' @return A \linkS4class{Seurat} object with inferred
 #'   cell type information in the \code{meta.data} slot named in 
 #'   \code{refset.labels} format. If \code{method = "cluster"}, the resulting
 #'   \code{meta.data} column will be named in \code{clusters.refset.labels} 
@@ -230,7 +230,7 @@ PerformCellInference <- function(scrna, sce, method, refset, labels,
 
     # Add labels as column to meta.data.
     scrna[[sprintf("%s.%s.%s", clusts.name, metadata(refset)$name, labels)]] <- 
-      annots$labels[match(scrna@meta.data[[clusts.name]], annots$clusters)]
+      annots$labels[match(scrna[[]][[clusts.name]], annots$clusters)]
 
   } else {
     cells <- rownames(annots)
@@ -249,7 +249,7 @@ PerformCellInference <- function(scrna, sce, method, refset, labels,
 
       # pheatmap clustering can't handle tons of cells.
       if (nrow(annots) < 65500) {
-        pdf(sprintf("%s/%s.%s.%s.%s.pdf", outdir, method, refset@metadata$name, 
+        pdf(sprintf("%s/%s.%s.%s.%s.pdf", outdir, method, metadata(refset)$name, 
           labels, clusts.name))
         p <- SingleR::plotScoreHeatmap(annots, clusters = clusts, 
           silent = TRUE)

@@ -54,7 +54,7 @@ GetRootNodes <- function(cds, order.var, order.start, partitions = NULL) {
 
 #' Convert a Seurat object to a cell data set object
 #'
-#' \code{SeuratToCDS} converts a \code{Seurat} object to a 
+#' \code{SeuratToCDS} converts a \linkS4class{Seurat} object to a 
 #' \code{cell_data_set} object with a trajectory graph.
 #'
 #' @details
@@ -63,8 +63,8 @@ GetRootNodes <- function(cds, order.var, order.start, partitions = NULL) {
 #' \code{cell_data_set} will be comparable to those from 
 #' \code{\link[Seurat]{DimPlot}}.
 #'
-#' @param scrna A Seurat object with UMAP mappings.
-#' @param clusters String indicating column in \code{scrna@meta.data} that 
+#' @param scrna A \linkS4class{Seurat} object with UMAP mappings.
+#' @param clusters String indicating column in \code{meta.data} that 
 #'   contains cluster information to be utilized.
 #' @return A \code{cell_data_set} object with trajectory information calculated.
 #'   Retains the same UMAP mappings and cluster information as \code{scrna}.
@@ -99,7 +99,7 @@ SeuratToCDS <- function(scrna, clusters) {
   cds <- cluster_cells(cds)
 
   # Map clusters to CDS object.
-  list_cluster <- scrna@meta.data[[clusters]]
+  list_cluster <- scrna[[]][[clusters]]
   names(list_cluster) <- scrna@assays[["RNA"]]@data@Dimnames[[2]]
 
   cds@clusters@listData[["UMAP"]][["clusters"]] <- list_cluster

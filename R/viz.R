@@ -144,13 +144,13 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
 	dim.params <- list(...)
 	for (i in vars) {
 		message("Plotting ", i)
-    if (is.null(scrna@meta.data[[as.character(i)]])) {
+    if (is.null(scrna[[]][[as.character(i)]])) {
       stop(paste0(i, " not found in Seurat object.",
         " Check metadata and variable name."))
     }
 
 	  # Get all unique elements of variable.
-		vars_found <- sort(unique(scrna@meta.data[[as.character(i)]]))
+		vars_found <- sort(unique(scrna[[]][[as.character(i)]]))
 		  
 		# Color with rainbow colors.
 		cell_colors <- rainbow(length(vars_found), s = 0.6, v = 0.9)
@@ -306,6 +306,7 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 
 	dev.off()
 }
+
 
 #' Visualize an annotated marker list
 #'
@@ -479,7 +480,7 @@ VizScoredSets <- function(scrna, marker.df, outdir, vln = NULL,
     name <- paste0(j,".Score")
 
     # Move to next set if no score for current set in Seurat object.
-    if (is.null(scrna@meta.data[[name]])) {
+    if (is.null(scrna[[]][[name]])) {
     	message("Skipping ", j, " as no score is present in Seurat object.")
     	next
     }

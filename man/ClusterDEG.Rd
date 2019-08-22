@@ -10,7 +10,7 @@ ClusterDEG(scrna, outdir = ".", npcs = 30, res = 0.8,
   logfc.thresh = 0.25, min.pct = 0.1)
 }
 \arguments{
-\item{scrna}{\code{Seurat} object.}
+\item{scrna}{\linkS4class{Seurat} object.}
 
 \item{outdir}{Path to output directory.}
 
@@ -62,13 +62,13 @@ differences.}
 fraction of cells in either population.}
 }
 \value{
-A Seurat object with normalized, scaled counts and assigned clusters.
-  If \code{ccpca = TRUE}, an additional PCA reduction named "cc" will also be 
-  present.
+A \linkS4class{Seurat} object with normalized, scaled counts and 
+  assigned clusters. If \code{ccpca = TRUE}, an additional PCA reduction 
+  named "cc" will also be present.
 }
 \description{
 \code{ClusterDEG} runs \code{\link[Seurat]{SCTransform}} on a 
-\code{Seurat} object, followed by \code{\link[Seurat]{RunPCA}}, 
+\linkS4class{Seurat} object, followed by \code{\link[Seurat]{RunPCA}}, 
 \code{\link[Seurat]{RunTSNE}}, \code{\link[Seurat]{RunUMAP}}, and 
 clustering. Also finds marker genes for each cluster and saves the output as
 a table along with a heatmap of the top 10 upregulated genes in each cluster.

@@ -7,19 +7,19 @@
 RunQC(scrna, outdir = NULL)
 }
 \arguments{
-\item{scrna}{\code{Seurat} object.}
+\item{scrna}{\linkS4class{Seurat} object.}
 
 \item{outdir}{Path to output directory for QC plots. Will not plot if not 
 set.}
 }
 \value{
-Seurat object with percent mitochondrial reads added to the
-  \code{meta.data} for each cell.
+\linkS4class{Seurat} object with percent mitochondrial reads added to 
+  the \code{meta.data} for each cell.
 }
 \description{
 \code{RunQC} saves 3 QC plots showing gene counts, read counts, and percent 
 mitochondrial reads per cell to help determine filters. It returns a
-\code{Seurat} object with percent mitochondrial reads added to the 
+\linkS4class{Seurat} object with percent mitochondrial reads added to the 
 \code{meta.data}.
 }
 \examples{

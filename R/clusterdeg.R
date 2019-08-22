@@ -1,7 +1,7 @@
 #' Normalize, scale, and regress out wanted variation
 #'
 #' \code{ClusterDEG} runs \code{\link[Seurat]{SCTransform}} on a 
-#' \code{Seurat} object, followed by \code{\link[Seurat]{RunPCA}}, 
+#' \linkS4class{Seurat} object, followed by \code{\link[Seurat]{RunPCA}}, 
 #' \code{\link[Seurat]{RunTSNE}}, \code{\link[Seurat]{RunUMAP}}, and 
 #' clustering. Also finds marker genes for each cluster and saves the output as
 #' a table along with a heatmap of the top 10 upregulated genes in each cluster.
@@ -14,7 +14,7 @@
 #' Heatmaps created by \code{ClusterDEG} have each identity class downsampled 
 #' to a max of 100 cells - this makes smaller clusters much more visible.
 #'
-#' @param scrna \code{Seurat} object.
+#' @param scrna \linkS4class{Seurat} object.
 #' @param outdir Path to output directory.
 #' @param npcs Number of principle components to use for UMAP and clustering.
 #' @param res Numeric value denoting resolution to use for clustering. 
@@ -53,9 +53,9 @@
 #'   differences. 
 #' @param min.pct Value that limits DE testing to genes detected in a minimum
 #'   fraction of cells in either population.
-#' @return A Seurat object with normalized, scaled counts and assigned clusters.
-#'   If \code{ccpca = TRUE}, an additional PCA reduction named "cc" will also be 
-#'   present.
+#' @return A \linkS4class{Seurat} object with normalized, scaled counts and 
+#'   assigned clusters. If \code{ccpca = TRUE}, an additional PCA reduction 
+#'   named "cc" will also be present.
 #'
 #' @import Seurat
 #' @importFrom grDevices dev.off pdf
