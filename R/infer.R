@@ -99,6 +99,8 @@
 #'   clusters = c("RNA_snn_res.0.8", "RNA_snn_res.1"))
 #' }
 #'
+#' @seealso \code{\link[SingleR]{SingleR}} for additional options.
+#'
 #' @author Jared Andrews
 #'
 AssignCellType <- function(scrna, refsets, labels = c("label.main", 

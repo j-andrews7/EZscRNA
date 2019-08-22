@@ -114,6 +114,9 @@ pbmc.all.anno <- AssignCellType(pbmc, refsets = list(hpca, bp),
 }
 
 }
+\seealso{
+\code{\link[SingleR]{SingleR}} for additional options.
+}
 \author{
 Jared Andrews
 }
