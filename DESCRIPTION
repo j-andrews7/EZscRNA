@@ -45,8 +45,7 @@ Remotes:
   bioc::3.10/DelayedMatrixStats,
   bioc::3.10/limma,
   bioc::3.10/S4Vectors,
-  bioc::3.10/SingleCellExperiment,
-  bioc::3.10/S4Vectors
+  bioc::3.10/SingleCellExperiment
 License: GPL-3 | file LICENSE
 URL: https://github.com/j-andrews7/EZscRNA
 BugReports: https://github.com/j-andrews7/EZscRNA/issues
