@@ -13,6 +13,7 @@ jobs:
   include:
     - stage: prepare cache
       script: true
+    - stage: test
 
 before_script:
   - R -e 'BiocManager::install(version = "devel", ask=FALSE)'
