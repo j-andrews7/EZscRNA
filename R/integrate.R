@@ -2,8 +2,8 @@
 #'
 #' \code{SimpleIntegration} integrates \linkS4class{Seurat} objects using 
 #' either Seurat integration functions or 
-#' \code{\link[SeuratWrappers]{RunFastMNN}}, a wrapper around
-#' \code{\link[batchelor]{fastMNN}}. This is useful for removing batch effects. 
+#' \code{RunFastMNN}, a wrapper from \code{SeuratWrappers} around
+#' \code{fastMNN} from batchelor. This is useful for removing batch effects. 
 #' It can take either a list of \linkS4class{Seurat}  objects or a 
 #' \code{meta.data} variable to split a single \linkS4class{Seurat} object by 
 #' prior to integration. 
@@ -11,6 +11,8 @@
 #' @details
 #' Performs \code{\link[Seurat]{SCTransform}} on each Seurat object 
 #' individually prior to integration. 
+#'
+#' If \code{method="MNN"} is used, \code{SeuratWrappers} must be installed.
 #'
 #' @param scrnas Either a list of \linkS4class{Seurat} objects or a single 
 #'   \linkS4class{Seurat} object, the latter of which requires \code{split.by} 
@@ -37,8 +39,6 @@
 #' }
 #'
 #' @author Jared Andrews
-#'
-#' @seealso
 #'
 SimpleIntegration <- function(scrnas, split.by = NULL, 
   method = c("Seurat", "MNN"), vars.to.regress = NULL, n.features = 3000) {

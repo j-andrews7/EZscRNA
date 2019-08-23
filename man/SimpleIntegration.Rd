@@ -31,15 +31,17 @@ An integrated \linkS4class{Seurat} object with technical
 \description{
 \code{SimpleIntegration} integrates \linkS4class{Seurat} objects using 
 either Seurat integration functions or 
-\code{\link[SeuratWrappers]{RunFastMNN}}, a wrapper around
-\code{\link[batchelor]{fastMNN}}. This is useful for removing batch effects. 
+\code{RunFastMNN}, a wrapper from \code{SeuratWrappers} around
+\code{fastMNN} from batchelor. This is useful for removing batch effects. 
 It can take either a list of \linkS4class{Seurat}  objects or a 
 \code{meta.data} variable to split a single \linkS4class{Seurat} object by 
 prior to integration.
 }
 \details{
 Performs \code{\link[Seurat]{SCTransform}} on each Seurat object 
-individually prior to integration.
+individually prior to integration. 
+
+If \code{method="MNN"} is used, \code{SeuratWrappers} must be installed.
 }
 \examples{
 \dontrun{
@@ -47,9 +49,6 @@ library(Seurat)
 # Will error due to too few cells.
 pbmc.int <- SimpleIntegration(pbmc_small, split.by = "groups")
 }
-
-}
-\seealso{
 
 }
 \author{
