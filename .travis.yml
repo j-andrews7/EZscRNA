@@ -34,6 +34,15 @@ r_binary_packages:
   - data.table
   - later
   - units
+  - sf
+  - RANN
+  - RSQLite
+  - ape
+  - pscl
+  - RhpcBLASctl
+  - matrixStats
+  - deldir
+  - FNN
 
 before_script:
   - R -e 'BiocManager::install(version = "devel", ask=FALSE)'
