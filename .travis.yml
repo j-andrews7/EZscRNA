@@ -25,7 +25,6 @@ r_binary_packages:
   - tidyr
   - plyr
   - stringi
-  - HDF5Array
   - Rcpp
   - reticulate
   - RcppParallel
@@ -33,7 +32,6 @@ r_binary_packages:
   - jsonlite
   - yaml
   - data.table
-  - Rhdf5lib
   - later
   - units
 
