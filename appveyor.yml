@@ -15,6 +15,9 @@ cache:
 
 # Adapt as necessary starting from here
 
+# Need Rtools to install source dependencies
+USE_RTOOLS: true
+
 build_script:
   - travis-tool.sh install_deps
 

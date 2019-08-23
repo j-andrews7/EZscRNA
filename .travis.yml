@@ -2,6 +2,7 @@
 
 language: R
 cache: packages
+sudo: required
 r:
   - bioc-devel
 
@@ -11,6 +12,30 @@ jobs:
     - stage: prepare cache
       script: true
     - stage: test
+
+r_binary_packages: 
+  - stringr
+  - dplyr
+  - igraph
+  - RCurl
+  - XML
+  - git2r
+  - plotly
+  - BH
+  - tidyr
+  - plyr
+  - stringi
+  - HDF5Array
+  - Rcpp
+  - reticulate
+  - RcppParallel
+  - digest
+  - jsonlite
+  - yaml
+  - data.table
+  - Rhdf5lib
+  - later
+  - units
 
 before_script:
   - R -e 'BiocManager::install(version = "devel", ask=FALSE)'
