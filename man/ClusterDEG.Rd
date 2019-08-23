@@ -4,7 +4,7 @@
 \alias{ClusterDEG}
 \title{Normalize, scale, and regress out wanted variation}
 \usage{
-ClusterDEG(scrna, outdir = ".", npcs = 30, res = 0.8,
+ClusterDEG(scrna, outdir = ".", npcs = 30, res = 0.8, mnn = FALSE,
   skip.sct = FALSE, min.dist = 0.3, n.neighbors = 30,
   regress = NULL, ccpca = FALSE, test = "wilcox",
   logfc.thresh = 0.25, min.pct = 0.1)
@@ -24,6 +24,11 @@ added as a \code{meta.data} column named \code{Cluster_res_npcs} where
 respectively. The clusters derived from the last value in the list will be 
 set as the default Ident for cells and stored in \code{meta.data} under
 'seurat_clusters' in addition to the aforementioned format.}
+
+\item{mnn}{Boolean indicating whether \code{scrna} was integrated with
+\code{method="MNN"} via \code{\link{SimpleIntegration}}. If so, must be set
+to \code{TRUE} or unintegrated PCA embeddings will be used for
+dimensionality reduction and clustering.}
 
 \item{skip.sct}{Boolean indicating whether to skip 
 \code{\link[Seurat]{SCTransform}}. Set to TRUE if 

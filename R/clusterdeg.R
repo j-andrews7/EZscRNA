@@ -25,6 +25,10 @@
 #'   respectively. The clusters derived from the last value in the list will be 
 #'   set as the default Ident for cells and stored in \code{meta.data} under
 #'   'seurat_clusters' in addition to the aforementioned format.
+#' @param mnn Boolean indicating whether \code{scrna} was integrated with
+#'   \code{method="MNN"} via \code{\link{SimpleIntegration}}. If so, must be set
+#'   to \code{TRUE} or unintegrated PCA embeddings will be used for
+#'   dimensionality reduction and clustering.
 #' @param skip.sct Boolean indicating whether to skip 
 #'   \code{\link[Seurat]{SCTransform}}. Set to TRUE if 
 #'   \code{\link{SimpleIntegration}} was used to integrate the 
@@ -77,7 +81,7 @@
 #'
 #' @author Jared Andrews
 #'
-ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8, 
+ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8, mnn = FALSE,
   skip.sct = FALSE, min.dist = 0.3, n.neighbors = 30, regress = NULL, 
 	ccpca = FALSE, test = "wilcox", logfc.thresh = 0.25, min.pct = 0.1) {
 
@@ -96,27 +100,38 @@ ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8,
 		  reduction.name = "cc")
   }
 
+  # Change to "mnn" reduction for fastMNN integrated objects.
   message("Performing PCA/UMAP/TSNE on variable features.")
+  if (!mnn) {
+    reduc <- "pca"
+  } else {
+    reduc <- "mnn"
+  }
+  message("Using ", reduc, " reduction.")
+
   scrna <- RunPCA(scrna, npcs = npcs)
+  scrna <- RunTSNE(scrna, dims = 1:npcs, reduction = reduc)
   scrna <- RunUMAP(scrna, dims = 1:npcs, n.neighbors = n.neighbors, min.dist =
-    min.dist)
-  scrna <- RunTSNE(scrna, dims = 1:npcs)
+    min.dist, reduction = reduc)
 
   message("Performing clustering on variable features.")
-  scrna <- FindNeighbors(scrna, dims = 1:npcs)
+  scrna <- FindNeighbors(scrna, dims = 1:npcs, reduction = reduc)
 
+  # Clustering/marker finding for multiple resolutions.
   for (i in res) {
   	message(paste0("Finding cluster markers using ", i, " resolution."))
   	scrna <- FindClusters(scrna, resolution = i)
-  	scrna[[sprintf("Clusters.%.1fRes.%dPC", i, npcs)]] <- Idents(scrna) 
+  	scrna[[sprintf("Clusters.%.1fRes.%dPC.%s", i, npcs, reduc)]] <- 
+      Idents(scrna) 
   
 	  markers <- FindAllMarkers(scrna, assay = "RNA", 
 			logfc.threshold = logfc.thresh, min.pct = min.pct, test.use = test)
 		
 	   # Save markers as table.
 	  message("Saving cluster markers.")
-	  write.table(markers, file = sprintf("%s/Cluster.Markers.%.1fRes.%dPC.txt", 
-	  	outdir, i, npcs), sep = "\t", quote = FALSE, row.names = FALSE)
+	  write.table(markers, 
+      file = sprintf("%s/Cluster.Markers.%.1fRes.%dPC.%s.txt", 
+	  	outdir, i, npcs, reduc), sep = "\t", quote = FALSE, row.names = FALSE)
 
 	  message("Visualizing cluster markers.")
 	  top10up <- markers %>% dplyr::group_by(cluster) %>% 
@@ -124,8 +139,8 @@ ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8,
 	  # Make marker heatmap. Dynamic sizing.
 	  h <- 4 + (0.15 * length(top10up$gene))
 		w <- 3 + (0.4 * length(sort(unique(Idents(scrna)))))
-	  pdf(sprintf("%s/Top10.UpMarkers.Cluster.%.1fRes.%dPC.Heatmap.pdf", outdir, 
-	  	i, npcs), height = h, width = w)
+	  pdf(sprintf("%s/Top10.UpMarkers.Cluster.%.1fRes.%dPC.%s.Heatmap.pdf", 
+      outdir, i, npcs, reduc), height = h, width = w)
 	  p <- DoHeatmap(subset(scrna, downsample = 100), features = top10up$gene, 
       assay = "RNA")
     print(p)

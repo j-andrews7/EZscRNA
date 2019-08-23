@@ -24,10 +24,10 @@
 #'   \code{RunFastMNN}.
 #' @param vars.to.regress Vector of meta.data variables to be regressed out
 #'   during \code{\link[Seurat]{SCTransform}}. 
-#' @param n.features Number of anchor features to use. 
+#' @param n.features Number of anchor features to use with 
+#'   \code{\link[Seurat]{SelectIntegrationFeatures}}. 
 #' @return An integrated \linkS4class{Seurat} object with technical 
 #'   variation/batch effects removed from the individual samples.
-#'
 #'
 #' @export
 #'
@@ -43,7 +43,10 @@
 SimpleIntegration <- function(scrnas, split.by = NULL, 
   method = c("Seurat", "MNN"), vars.to.regress = NULL, n.features = 3000) {
 
-	# Parameter checking.
+  # Arg check.
+  method <- match.arg(method)
+
+	# Seurat object splitting checking.
 	if (length(scrnas) > 1) {
 		for (i in 1:length(scrnas)) {
 			scrnas[[i]] <- Seurat::SCTransform(scrnas[[i]], verbose = FALSE, 
@@ -60,17 +63,21 @@ SimpleIntegration <- function(scrnas, split.by = NULL,
 		}
 	}
 
-	# Actual integration.
-	anch.features <- Seurat::SelectIntegrationFeatures(object.list = scrnas, 
-		nfeatures = n.features)
-	scrnas <- Seurat::PrepSCTIntegration(object.list = scrnas, 
-		anchor.features = anch.features, verbose = FALSE)
+  if (method == "MNN") {
+    scrna <- RunFastMNN(object.list = scrnas, features = n.features)
+  } else if (method == "Seurat") {
+    # Actual integration.
+    anch.features <- Seurat::SelectIntegrationFeatures(object.list = scrnas, 
+      nfeatures = n.features)
+    scrnas <- Seurat::PrepSCTIntegration(object.list = scrnas, 
+      anchor.features = anch.features, verbose = FALSE)
 
-	anchors <- Seurat::FindIntegrationAnchors(object.list = scrnas, 
-		normalization.method = "SCT", anchor.features = anch.features, 
-		verbose = FALSE)
-	scrna <- Seurat::IntegrateData(anchorset = anchors, 
-		normalization.method = "SCT", verbose = FALSE)
+    anchors <- Seurat::FindIntegrationAnchors(object.list = scrnas, 
+      normalization.method = "SCT", anchor.features = anch.features, 
+      verbose = FALSE)
+    scrna <- Seurat::IntegrateData(anchorset = anchors, 
+      normalization.method = "SCT", verbose = FALSE)
+  }
 
 	return(scrna)
 }
