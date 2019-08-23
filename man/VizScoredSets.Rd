@@ -37,9 +37,9 @@ for each set. Splits by cell idents. NULL by default.}
 \item{dot.params}{Boolean indicating whether to create Seurat DotPlots for 
 each set. Splits by cell idents. NULL by default.}
 
-\item{...}{Arguments to be passed to Seurat \code{FeaturePlot}. \code{cols}, 
-\code{features}, \code{reduction}, and \code{ncol} are already defined and
-will throw an error if passed.}
+\item{...}{Arguments to be passed to \code{\link[Seurat]{FeaturePlot}}. 
+\code{cols}, \code{features}, \code{reduction}, and \code{ncol} are already 
+defined and will throw an error if passed.}
 }
 \description{
 \code{VizScoredSets} creates Seurat FeaturePlots for scored gene sets.
@@ -48,4 +48,7 @@ will throw an error if passed.}
 Plots for each scored gene set will be output to a PDF that will be
 dynamically sized and named based on the name and number of markers for the
 set. New directories will be created for each set in the output directory.
+}
+\author{
+Jared Andrews
 }

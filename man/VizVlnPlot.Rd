@@ -13,11 +13,14 @@ VizVlnPlot(scrna, outfile, genes, vln.params = NULL)
 
 \item{genes}{Vector of genes to plot.}
 
-\item{vln.params}{List of keyword arguments to be passed to Seurat
-\code{VlnPlot}. \code{features} are already defined and will throw
-an error if passed. NULL by default.}
+\item{vln.params}{List of keyword arguments to be passed to 
+\code{\link[Seurat]{VlnPlot}}. \code{features} are already defined and will 
+throw an error if passed.}
 }
 \description{
 Dynamically generates Seurat VlnPlots for all genes in a given gene set as a
 PDF.
+}
+\author{
+Jared Andrews
 }

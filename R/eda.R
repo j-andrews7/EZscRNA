@@ -2,13 +2,14 @@
 #'
 #' \code{RunQC} saves 3 QC plots showing gene counts, read counts, and percent 
 #' mitochondrial reads per cell to help determine filters. It returns a
-#' Seurat object with percent mitochondrial reads added to the \code{meta.data}.
+#' \linkS4class{Seurat} object with percent mitochondrial reads added to the 
+#' \code{meta.data}.
 #'
-#' @param scrna Seurat object.
+#' @param scrna \linkS4class{Seurat} object.
 #' @param outdir Path to output directory for QC plots. Will not plot if not 
 #'   set.
-#' @return Seurat object with percent mitochondrial reads added to the
-#'   \code{meta.data} for each cell.
+#' @return \linkS4class{Seurat} object with percent mitochondrial reads added to 
+#'   the \code{meta.data} for each cell.
 #'
 #' @importFrom Seurat PercentageFeatureSet VlnPlot
 #'
@@ -17,6 +18,8 @@
 #' @examples
 #' library(Seurat)
 #' pbmc_small <- RunQC(pbmc_small)
+#'
+#' @author Jared Andrews
 #'
 RunQC <- function(scrna, outdir = NULL) {
   # Low-quality or dying cells often have mitochondrial contamination.
@@ -38,19 +41,16 @@ RunQC <- function(scrna, outdir = NULL) {
 
 #' Normalize counts and score cell cycle for each cell
 #' 
-#' \code{NormScoreCC} returns a Seurat object with normalized counts and adds 
-#' cell cycle scores for each gene based on Seurat's cell cycle gene lists.
+#' \code{NormScoreCC} returns a \code{Seurat} object with normalized counts and 
+#' adds cell cycle scores for each gene based on Seurat's cell cycle gene lists.
 #'
-#' The Seurat authors state (https://github.com/satijalab/seurat/issues/1679) 
-#' that counts should always be normalized before cell cycle or module scoring.
-#' This is particularly important if one is using the \code{SCTranform} function
-#' for data normalization, scaling, and therefore, regression. 
 #'
-#' @param scrna Seurat object to score cell cycle genes for each cell.
+#' @param scrna \linkS4class{Seurat} object to score cell cycle genes for each 
+#'   cell.
 #' @param skip.sct Boolean indicating whether to skip \code{SCTransform} call.
 #'   Useful for integrated objects.
-#' @return Seurat object with cell cycle scores ('S.Score', 'G2M.Score') and 
-#'   'Phase' added to \code{meta.data} for each cell.
+#' @return \linkS4class{Seurat} object with cell cycle scores ('S.Score', 
+#'   G2M.Score') and Phase' added to \code{meta.data} for each cell.
 #'
 #' @importFrom Seurat NormalizeData CellCycleScoring
 #'
@@ -61,6 +61,8 @@ RunQC <- function(scrna, outdir = NULL) {
 #' library(Seurat)
 #' pbmc_small <- NormScoreCC(pbmc_small)
 #' }
+#'
+#' @author Jared Andrews
 #'
 NormScoreCC <- function(scrna, skip.sct = NULL) {
 	message("Scoring cell cycle genes.")
@@ -94,15 +96,15 @@ NormScoreCC <- function(scrna, skip.sct = NULL) {
 #' explained by each variable across all genes using 
 #' \code{\link[scater]{plotExplanatoryVariables}}.
 #'
-#' @param scrna Seurat object.
+#' @param scrna \linkS4class{Seurat} object.
 #' @param outdir Path to output directory for plots.
 #' @param npcs Number of PCs to use for PCA and ElbowPlot. 
 #' @param vars Character vector indicating \code{meta.data} columns to be 
 #'   investigated for batch effects and variance contributions.
 #' @param skip.sct Boolean indicating whether to skip \code{SCTransform} call.
 #'   Useful for integrated objects.
-#' @return A Seurat object with a PCA for cell cycle genes stored with
-#'   \code{reduction.name = "cc"}. 
+#' @return A \linkS4class{Seurat} object with a PCA for cell cycle genes stored 
+#'   with \code{reduction.name = "cc"}. 
 #'
 #' @importFrom Seurat SCTransform RunPCA ElbowPlot DimPlot 
 #'   as.SingleCellExperiment
@@ -123,6 +125,8 @@ NormScoreCC <- function(scrna, skip.sct = NULL) {
 #' # Can explore other variables as well.
 #' pbmc_small <- BatchCCEDA(pbmc_small, skip.sct = TRUE, vars = "group")
 #' }
+#'
+#' @author Jared Andrews
 #'
 BatchCCEDA <- function(scrna, outdir = ".", npcs = 50, vars = NULL, 
   skip.sct = NULL) {

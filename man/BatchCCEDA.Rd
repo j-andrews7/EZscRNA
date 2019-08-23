@@ -8,7 +8,7 @@ BatchCCEDA(scrna, outdir = ".", npcs = 50, vars = NULL,
   skip.sct = NULL)
 }
 \arguments{
-\item{scrna}{Seurat object.}
+\item{scrna}{\linkS4class{Seurat} object.}
 
 \item{outdir}{Path to output directory for plots.}
 
@@ -21,8 +21,8 @@ investigated for batch effects and variance contributions.}
 Useful for integrated objects.}
 }
 \value{
-A Seurat object with a PCA for cell cycle genes stored with
-  \code{reduction.name = "cc"}.
+A \linkS4class{Seurat} object with a PCA for cell cycle genes stored 
+  with \code{reduction.name = "cc"}.
 }
 \description{
 \code{BatchCCEDA} creates a number of plots to determine the number of PCs
@@ -49,4 +49,7 @@ pbmc_small <- BatchCCEDA(pbmc_small, skip.sct = TRUE)
 pbmc_small <- BatchCCEDA(pbmc_small, skip.sct = TRUE, vars = "group")
 }
 
+}
+\author{
+Jared Andrews
 }

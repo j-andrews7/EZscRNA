@@ -34,7 +34,8 @@ The enrichr web server can be found at
 should be sure to cite the original authors.
 }
 \examples{
-genes <- c("CD8A", "CD4", "FOXP3", "CTLA4", "GNLY")
+genes <- c("CD8A", "CD4", "FOXP3", "CTLA4", "GNLY", "TNFSF18", "TNFRSF18", 
+  "CXCR4", "CD3E", "CCR6", "CCR7", "IL7R")
 libs <- c("Reactome_2016", "KEGG_2019_HUMAN")
 enrichments <- RunEnrichr(genes, libraries = libs)
 

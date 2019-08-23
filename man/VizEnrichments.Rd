@@ -45,3 +45,6 @@ VizEnrichments(enrichments = terms)
 \seealso{
 \code{\link{RunEnrichr}} for running enrichment analysis.
 }
+\author{
+Jared Andrews
+}

@@ -4,15 +4,20 @@
 \alias{SimpleIntegration}
 \title{Integrate Seurat objects simply and easily}
 \usage{
-SimpleIntegration(scrnas, split.by = NULL, vars.to.regress = NULL,
-  n.features = 3000)
+SimpleIntegration(scrnas, split.by = NULL, method = c("Seurat", "MNN"),
+  vars.to.regress = NULL, n.features = 3000)
 }
 \arguments{
-\item{scrnas}{Either a list of Seurat objects or a single Seurat object, the
-latter of which requires \code{split.by} to be provided as well.}
+\item{scrnas}{Either a list of \linkS4class{Seurat} objects or a single 
+\linkS4class{Seurat} object, the latter of which requires \code{split.by} 
+to be provided as well.}
 
 \item{split.by}{String containing name of meta.data column to be used to 
 split Seurat object into multiple samples.}
+
+\item{method}{String indicating method to be used. "Seurat" will use Seurat's
+internal functions for SCT integration. "MNN" will use
+\code{RunFastMNN}.}
 
 \item{vars.to.regress}{Vector of meta.data variables to be regressed out
 during \code{\link[Seurat]{SCTransform}}.}
@@ -20,18 +25,23 @@ during \code{\link[Seurat]{SCTransform}}.}
 \item{n.features}{Number of anchor features to use.}
 }
 \value{
-An integrated Seurat object with technical variation/batch effects
-  removed from the individual samples.
+An integrated \linkS4class{Seurat} object with technical 
+  variation/batch effects removed from the individual samples.
 }
 \description{
-\code{SimpleIntegration} integrates Seurat objects using default Seurat 
-parameters that should work for most cases. This is useful for removing batch
-effects. It can take either a list of Seurat objects or a meta.data variable 
-to split a single Seurat object by prior to integration.
+\code{SimpleIntegration} integrates \linkS4class{Seurat} objects using 
+either Seurat integration functions or 
+\code{RunFastMNN}, a wrapper from \code{SeuratWrappers} around
+\code{fastMNN} from batchelor. This is useful for removing batch effects. 
+It can take either a list of \linkS4class{Seurat}  objects or a 
+\code{meta.data} variable to split a single \linkS4class{Seurat} object by 
+prior to integration.
 }
 \details{
 Performs \code{\link[Seurat]{SCTransform}} on each Seurat object 
-individually prior to integration.
+individually prior to integration. 
+
+If \code{method="MNN"} is used, \code{SeuratWrappers} must be installed.
 }
 \examples{
 \dontrun{
@@ -40,4 +50,7 @@ library(Seurat)
 pbmc.int <- SimpleIntegration(pbmc_small, split.by = "groups")
 }
 
+}
+\author{
+Jared Andrews
 }

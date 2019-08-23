@@ -13,11 +13,14 @@ VizRidgePlot(scrna, outfile, genes, ridge.params = NULL)
 
 \item{genes}{Vector of genes to plot.}
 
-\item{ridge.params}{List of keyword arguments to be passed to Seurat
-\code{RidgePlot}. \code{features} are already defined and will throw
-an error if passed. NULL by default.}
+\item{ridge.params}{List of keyword arguments to be passed to 
+\code{\link[Seurat]{RidgePlot}}. \code{features} are already defined and 
+will throw an error if passed.}
 }
 \description{
 Dynamically generates Seurat RidgePlots for all genes in a given gene set as
 a PDF.
+}
+\author{
+Jared Andrews
 }

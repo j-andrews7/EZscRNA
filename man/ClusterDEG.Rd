@@ -10,7 +10,7 @@ ClusterDEG(scrna, outdir = ".", npcs = 30, res = 0.8,
   logfc.thresh = 0.25, min.pct = 0.1)
 }
 \arguments{
-\item{scrna}{\code{Seurat} object.}
+\item{scrna}{\linkS4class{Seurat} object.}
 
 \item{outdir}{Path to output directory.}
 
@@ -26,17 +26,17 @@ set as the default Ident for cells and stored in \code{meta.data} under
 'seurat_clusters' in addition to the aforementioned format.}
 
 \item{skip.sct}{Boolean indicating whether to skip 
-\code{\link{SCTransform}}. Set to TRUE if 
-\code{\link{SimpleIntegration()}} was used to integrate the \code{Seurat} 
- object.}
+\code{\link[Seurat]{SCTransform}}. Set to TRUE if 
+\code{\link{SimpleIntegration}} was used to integrate the 
+\code{Seurat} object.}
 
 \item{min.dist}{Number that controls how tighly the embedding is allowed to
-compress points together in \code{\link{RunUMAP()}}. Increasing may 
+compress points together in \code{\link[Seurat]{RunUMAP}}. Increasing may 
 be beneficial for large datasets.}
 
 \item{n.neighbors}{Integer that determines the number of neighboring points
 used in local approximations of manifold structure in 
-\code{\link{RunUMAP()}}. Values of 5-50 
+\code{\link[Seurat]{RunUMAP}}. Values of 5-50 
 are considered sensical. Larger values preserve more global structure while 
 detailed local structure is lost.}
 
@@ -51,7 +51,7 @@ scores were regressed out via \code{regress}.}
 \item{test}{String indication which DE test to use for marker finding. 
 Options are: 
   "wilcox", "bimod", "roc", "t", "negbinom", "poisson", "LR", 
-  "MAST", "DESeq2". See \code{\link{FindAllMarkers()}}.}
+  "MAST", "DESeq2". See \code{\link[Seurat]{FindAllMarkers}}.}
 
 \item{logfc.thresh}{Value that limits DE testing to genes that show, 
 on average, at least X-fold difference (log-scale) between two groups of 
@@ -62,23 +62,23 @@ differences.}
 fraction of cells in either population.}
 }
 \value{
-A Seurat object with normalized, scaled counts and assigned clusters.
-  If \code{ccpca = TRUE}, an additional PCA reduction named "cc" will also be 
-  present.
+A \linkS4class{Seurat} object with normalized, scaled counts and 
+  assigned clusters. If \code{ccpca = TRUE}, an additional PCA reduction 
+  named "cc" will also be present.
 }
 \description{
-\code{ClusterDEG()} runs \code{\link{SCTransform()}} on a \code{Seurat} 
-object, followed by \code{\link{RunPCA()}}, \code{\link{RunTSNE()}}, 
-\code{\link{RunUMAP()}}, and clustering. Also finds marker genes for 
-each cluster and saves the output as a table along with a heatmap of the top 
-10 upregulated genes in each cluster.
+\code{ClusterDEG} runs \code{\link[Seurat]{SCTransform}} on a 
+\linkS4class{Seurat} object, followed by \code{\link[Seurat]{RunPCA}}, 
+\code{\link[Seurat]{RunTSNE}}, \code{\link[Seurat]{RunUMAP}}, and 
+clustering. Also finds marker genes for each cluster and saves the output as
+a table along with a heatmap of the top 10 upregulated genes in each cluster.
 }
 \details{
 If multiple \code{res} values are given, a table and heatmap will be made for
 each, along with saving the clusters for each in their own \code{meta.data} 
 columns. 
 
-Heatmaps created by \code{ClusterDEG()} have each identity class downsampled 
+Heatmaps created by \code{ClusterDEG} have each identity class downsampled 
 to a max of 100 cells - this makes smaller clusters much more visible.
 }
 \examples{
@@ -92,4 +92,7 @@ scrna <- ClusterDEG(pbmc_small)
 scrna <- ClusterDEG(pbmc_small, res = c(0.8, 1, 1.2))
 }
 
+}
+\author{
+Jared Andrews
 }

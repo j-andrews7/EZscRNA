@@ -27,7 +27,8 @@
 #'   analysis web server 2016 update. Nucleic Acids Research. 2016; gkw377}
 #'
 #' @examples
-#' genes <- c("CD8A", "CD4", "FOXP3", "CTLA4", "GNLY")
+#' genes <- c("CD8A", "CD4", "FOXP3", "CTLA4", "GNLY", "TNFSF18", "TNFRSF18", 
+#'   "CXCR4", "CD3E", "CCR6", "CCR7", "IL7R")
 #' libs <- c("Reactome_2016", "KEGG_2019_HUMAN")
 #' enrichments <- RunEnrichr(genes, libraries = libs)
 #'

@@ -8,17 +8,20 @@
 #' dynamically sized and named based on the name and number of markers for the
 #' set. New directories will be created for each set in the output directory.
 #'
-#' @param scrna Seurat object.
+#' @param scrna \linkS4class{Seurat} object.
 #' @param marker.df Dataframe two columns named "Set" and "Marker". 
 #'   The "Set" column should contain a cell or process-type (e.g. Tcell, Bcell, 
 #'   Exhaustion markers, etc.) while the "Marker" column contains the 
 #'   comma-delimited gene symbols associated with it.
-#' @return Seurat object with scores for each "Set" added to \code{meta.data}.
+#' @return \linkS4class{Seurat} object with scores for each "Set" added to 
+#'   \code{meta.data}.
 #'
 #' @importFrom Seurat AddModuleScore
 #' 
 #' @export
 #'
+#' @seealso \code{\link[Seurat]{AddModuleScore}} for scoring info.
+#' 
 ScoreAnnotatedMarkers <- function(scrna, marker.df) {
 
   # Plot individual genes in various classes.
@@ -45,7 +48,7 @@ ScoreAnnotatedMarkers <- function(scrna, marker.df) {
     	), assay = "RNA")
 
     # Remove random number from column header, annoys me.
-    colnames(scrna@meta.data)[colnames(scrna@meta.data) == paste0(j, ".Score1"
+    colnames(scrna[[]])[colnames(scrna[[]]) == paste0(j, ".Score1"
     	)] <- paste0(j, ".Score")
   }
 
