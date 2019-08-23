@@ -64,7 +64,7 @@ SimpleIntegration <- function(scrnas, split.by = NULL,
 	}
 
   if (method == "MNN") {
-    scrna <- RunFastMNN(object.list = scrnas)
+    scrna <- RunFastMNN(object.list = scrnas, features = n.features)
   } else if (method == "Seurat") {
     # Actual integration.
     anch.features <- Seurat::SelectIntegrationFeatures(object.list = scrnas, 
