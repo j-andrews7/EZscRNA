@@ -18,6 +18,7 @@ cache:
 # Need Rtools to install source dependencies
 environment:
   USE_RTOOLS: true
+  PKGTYPE: both
 
 build_script:
   - travis-tool.sh install_bioc_deps
