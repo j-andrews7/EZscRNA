@@ -17,7 +17,7 @@ split Seurat object into multiple samples.}
 
 \item{method}{String indicating method to be used. "Seurat" will use Seurat's
 internal functions for SCT integration. "MNN" will use
-\code{\link[SeuratWrappers]{RunFastMNN}}.}
+\code{RunFastMNN}.}
 
 \item{vars.to.regress}{Vector of meta.data variables to be regressed out
 during \code{\link[Seurat]{SCTransform}}.}
