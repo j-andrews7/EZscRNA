@@ -48,9 +48,9 @@ RunQC <- function(scrna, outdir = NULL) {
 #' @param scrna \linkS4class{Seurat} object to score cell cycle genes for each 
 #'   cell.
 #' @param skip.sct Boolean indicating whether to skip \code{SCTransform} call.
-#'   Useful for integrated objects.
-#' @return \linkS4class{Seurat} object with cell cycle scores ('S.Score', 
-#'   G2M.Score') and Phase' added to \code{meta.data} for each cell.
+#'   Useful for integrated/already normalized objects.
+#' @return \linkS4class{Seurat} object with cell cycle scores ("S.Score", 
+#'   "G2M.Score") and "Phase" added to \code{meta.data} for each cell.
 #'
 #' @importFrom Seurat NormalizeData CellCycleScoring
 #'
@@ -76,7 +76,7 @@ NormScoreCC <- function(scrna, skip.sct = NULL) {
   }
 
 	cc.seurat <- CellCycleScoring(scrna, s.features = s.genes, 
-		g2m.features = g2m.genes)
+		g2m.features = g2m.genes, assay = "RNA")
 	message("Cell cycle scoring complete.")
 
 	return(cc.seurat)

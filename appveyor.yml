@@ -21,8 +21,8 @@ environment:
   PKGTYPE: both
 
 build_script:
+  - travis-tool.sh install_bioc GenomeInfoDbData BiocParallel
   - travis-tool.sh install_bioc_deps
-  - travis-tool.sh install_bioc GenomeInfoDbData
   - travis-tool.sh install_deps
 
 
