@@ -18,10 +18,9 @@ cache:
 # Need Rtools to install source dependencies
 environment:
   USE_RTOOLS: true
-  PKGTYPE: both
 
 build_script:
-  - travis-tool.sh install_bioc GenomeInfoDbData BiocParallel
+  - travis-tool.sh bioc_install GenomeInfoDbData BiocParallel SummarizedExperiment SingleCellExperiment S4Vectors
   - travis-tool.sh install_bioc_deps
   - travis-tool.sh install_deps
 

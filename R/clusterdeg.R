@@ -25,6 +25,10 @@
 #'   respectively. The clusters derived from the last value in the list will be 
 #'   set as the default Ident for cells and stored in \code{meta.data} under
 #'   'seurat_clusters' in addition to the aforementioned format.
+#' @param mnn Boolean indicating whether \code{scrna} was integrated with
+#'   \code{method="MNN"} via \code{\link{SimpleIntegration}}. If so, must be set
+#'   to \code{TRUE} or unintegrated PCA embeddings will be used for
+#'   dimensionality reduction and clustering.
 #' @param skip.sct Boolean indicating whether to skip 
 #'   \code{\link[Seurat]{SCTransform}}. Set to TRUE if 
 #'   \code{\link{SimpleIntegration}} was used to integrate the 
@@ -103,7 +107,7 @@ ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8, mnn = FALSE,
   } else {
     reduc <- "mnn"
   }
-  message("Using ", reduction, " reduction.")
+  message("Using ", reduc, " reduction.")
 
   scrna <- RunPCA(scrna, npcs = npcs)
   scrna <- RunTSNE(scrna, dims = 1:npcs, reduction = reduc)
