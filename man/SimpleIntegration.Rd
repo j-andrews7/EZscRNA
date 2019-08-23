@@ -22,7 +22,8 @@ internal functions for SCT integration. "MNN" will use
 \item{vars.to.regress}{Vector of meta.data variables to be regressed out
 during \code{\link[Seurat]{SCTransform}}.}
 
-\item{n.features}{Number of anchor features to use.}
+\item{n.features}{Number of anchor features to use with 
+\code{\link[Seurat]{SelectIntegrationFeatures}}.}
 }
 \value{
 An integrated \linkS4class{Seurat} object with technical 
