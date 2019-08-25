@@ -212,6 +212,7 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
 #' @import ggplot2
 #' @import dplyr
 #' @importFrom stats reorder
+#' @importFrom scales wrap_format
 #'
 #' @export
 #'
@@ -317,8 +318,8 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 #' dynamically sized and named based on the name and number of markers for the
 #' set. New directories will be created for each set in the output directory.
 #'
-#' @param scrna Seurat object.
-#' @param marker.df Dataframe with the two columns called "Set" and "Marker". 
+#' @param scrna \linkS4class{Seurat} object.
+#' @param marker.df Dataframe with two columns named "Set" and "Marker". 
 #'   The "Set" column should contain a cell or process-type (e.g. Tcell, Bcell, 
 #'   Exhaustion markers, etc.) while the "Marker" column contains the 
 #'   comma-delimited gene symbols associated with it. 
@@ -331,15 +332,18 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 #'   set. Splits by cell idents. 
 #' @param heatmap Boolean indicating whether to create a Seurat Heatmap for each
 #'   set. Splits by cell idents.
-#' @param vln.params List of keyword arguments to be passed to Seurat
-#'   \code{VlnPlot}. \code{features} are already defined and will throw
-#'   an error if passed.
-#' @param ridge.params Boolean indicating whether to create Seurat RidgePlots 
-#'   for each set. Splits by cell idents.
-#' @param dot.params Boolean indicating whether to create Seurat DotPlots for 
-#'   each set. Splits by cell idents.
-#' @param heatmap.params Boolean indicating whether to create a Seurat Heatmap 
-#'   for each set. Splits by cell idents. 
+#' @param vln.params List of keyword arguments to be passed to 
+#'   \code{\link[Seurat]{VlnPlot}}. \code{features} are already defined and will 
+#'   throw an error if passed.
+#' @param ridge.params List of keyword arguments to be passed to Seurat
+#'   \code{\link[Seurat]{RidgePlot}}. \code{features} are already defined and 
+#'   will throw an error if passed.
+#' @param dot.params List of keyword arguments to be passed to Seurat
+#'   \code{\link[Seurat]{DotPlot}}. \code{features} are already defined and will 
+#'   throw an error if passed.
+#' @param heatmap.params List of keyword arguments to be passed to Seurat
+#'   \code{\link[Seurat]{DoHeatmap}}. \code{features} and \code{assay} are 
+#'   already defined and will throw an error if passed.
 #' @param ... Arguments to be passed to Seurat \code{FeaturePlot}. \code{cols}, 
 #'   \code{features}, \code{reduction}, and \code{ncol} are already defined and
 #'   will throw an error if passed.
@@ -437,25 +441,27 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL,
 #' dynamically sized and named based on the name and number of markers for the
 #' set. New directories will be created for each set in the output directory.
 #'
-#' @param scrna Seurat object.
+#' @param scrna \linkS4class{Seurat} object.
 #' @param marker.df Dataframe with the two columns called "Set" and "Marker". 
 #'   The "Set" column should contain a cell or process-type (e.g. Tcell, Bcell, 
 #'   Exhaustion markers, etc.) while the "Marker" column contains the 
 #'   comma-delimited gene symbols associated with it. 
 #' @param outdir Path to output directory.
 #' @param vln Boolean indicating whether to create Seurat VlnPlots for each set.
-#'   Splits by cell idents. NULL by default.
+#'   Splits by cell idents. 
 #' @param ridge Boolean indicating whether to create Seurat RidgePlots for each
-#'   set. Splits by cell idents. NULL by default.
+#'   set. Splits by cell idents. 
 #' @param dot Boolean indicating whether to create Seurat DotPlots for each
-#'   set. Splits by cell idents. NULL by default.
-#' @param vln.params List of keyword arguments to be passed to Seurat
-#'   \code{VlnPlot}. \code{features} are already defined and will throw
-#'   an error if passed.
-#' @param ridge.params Boolean indicating whether to create Seurat RidgePlots 
-#'   for each set. Splits by cell idents. NULL by default.
-#' @param dot.params Boolean indicating whether to create Seurat DotPlots for 
-#'   each set. Splits by cell idents. NULL by default.
+#'   set. Splits by cell idents. 
+#' @param vln.params List of keyword arguments to be passed to 
+#'   \code{\link[Seurat]{VlnPlot}}. \code{features} are already defined and will 
+#'   throw an error if passed.
+#' @param ridge.params List of keyword arguments to be passed to Seurat
+#'   \code{\link[Seurat]{RidgePlot}}. \code{features} are already defined and 
+#'   will throw an error if passed.
+#' @param dot.params List of keyword arguments to be passed to Seurat
+#'   \code{\link[Seurat]{DotPlot}}. \code{features} are already defined and will 
+#'   throw an error if passed.
 #' @param ... Arguments to be passed to \code{\link[Seurat]{FeaturePlot}}. 
 #'   \code{cols}, \code{features}, \code{reduction}, and \code{ncol} are already 
 #'   defined and will throw an error if passed.

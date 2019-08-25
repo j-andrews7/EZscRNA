@@ -9,7 +9,7 @@ ScoreAnnotatedMarkers(scrna, marker.df)
 \arguments{
 \item{scrna}{\linkS4class{Seurat} object.}
 
-\item{marker.df}{Dataframe two columns named "Set" and "Marker". 
+\item{marker.df}{Dataframe with two columns named "Set" and "Marker". 
 The "Set" column should contain a cell or process-type (e.g. Tcell, Bcell, 
 Exhaustion markers, etc.) while the "Marker" column contains the 
 comma-delimited gene symbols associated with it.}
@@ -19,14 +19,11 @@ comma-delimited gene symbols associated with it.}
   \code{meta.data}.
 }
 \description{
-\code{ScoreAnnotatedMarkers} creates Seurat FeaturePlots for lists of 
-marker genes associated with a given annotation.
-}
-\details{
-Plots for each annotation set will be output to a PDF that will be
-dynamically sized and named based on the name and number of markers for the
-set. New directories will be created for each set in the output directory.
+\code{ScoreAnnotatedMarkers} scores \linkS4class{Seurat} objects for lists of 
+marker genes associated with a given annotation. Scores are stored in
+\code{meta.data} columns named after each set.
 }
 \seealso{
-\code{\link[Seurat]{AddModuleScore}} for scoring info.
+\code{\link[Seurat]{AddModuleScore}} for scoring info and 
+  \code{\link{VizAnnotatedMarkers}} for convenient visualization options.
 }

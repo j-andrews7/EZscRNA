@@ -9,15 +9,15 @@ AddClonotype(vdj.dir, scrna)
 \arguments{
 \item{vdj.dir}{String containing path to TCR (VDJ) directory.}
 
-\item{scrna}{Seurat object.}
+\item{scrna}{\linkS4class{Seurat} object.}
 }
 \value{
-Seurat object with clonotype data (clonotype_id and cdr3s_aa) 
-  added to the metadata for each cell.
+\linkS4class{Seurat} object with clonotype data (clonotype_id 
+  and cdr3s_aa) added to the metadata for each cell.
 }
 \description{
 \code{AddClonotype} adds clonotype info from matched 10X VDJ sequencing to 
-the metadata of a given Seurat object.
+the metadata of a given \linkS4class{Seurat} object.
 }
 \details{
 This function is admittedly rough and will be rewritten in the future. It
