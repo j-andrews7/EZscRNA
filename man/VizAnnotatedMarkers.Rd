@@ -4,9 +4,10 @@
 \alias{VizAnnotatedMarkers}
 \title{Visualize an annotated marker list}
 \usage{
-VizAnnotatedMarkers(scrna, marker.df, outdir, vln = NULL, ridge = NULL,
-  dot = NULL, heatmap = NULL, vln.params = NULL,
-  ridge.params = NULL, dot.params = NULL, heatmap.params = NULL, ...)
+VizAnnotatedMarkers(scrna, marker.df, outdir, idents = "default",
+  vln = NULL, ridge = NULL, dot = NULL, heatmap = NULL,
+  vln.params = NULL, ridge.params = NULL, dot.params = NULL,
+  heatmap.params = NULL, ...)
 }
 \arguments{
 \item{scrna}{\linkS4class{Seurat} object.}
@@ -17,6 +18,10 @@ Exhaustion markers, etc.) while the "Marker" column contains the
 comma-delimited gene symbols associated with it.}
 
 \item{outdir}{Path to output directory.}
+
+\item{idents}{String or character vector containing \code{meta.data} columns
+to use as cell identities across all plots. Multiple can be provided - 
+plots will be generated for each.}
 
 \item{vln}{Boolean indicating whether to create Seurat VlnPlots for each set.
 Splits by cell idents.}

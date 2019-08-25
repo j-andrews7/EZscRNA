@@ -4,8 +4,8 @@
 \alias{VizScoredSets}
 \title{Visualize scored gene modules}
 \usage{
-VizScoredSets(scrna, marker.df, outdir, vln = NULL, ridge = NULL,
-  dot = NULL, vln.params = NULL, ridge.params = NULL,
+VizScoredSets(scrna, marker.df, outdir, idents = "default", vln = NULL,
+  ridge = NULL, dot = NULL, vln.params = NULL, ridge.params = NULL,
   dot.params = NULL, ...)
 }
 \arguments{
@@ -17,6 +17,10 @@ Exhaustion markers, etc.) while the "Marker" column contains the
 comma-delimited gene symbols associated with it.}
 
 \item{outdir}{Path to output directory.}
+
+\item{idents}{String or character vector containing \code{meta.data} columns
+to use as cell identities across all plots. Multiple can be provided - 
+plots will be generated for each.}
 
 \item{vln}{Boolean indicating whether to create Seurat VlnPlots for each set.
 Splits by cell idents.}

@@ -324,6 +324,9 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 #'   Exhaustion markers, etc.) while the "Marker" column contains the 
 #'   comma-delimited gene symbols associated with it. 
 #' @param outdir Path to output directory.
+#' @param idents String or character vector containing \code{meta.data} columns
+#'   to use as cell identities across all plots. Multiple can be provided - 
+#'   plots will be generated for each.
 #' @param vln Boolean indicating whether to create Seurat VlnPlots for each set.
 #'   Splits by cell idents. 
 #' @param ridge Boolean indicating whether to create Seurat RidgePlots for each
@@ -355,9 +358,10 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 #'
 #' @author Jared Andrews
 #'
-VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL, 
-	ridge = NULL, dot = NULL, heatmap = NULL, vln.params = NULL, 
+VizAnnotatedMarkers <- function(scrna, marker.df, outdir, idents = "default", 
+  vln = NULL, ridge = NULL, dot = NULL, heatmap = NULL, vln.params = NULL, 
 	ridge.params = NULL, dot.params = NULL, heatmap.params = NULL, ...) {
+
 
   # Plot individual genes in various classes.
   for (i in unique(marker.df$Set)) {
@@ -365,8 +369,9 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL,
     j <- gsub(" ", "_", i)
     j <- gsub("/", "_", j)
     message("Plotting ", j)
-    genes <- trimws(unlist(strsplit(marker.df$Marker[which(marker.df$Set == i)], 
-    	",")))
+    genes <- trimws(unlist(strsplit(marker.df$Marker[which(
+      marker.df$Set == i)], ",")))
+
     # Remove genes not found in Seurat object.
     genes <- genes[which(genes %in% rownames(scrna))]
     ng <- length(genes)
@@ -392,6 +397,7 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL,
       w = 6 
       h = 5 
     }
+
     pdf(out.tsne, useDingbats = FALSE, height = h, width = w)
     fp <- FeaturePlot(object = scrna, features = genes, 
     	cols = c("gray","red"), ncol = 2, reduction = "tsne", ...)
@@ -404,31 +410,41 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL,
     print(fp)
     dev.off()
 
-    # Additional plots.
-    if (vln) {
-    	message("Plotting violin plots.")
-    	out.vln <- sprintf("%s/VlnPlots.%s.pdf", out, j)
-    	VizVlnPlot(scrna, out.vln, genes, vln.params = vln.params)
-    }
+    # Iterate through idents.
+    for (x in idents) {
+      # Set identities as appropriate.
+      if (!(x == "default")) {
+        Idents(scrna) <- scrna[[x]]
+        idents.label <- x
+      } else {
+        idents.label <- "DefaultIdents"
+      }
 
-    if (ridge) {
-    	message("Plotting ridge plots.")
-    	out.rid <- sprintf("%s/RidgePlots.%s.pdf", out, j)
-    	VizRidgePlot(scrna, out.rid, genes, ridge.params = ridge.params)
-    }
+      # Additional plots.
+      if (vln) {
+      	message("Plotting violin plots.")
+      	out.vln <- sprintf("%s/VlnPlots.%s.%s.pdf", out, j, idents.label)
+      	VizVlnPlot(scrna, out.vln, genes, vln.params = vln.params)
+      }
 
-    if (dot) {
-    	message("Plotting dot plots.")
-    	out.dot <- sprintf("%s/DotPlots.%s.pdf", out, j)
-    	VizDotPlot(scrna, out.dot, genes, dot.params = dot.params)
-    }
+      if (ridge) {
+      	message("Plotting ridge plots.")
+      	out.rid <- sprintf("%s/RidgePlots.%s.%s.pdf", out, j, idents.label)
+      	VizRidgePlot(scrna, out.rid, genes, ridge.params = ridge.params)
+      }
 
-    if (heatmap) {
-    	message("Plotting heatmaps.")
-    	out.heat <- sprintf("%s/Heatmaps.%s.pdf", out, j)
-    	VizHeatmap(scrna, out.heat, genes, heatmap.params = heatmap.params)
-    }
+      if (dot) {
+      	message("Plotting dot plots.")
+      	out.dot <- sprintf("%s/DotPlots.%s.%s.pdf", out, j, idents.label)
+      	VizDotPlot(scrna, out.dot, genes, dot.params = dot.params)
+      }
 
+      if (heatmap) {
+      	message("Plotting heatmaps.")
+      	out.heat <- sprintf("%s/Heatmaps.%s.%s.pdf", out, j, idents.label)
+      	VizHeatmap(scrna, out.heat, genes, heatmap.params = heatmap.params)
+      }
+    }
   }
 }
 
@@ -447,6 +463,9 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL,
 #'   Exhaustion markers, etc.) while the "Marker" column contains the 
 #'   comma-delimited gene symbols associated with it. 
 #' @param outdir Path to output directory.
+#' @param idents String or character vector containing \code{meta.data} columns
+#'   to use as cell identities across all plots. Multiple can be provided - 
+#'   plots will be generated for each.
 #' @param vln Boolean indicating whether to create Seurat VlnPlots for each set.
 #'   Splits by cell idents. 
 #' @param ridge Boolean indicating whether to create Seurat RidgePlots for each
@@ -473,9 +492,9 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL,
 #'
 #' @author Jared Andrews
 #'
-VizScoredSets <- function(scrna, marker.df, outdir, vln = NULL, 
-	ridge = NULL, dot = NULL, vln.params = NULL, 
-	ridge.params = NULL, dot.params = NULL, ...) {
+VizScoredSets <- function(scrna, marker.df, outdir, idents = "default", 
+  vln = NULL, ridge = NULL, dot = NULL, vln.params = NULL, ridge.params = NULL, 
+  dot.params = NULL, ...) {
 
   # Plot score for each set.
   sets <- c()
@@ -523,23 +542,34 @@ VizScoredSets <- function(scrna, marker.df, outdir, vln = NULL,
   print(fp)
   dev.off()
 
-  # Additional plots.
-  if (vln) {
-  	message("Plotting violin plots.")
-  	out.vln <- sprintf("%s/VlnPlots.ScoredModule.pdf", out)
-  	VizVlnPlot(scrna, out.vln, sets, vln.params = vln.params)
-  }
+  # Iterate through idents.
+  for (x in idents) {
+    # Set identities as appropriate.
+    if (!(x == "default")) {
+      Idents(scrna) <- scrna[[x]]
+      idents.label <- x
+    } else {
+      idents.label <- "DefaultIdents"
+    }
 
-  if (ridge) {
-  	message("Plotting ridge plots.")
-  	out.rid <- sprintf("%s/RidgePlots.ScoredModule.pdf", out)
-  	VizRidgePlot(scrna, out.rid, sets, ridge.params = ridge.params)
-  }
+    # Additional plots.
+    if (vln) {
+    	message("Plotting violin plots with ", idents.label, ".")
+    	out.vln <- sprintf("%s/VlnPlots.ScoredModule.%s.pdf", out, idents.label)
+    	VizVlnPlot(scrna, out.vln, sets, vln.params = vln.params)
+    }
 
-  if (dot) {
-  	message("Plotting dot plots.")
-  	out.dot <- sprintf("%s/DotPlots.ScoredModule.pdf", out)
-  	VizDotPlot(scrna, out.dot, sets, dot.params = dot.params)
+    if (ridge) {
+    	message("Plotting ridge plots with ", idents.label, ".")
+    	out.rid <- sprintf("%s/RidgePlots.ScoredModule.%s.pdf", out, idents.label)
+    	VizRidgePlot(scrna, out.rid, sets, ridge.params = ridge.params)
+    }
+
+    if (dot) {
+    	message("Plotting dot plots with ", idents.label, ".")
+    	out.dot <- sprintf("%s/DotPlots.ScoredModule.%s.pdf", out, idents.label)
+    	VizDotPlot(scrna, out.dot, sets, dot.params = dot.params)
+    }
   }
   
 }
