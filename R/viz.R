@@ -596,14 +596,14 @@ VizScoredSets <- function(scrna, marker.df, outdir, idents = "default",
 VizVlnPlot <- function(scrna, outfile, genes, vln.params = NULL) {
 	ng <- length(genes)
 	if (ng == 1) {
-	  w <- 0.3 * length(sort(unique(Idents(scrna))))
-	  h <- 4 * ceiling(length(genes) / 3)
+	  w <- 1 + (0.3 * length(sort(unique(Idents(scrna)))))
+	  h <- 4 * ceiling(ng / 3)
 	} else if (ng == 2) {
-	  w <- 2 * (0.3 * length(sort(unique(Idents(scrna)))))
-	  h <- 4 * ceiling(length(genes) / 3)
+	  w <- 2 + (2 * (0.3 * length(sort(unique(Idents(scrna))))))
+	  h <- 4 * ceiling(ng / 3)
 	} else {
-	  w <- 3 * (0.3 * length(sort(unique(Idents(scrna)))))
-	  h <- 4 * ceiling(length(genes) / 3)
+	  w <- 3 + (3 * (0.3 * length(sort(unique(Idents(scrna))))))
+	  h <- 4 * ceiling(ng / 3)
 	}
 	pdf(outfile, useDingbats = FALSE, height = h, width = w)
 
@@ -640,16 +640,17 @@ VizRidgePlot <- function(scrna, outfile, genes, ridge.params = NULL) {
 	ng <- length(genes)
 	if (ng == 1) {
 	    w <- 5
-	    h <- 0.33 * length(sort(unique(Idents(scrna))))
+	    h <- 1 + (0.33 * length(sort(unique(Idents(scrna)))))
 	} else if (ng == 2) {
 	    w <- 10
-	    h <- 0.33 * length(sort(unique(Idents(scrna))))
+	    h <- 1 + (0.33 * length(sort(unique(Idents(scrna)))))
 	} else if (ng == 3) {
 	    w <- 15
-	    h <- 0.33 * length(sort(unique(Idents(scrna))))
+	    h <- 1 + (0.33 * length(sort(unique(Idents(scrna)))))
 	} else {
 	    w <- 15
-	    h <- 4 * (0.33 * length(sort(unique(Idents(scrna)))))
+	    h <- ceiling(ng / 3) * (1 + 
+        (0.33 * length(sort(unique(Idents(scrna))))))
 	}
 	pdf(outfile, useDingbats = FALSE, height = h, width = w)
 	# Check for additional kwargs.
@@ -684,7 +685,7 @@ VizRidgePlot <- function(scrna, outfile, genes, ridge.params = NULL) {
 VizDotPlot <- function(scrna, outfile, genes, dot.params = NULL) {
 	ng <- length(genes)
 	w <- 5 + (0.3 * ng)
-	h <- 0.4 * length(sort(unique(Idents(scrna))))
+	h <- 1.5 + (0.4 * length(sort(unique(Idents(scrna)))))
 
 	pdf(outfile, useDingbats = FALSE, height = h, width = w)
 	# Check for additional kwargs.
@@ -720,7 +721,7 @@ VizDotPlot <- function(scrna, outfile, genes, dot.params = NULL) {
 VizHeatmap <- function(scrna, outfile, genes, heatmap.params = NULL) {
 	ng <- length(genes)
 
-	h <- 4 + (0.3 * length(genes))
+	h <- 3 + (0.3 * length(genes))
 	w <- 3 + (0.4 * length(sort(unique(Idents(scrna)))))
 
 	pdf(outfile, useDingbats = FALSE, height = h, width = w)
