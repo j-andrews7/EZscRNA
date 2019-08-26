@@ -212,6 +212,7 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
 #' @import ggplot2
 #' @import dplyr
 #' @importFrom stats reorder
+#' @importFrom scales wrap_format
 #'
 #' @export
 #'
@@ -317,12 +318,15 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 #' dynamically sized and named based on the name and number of markers for the
 #' set. New directories will be created for each set in the output directory.
 #'
-#' @param scrna Seurat object.
-#' @param marker.df Dataframe with the two columns called "Set" and "Marker". 
+#' @param scrna \linkS4class{Seurat} object.
+#' @param marker.df Dataframe with two columns named "Set" and "Marker". 
 #'   The "Set" column should contain a cell or process-type (e.g. Tcell, Bcell, 
 #'   Exhaustion markers, etc.) while the "Marker" column contains the 
 #'   comma-delimited gene symbols associated with it. 
 #' @param outdir Path to output directory.
+#' @param idents String or character vector containing \code{meta.data} columns
+#'   to use as cell identities across all plots. Multiple can be provided - 
+#'   plots will be generated for each.
 #' @param vln Boolean indicating whether to create Seurat VlnPlots for each set.
 #'   Splits by cell idents. 
 #' @param ridge Boolean indicating whether to create Seurat RidgePlots for each
@@ -331,15 +335,18 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 #'   set. Splits by cell idents. 
 #' @param heatmap Boolean indicating whether to create a Seurat Heatmap for each
 #'   set. Splits by cell idents.
-#' @param vln.params List of keyword arguments to be passed to Seurat
-#'   \code{VlnPlot}. \code{features} are already defined and will throw
-#'   an error if passed.
-#' @param ridge.params Boolean indicating whether to create Seurat RidgePlots 
-#'   for each set. Splits by cell idents.
-#' @param dot.params Boolean indicating whether to create Seurat DotPlots for 
-#'   each set. Splits by cell idents.
-#' @param heatmap.params Boolean indicating whether to create a Seurat Heatmap 
-#'   for each set. Splits by cell idents. 
+#' @param vln.params List of keyword arguments to be passed to 
+#'   \code{\link[Seurat]{VlnPlot}}. \code{features} are already defined and will 
+#'   throw an error if passed.
+#' @param ridge.params List of keyword arguments to be passed to Seurat
+#'   \code{\link[Seurat]{RidgePlot}}. \code{features} are already defined and 
+#'   will throw an error if passed.
+#' @param dot.params List of keyword arguments to be passed to Seurat
+#'   \code{\link[Seurat]{DotPlot}}. \code{features} are already defined and will 
+#'   throw an error if passed.
+#' @param heatmap.params List of keyword arguments to be passed to Seurat
+#'   \code{\link[Seurat]{DoHeatmap}}. \code{features} and \code{assay} are 
+#'   already defined and will throw an error if passed.
 #' @param ... Arguments to be passed to Seurat \code{FeaturePlot}. \code{cols}, 
 #'   \code{features}, \code{reduction}, and \code{ncol} are already defined and
 #'   will throw an error if passed.
@@ -351,9 +358,10 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 #'
 #' @author Jared Andrews
 #'
-VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL, 
-	ridge = NULL, dot = NULL, heatmap = NULL, vln.params = NULL, 
+VizAnnotatedMarkers <- function(scrna, marker.df, outdir, idents = "default", 
+  vln = NULL, ridge = NULL, dot = NULL, heatmap = NULL, vln.params = NULL, 
 	ridge.params = NULL, dot.params = NULL, heatmap.params = NULL, ...) {
+
 
   # Plot individual genes in various classes.
   for (i in unique(marker.df$Set)) {
@@ -361,8 +369,9 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL,
     j <- gsub(" ", "_", i)
     j <- gsub("/", "_", j)
     message("Plotting ", j)
-    genes <- trimws(unlist(strsplit(marker.df$Marker[which(marker.df$Set == i)], 
-    	",")))
+    genes <- trimws(unlist(strsplit(marker.df$Marker[which(
+      marker.df$Set == i)], ",")))
+
     # Remove genes not found in Seurat object.
     genes <- genes[which(genes %in% rownames(scrna))]
     ng <- length(genes)
@@ -388,6 +397,7 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL,
       w = 6 
       h = 5 
     }
+
     pdf(out.tsne, useDingbats = FALSE, height = h, width = w)
     fp <- FeaturePlot(object = scrna, features = genes, 
     	cols = c("gray","red"), ncol = 2, reduction = "tsne", ...)
@@ -400,31 +410,41 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL,
     print(fp)
     dev.off()
 
-    # Additional plots.
-    if (vln) {
-    	message("Plotting violin plots.")
-    	out.vln <- sprintf("%s/VlnPlots.%s.pdf", out, j)
-    	VizVlnPlot(scrna, out.vln, genes, vln.params = vln.params)
-    }
+    # Iterate through idents.
+    for (x in idents) {
+      # Set identities as appropriate.
+      if (!(x == "default")) {
+        Idents(scrna) <- scrna[[x]]
+        idents.label <- x
+      } else {
+        idents.label <- "DefaultIdents"
+      }
 
-    if (ridge) {
-    	message("Plotting ridge plots.")
-    	out.rid <- sprintf("%s/RidgePlots.%s.pdf", out, j)
-    	VizRidgePlot(scrna, out.rid, genes, ridge.params = ridge.params)
-    }
+      # Additional plots.
+      if (vln) {
+      	message("Plotting violin plots.")
+      	out.vln <- sprintf("%s/VlnPlots.%s.%s.pdf", out, j, idents.label)
+      	VizVlnPlot(scrna, out.vln, genes, vln.params = vln.params)
+      }
 
-    if (dot) {
-    	message("Plotting dot plots.")
-    	out.dot <- sprintf("%s/DotPlots.%s.pdf", out, j)
-    	VizDotPlot(scrna, out.dot, genes, dot.params = dot.params)
-    }
+      if (ridge) {
+      	message("Plotting ridge plots.")
+      	out.rid <- sprintf("%s/RidgePlots.%s.%s.pdf", out, j, idents.label)
+      	VizRidgePlot(scrna, out.rid, genes, ridge.params = ridge.params)
+      }
 
-    if (heatmap) {
-    	message("Plotting heatmaps.")
-    	out.heat <- sprintf("%s/Heatmaps.%s.pdf", out, j)
-    	VizHeatmap(scrna, out.heat, genes, heatmap.params = heatmap.params)
-    }
+      if (dot) {
+      	message("Plotting dot plots.")
+      	out.dot <- sprintf("%s/DotPlots.%s.%s.pdf", out, j, idents.label)
+      	VizDotPlot(scrna, out.dot, genes, dot.params = dot.params)
+      }
 
+      if (heatmap) {
+      	message("Plotting heatmaps.")
+      	out.heat <- sprintf("%s/Heatmaps.%s.%s.pdf", out, j, idents.label)
+      	VizHeatmap(scrna, out.heat, genes, heatmap.params = heatmap.params)
+      }
+    }
   }
 }
 
@@ -437,25 +457,30 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL,
 #' dynamically sized and named based on the name and number of markers for the
 #' set. New directories will be created for each set in the output directory.
 #'
-#' @param scrna Seurat object.
+#' @param scrna \linkS4class{Seurat} object.
 #' @param marker.df Dataframe with the two columns called "Set" and "Marker". 
 #'   The "Set" column should contain a cell or process-type (e.g. Tcell, Bcell, 
 #'   Exhaustion markers, etc.) while the "Marker" column contains the 
 #'   comma-delimited gene symbols associated with it. 
 #' @param outdir Path to output directory.
+#' @param idents String or character vector containing \code{meta.data} columns
+#'   to use as cell identities across all plots. Multiple can be provided - 
+#'   plots will be generated for each.
 #' @param vln Boolean indicating whether to create Seurat VlnPlots for each set.
-#'   Splits by cell idents. NULL by default.
+#'   Splits by cell idents. 
 #' @param ridge Boolean indicating whether to create Seurat RidgePlots for each
-#'   set. Splits by cell idents. NULL by default.
+#'   set. Splits by cell idents. 
 #' @param dot Boolean indicating whether to create Seurat DotPlots for each
-#'   set. Splits by cell idents. NULL by default.
-#' @param vln.params List of keyword arguments to be passed to Seurat
-#'   \code{VlnPlot}. \code{features} are already defined and will throw
-#'   an error if passed.
-#' @param ridge.params Boolean indicating whether to create Seurat RidgePlots 
-#'   for each set. Splits by cell idents. NULL by default.
-#' @param dot.params Boolean indicating whether to create Seurat DotPlots for 
-#'   each set. Splits by cell idents. NULL by default.
+#'   set. Splits by cell idents. 
+#' @param vln.params List of keyword arguments to be passed to 
+#'   \code{\link[Seurat]{VlnPlot}}. \code{features} are already defined and will 
+#'   throw an error if passed.
+#' @param ridge.params List of keyword arguments to be passed to Seurat
+#'   \code{\link[Seurat]{RidgePlot}}. \code{features} are already defined and 
+#'   will throw an error if passed.
+#' @param dot.params List of keyword arguments to be passed to Seurat
+#'   \code{\link[Seurat]{DotPlot}}. \code{features} are already defined and will 
+#'   throw an error if passed.
 #' @param ... Arguments to be passed to \code{\link[Seurat]{FeaturePlot}}. 
 #'   \code{cols}, \code{features}, \code{reduction}, and \code{ncol} are already 
 #'   defined and will throw an error if passed.
@@ -467,9 +492,9 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, vln = NULL,
 #'
 #' @author Jared Andrews
 #'
-VizScoredSets <- function(scrna, marker.df, outdir, vln = NULL, 
-	ridge = NULL, dot = NULL, vln.params = NULL, 
-	ridge.params = NULL, dot.params = NULL, ...) {
+VizScoredSets <- function(scrna, marker.df, outdir, idents = "default", 
+  vln = NULL, ridge = NULL, dot = NULL, vln.params = NULL, ridge.params = NULL, 
+  dot.params = NULL, ...) {
 
   # Plot score for each set.
   sets <- c()
@@ -517,23 +542,34 @@ VizScoredSets <- function(scrna, marker.df, outdir, vln = NULL,
   print(fp)
   dev.off()
 
-  # Additional plots.
-  if (vln) {
-  	message("Plotting violin plots.")
-  	out.vln <- sprintf("%s/VlnPlots.ScoredModule.pdf", out)
-  	VizVlnPlot(scrna, out.vln, sets, vln.params = vln.params)
-  }
+  # Iterate through idents.
+  for (x in idents) {
+    # Set identities as appropriate.
+    if (!(x == "default")) {
+      Idents(scrna) <- scrna[[x]]
+      idents.label <- x
+    } else {
+      idents.label <- "DefaultIdents"
+    }
 
-  if (ridge) {
-  	message("Plotting ridge plots.")
-  	out.rid <- sprintf("%s/RidgePlots.ScoredModule.pdf", out)
-  	VizRidgePlot(scrna, out.rid, sets, ridge.params = ridge.params)
-  }
+    # Additional plots.
+    if (vln) {
+    	message("Plotting violin plots with ", idents.label, ".")
+    	out.vln <- sprintf("%s/VlnPlots.ScoredModule.%s.pdf", out, idents.label)
+    	VizVlnPlot(scrna, out.vln, sets, vln.params = vln.params)
+    }
 
-  if (dot) {
-  	message("Plotting dot plots.")
-  	out.dot <- sprintf("%s/DotPlots.ScoredModule.pdf", out)
-  	VizDotPlot(scrna, out.dot, sets, dot.params = dot.params)
+    if (ridge) {
+    	message("Plotting ridge plots with ", idents.label, ".")
+    	out.rid <- sprintf("%s/RidgePlots.ScoredModule.%s.pdf", out, idents.label)
+    	VizRidgePlot(scrna, out.rid, sets, ridge.params = ridge.params)
+    }
+
+    if (dot) {
+    	message("Plotting dot plots with ", idents.label, ".")
+    	out.dot <- sprintf("%s/DotPlots.ScoredModule.%s.pdf", out, idents.label)
+    	VizDotPlot(scrna, out.dot, sets, dot.params = dot.params)
+    }
   }
   
 }
@@ -560,14 +596,14 @@ VizScoredSets <- function(scrna, marker.df, outdir, vln = NULL,
 VizVlnPlot <- function(scrna, outfile, genes, vln.params = NULL) {
 	ng <- length(genes)
 	if (ng == 1) {
-	  w <- 0.3 * length(sort(unique(Idents(scrna))))
-	  h <- 4 * ceiling(length(genes) / 3)
+	  w <- 1 + (0.3 * length(sort(unique(Idents(scrna)))))
+	  h <- 4 * ceiling(ng / 3)
 	} else if (ng == 2) {
-	  w <- 2 * (0.3 * length(sort(unique(Idents(scrna)))))
-	  h <- 4 * ceiling(length(genes) / 3)
+	  w <- 2 + (2 * (0.3 * length(sort(unique(Idents(scrna))))))
+	  h <- 4 * ceiling(ng / 3)
 	} else {
-	  w <- 3 * (0.3 * length(sort(unique(Idents(scrna)))))
-	  h <- 4 * ceiling(length(genes) / 3)
+	  w <- 3 + (3 * (0.3 * length(sort(unique(Idents(scrna))))))
+	  h <- 4 * ceiling(ng / 3)
 	}
 	pdf(outfile, useDingbats = FALSE, height = h, width = w)
 
@@ -604,16 +640,17 @@ VizRidgePlot <- function(scrna, outfile, genes, ridge.params = NULL) {
 	ng <- length(genes)
 	if (ng == 1) {
 	    w <- 5
-	    h <- 0.33 * length(sort(unique(Idents(scrna))))
+	    h <- 1 + (0.33 * length(sort(unique(Idents(scrna)))))
 	} else if (ng == 2) {
 	    w <- 10
-	    h <- 0.33 * length(sort(unique(Idents(scrna))))
+	    h <- 1 + (0.33 * length(sort(unique(Idents(scrna)))))
 	} else if (ng == 3) {
 	    w <- 15
-	    h <- 0.33 * length(sort(unique(Idents(scrna))))
+	    h <- 1 + (0.33 * length(sort(unique(Idents(scrna)))))
 	} else {
 	    w <- 15
-	    h <- 4 * (0.33 * length(sort(unique(Idents(scrna)))))
+	    h <- ceiling(ng / 3) * (1 + 
+        (0.33 * length(sort(unique(Idents(scrna))))))
 	}
 	pdf(outfile, useDingbats = FALSE, height = h, width = w)
 	# Check for additional kwargs.
@@ -648,7 +685,7 @@ VizRidgePlot <- function(scrna, outfile, genes, ridge.params = NULL) {
 VizDotPlot <- function(scrna, outfile, genes, dot.params = NULL) {
 	ng <- length(genes)
 	w <- 5 + (0.3 * ng)
-	h <- 0.4 * length(sort(unique(Idents(scrna))))
+	h <- 1.5 + (0.4 * length(sort(unique(Idents(scrna)))))
 
 	pdf(outfile, useDingbats = FALSE, height = h, width = w)
 	# Check for additional kwargs.
@@ -684,7 +721,7 @@ VizDotPlot <- function(scrna, outfile, genes, dot.params = NULL) {
 VizHeatmap <- function(scrna, outfile, genes, heatmap.params = NULL) {
 	ng <- length(genes)
 
-	h <- 4 + (0.3 * length(genes))
+	h <- 3 + (0.3 * length(genes))
 	w <- 3 + (0.4 * length(sort(unique(Idents(scrna)))))
 
 	pdf(outfile, useDingbats = FALSE, height = h, width = w)
