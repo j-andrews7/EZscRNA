@@ -109,7 +109,9 @@ ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8, mnn = FALSE,
   }
   message("Using ", reduc, " reduction.")
 
+  if (!mnn) {
   scrna <- RunPCA(scrna, npcs = npcs)
+  }
   scrna <- RunTSNE(scrna, dims = 1:npcs, reduction = reduc)
   scrna <- RunUMAP(scrna, dims = 1:npcs, n.neighbors = n.neighbors, min.dist =
     min.dist, reduction = reduc)
