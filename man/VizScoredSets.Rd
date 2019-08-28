@@ -4,12 +4,12 @@
 \alias{VizScoredSets}
 \title{Visualize scored gene modules}
 \usage{
-VizScoredSets(scrna, marker.df, outdir, vln = NULL, ridge = NULL,
-  dot = NULL, vln.params = NULL, ridge.params = NULL,
+VizScoredSets(scrna, marker.df, outdir, idents = "default", vln = NULL,
+  ridge = NULL, dot = NULL, vln.params = NULL, ridge.params = NULL,
   dot.params = NULL, ...)
 }
 \arguments{
-\item{scrna}{Seurat object.}
+\item{scrna}{\linkS4class{Seurat} object.}
 
 \item{marker.df}{Dataframe with the two columns called "Set" and "Marker". 
 The "Set" column should contain a cell or process-type (e.g. Tcell, Bcell, 
@@ -18,24 +18,30 @@ comma-delimited gene symbols associated with it.}
 
 \item{outdir}{Path to output directory.}
 
+\item{idents}{String or character vector containing \code{meta.data} columns
+to use as cell identities across all plots. Multiple can be provided - 
+plots will be generated for each.}
+
 \item{vln}{Boolean indicating whether to create Seurat VlnPlots for each set.
-Splits by cell idents. NULL by default.}
+Splits by cell idents.}
 
 \item{ridge}{Boolean indicating whether to create Seurat RidgePlots for each
-set. Splits by cell idents. NULL by default.}
+set. Splits by cell idents.}
 
 \item{dot}{Boolean indicating whether to create Seurat DotPlots for each
-set. Splits by cell idents. NULL by default.}
+set. Splits by cell idents.}
 
-\item{vln.params}{List of keyword arguments to be passed to Seurat
-\code{VlnPlot}. \code{features} are already defined and will throw
-an error if passed.}
+\item{vln.params}{List of keyword arguments to be passed to 
+\code{\link[Seurat]{VlnPlot}}. \code{features} are already defined and will 
+throw an error if passed.}
 
-\item{ridge.params}{Boolean indicating whether to create Seurat RidgePlots 
-for each set. Splits by cell idents. NULL by default.}
+\item{ridge.params}{List of keyword arguments to be passed to Seurat
+\code{\link[Seurat]{RidgePlot}}. \code{features} are already defined and 
+will throw an error if passed.}
 
-\item{dot.params}{Boolean indicating whether to create Seurat DotPlots for 
-each set. Splits by cell idents. NULL by default.}
+\item{dot.params}{List of keyword arguments to be passed to Seurat
+\code{\link[Seurat]{DotPlot}}. \code{features} are already defined and will 
+throw an error if passed.}
 
 \item{...}{Arguments to be passed to \code{\link[Seurat]{FeaturePlot}}. 
 \code{cols}, \code{features}, \code{reduction}, and \code{ncol} are already 

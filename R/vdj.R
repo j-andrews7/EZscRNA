@@ -1,16 +1,16 @@
 #' Add 10X clonotype data to seurat object
 #'
 #' \code{AddClonotype} adds clonotype info from matched 10X VDJ sequencing to 
-#' the metadata of a given Seurat object.
+#' the metadata of a given \linkS4class{Seurat} object.
 #'
 #' This function is admittedly rough and will be rewritten in the future. It
 #' does not include specific VDJ genes for each cell, rather just using the
 #' final amino acid sequence for inter-sample comparison.
 #'
 #' @param vdj.dir String containing path to TCR (VDJ) directory.
-#' @param scrna Seurat object.
-#' @return Seurat object with clonotype data (clonotype_id and cdr3s_aa) 
-#'   added to the metadata for each cell.
+#' @param scrna \linkS4class{Seurat} object.
+#' @return \linkS4class{Seurat} object with clonotype data (clonotype_id 
+#'   and cdr3s_aa) added to the metadata for each cell.
 #'
 #' @importFrom Seurat AddMetaData
 #' @importFrom utils read.csv

@@ -222,7 +222,7 @@ PerformCellInference <- function(scrna, sce, method, refset, labels,
       write.table(label.dists, file = sprintf("%s/%s.%s.%s.dist.txt", outdir, 
         clusts.name, metadata(refset)$name, labels), quote = FALSE, sep = "\t", 
         row.names = FALSE)
-      p <- SingleR::plotScoreHeatmap(annots, clusters = annots$clusts, 
+      p <- SingleR::plotScoreHeatmap(annots, clusters = annots$clusters, 
         silent = TRUE)
       pdf(sprintf("%s/%s.%s.%s.pdf", outdir, clusts.name, metadata(refset)$name, 
         labels))
