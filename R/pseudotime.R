@@ -95,6 +95,9 @@ SeuratToCDS <- function(scrna, clusters) {
   reducedDims(cds)@listData[["UMAP"]] <- 
     scrna@reductions[["umap"]]@cell.embeddings
 
+  cds@preprocess_aux@listData[["gene_loadings"]] <- 
+    Loadings(scrna, reduction = "pca")
+
   # Cluster cells. Only done to get partitions that aren't provided by Seurat.
   cds <- cluster_cells(cds)
 

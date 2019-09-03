@@ -4,35 +4,32 @@
 #' reference dataset via \code{\link[SingleR]{SingleR}}. 
 #'
 #' @details
-#' Reference datasets available for use by this function include:
+#' Reference datasets available for use by this function include those provided
+#' by SingleR:
 #' \describe{
 #'   \item{"HPCA"}{Human Primary Cell Atlas (HPCA): A collection of Gene 
 #'     Expression Omnibus (GEO datasets), which contains 713 human microarray 
 #'     samples classified to 38 main cell types and further annotated to 169
 #'     subtypes. Download from ExperimentHub as a 
 #'     \linkS4class{SummarizedExperiment} object via 
-#'     \code{\link[SingleR]{HumanPrimaryCellAtlasData}}. See dataset details via 
-#'     \code{?HumanPrimaryCellAtlasData}.}
+#'     \code{\link[SingleR]{HumanPrimaryCellAtlasData}}.}
 #'   \item{"Blueprint_Encode"}{Blueprint + ENCODE datasets: Blueprint 
 #'     Epigenomics, 144 RNA-seq pure human immune samples annotated to 28 cell 
 #'     types. ENCODE, 115 RNA-seq pure stroma and immune samples annotated 
 #'     to 17 cell types. Altogether, 259 samples with 43 cell types. Download 
 #'     from ExperimentHub as a \linkS4class{SummarizedExperiment} object via 
-#'     \code{\link[SingleR]{BlueprintEncodeData}}. See dataset details via 
-#'     \code{?BlueprintEncodeData}.}
-#'   \item{"ImmGen"}{Immunological Genome Project (ImmGen): 830 microarray 
+#'     \code{\link[SingleR]{BlueprintEncodeData}}.}
+#'   \item{"ImmGen"}{Immunological Genome Project (ImmGen): 830 mouse microarray 
 #'     samples, which we classified to 20 main cell types and further
 #'     annotated to 253 subtypes. Download from ExperimentHub as a 
 #'     \linkS4class{SummarizedExperiment} object via 
-#'     \code{\link[SingleR]{ImmGenData}}. See dataset details via 
-#'     \code{?ImmGeneData}.}
+#'     \code{\link[SingleR]{ImmGenData}}.}
 #'   \item{"MouseRNAseq"}{A dataset of 358 mouse RNA-seq samples annotated to
 #'     28 cell types. This dataset was collected, processed, and shared 
 #'     courtesy of Bérénice Benayoun. This data set is especially useful for 
 #'     brain-related samples. Download from ExperimentHub as a 
 #'     \linkS4class{SummarizedExperiment} object via 
-#'     \code{\link[SingleR]{MouseRNAseqData}}. See dataset details via 
-#'     \code{?MouseRNAseqData}.}
+#'     \code{\link[SingleR]{MouseRNAseqData}}.}
 #' }
 #'
 #' If \code{outdir} is specified, the annotation results will be written to a
@@ -50,13 +47,14 @@
 #'   labels (\code{labels="label.fine"}. The former is quicker and can be 
 #'   informative enough if your sample has many cell types. The latter is 
 #'   best-suited for purified cell types or if particular cellular subtypes are 
-#'   important.
+#'   important. If both are supplied, inference will be performed for both 
+#'   label sets.
 #' @param outdir Path to output directory for annotation scores, distributions,
-#'   and heatmap.
+#'   and heatmaps.
 #' @param method String or character vector specifying whether annotation should 
 #'   be applied to each single cell \code{method = "single"} or aggregated into 
 #'   cluster-level profiles \code{method = "cluster"} prior to annotation. If
-#'   both are supplied, predictions will be performed for both methods.
+#'   both are supplied, inference will be performed for both methods.
 #' @param clusters String or character vector defining the \code{meta.data} 
 #'   column(s) in \code{scrna} that specify cluster identities for each cell. 
 #'   Only required if \code{method = "cluster"}. A character vector can be 
@@ -64,7 +62,7 @@
 #'   
 #'   If provided with \code{method = "single"}, will be used as an additional 
 #'   label in heatmap plotting. 
-#' @param singler.params List of arguments to be passed to 
+#' @param singler.params List of additional arguments to be passed to 
 #'   \code{\link[SingleR]{SingleR}}.
 #' @return A \linkS4class{Seurat} object with inferred
 #'   cell type information in the \code{meta.data} slot named in 

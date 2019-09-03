@@ -109,15 +109,18 @@ VizEnrichments <- function(enrichments, outdir = NULL,
 }
 
 
-#' Visualize by metadata variables
+#' Visualize a Seurat object by metadata variables
 #'
-#' \code{VizDimMetaData} creates Seurat DimPlots for the given meta.data columns
-#' using UMAP, TSNE, and PCA reductions. These plots are automatically saved in 
-#' a PDF in the specified output directory.
+#' \code{VizMetaData} creates Seurat DimPlots for the given \code{meta.data} 
+#' columns using UMAP, TSNE, and PCA reductions. These plots are automatically 
+#' saved in a PDF in the specified output directory.
 #'
-#' @param scrna Seurat object.
-#' @param vars Vector of meta.data column names to plot.
+#' @param scrna \linkS4class{Seurat} object.
+#' @param vars String or character vector of \code{meta.data} column names to 
+#'   plot.
 #' @param outdir Path to output directory.
+#' @param mnn Boolean indicating whether integration performed via 
+#'   \code{\link{SimpleIntegration}} used \code{method = "MNN"}.
 #' @param ... Arguments to be passed to \code{\link[Seurat]{DimPlot}}. 
 #'   \code{cols}, \code{reduction}, and \code{group.by} are already defined and 
 #'   will throw an error if passed.
@@ -130,16 +133,25 @@ VizEnrichments <- function(enrichments, outdir = NULL,
 #'
 #' @author Jared Andrews
 #'
-VizMetaData <- function(scrna, vars, outdir, ...) {
+VizMetaData <- function(scrna, vars, outdir, mnn = FALSE, ...) {
 
 	# Check for necessary reductions.
 	if (is.null(scrna@reductions$tsne)) {
-		stop("TSNE not available in reductions, please run RunTSNE() on object.")
+		stop("'tsne' not available in reductions, please run RunTSNE() on object.")
 	} else if(is.null(scrna@reductions$umap)) {
-		stop("UMAP not available in reductions, please run RunUMAP() on object.")
-	} else if(is.null(scrna@reductions$pca)) {
-		stop("PCA not available in reductions, please run RunPCA() on object.")
-	}
+		stop("'umap' not available in reductions, please run RunUMAP() on object.")
+	} else if(is.null(scrna@reductions$pca) && !mnn) {
+		stop("'pca' not available in reductions, please run RunPCA() on object.")
+	} else if(mnn && is.null(scrna@reductions$mnn)) {
+    stop("'mnn' not available in reductions.")
+  }
+
+  # 
+  if (mnn) {
+    reduc <- "mnn"
+  } else {
+    reduc <- "pca"
+  }
 
 	dim.params <- list(...)
 	for (i in vars) {
@@ -158,7 +170,7 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
 		w <- 15 + (2 * ceiling((length(vars_found) / 12)))
 
 		p1 <- do.call(DimPlot, c(scrna, list(group.by = as.character(i), 
-			cols = cell_colors, reduction = "pca"), dim.params)) + NoLegend()
+			cols = cell_colors, reduction = reduc), dim.params)) + NoLegend()
 		p2 <- do.call(DimPlot, c(scrna, list(group.by = as.character(i), 
 			cols = cell_colors, reduction = "tsne"), dim.params)) + NoLegend()
 		p3 <- do.call(DimPlot, c(scrna, list(group.by = as.character(i), 
@@ -196,8 +208,8 @@ VizMetaData <- function(scrna, vars, outdir, ...) {
 #' Cells with no clonotypes are still included in determining clonotype
 #' frequencies, but NA is removed from subsequent graphs.
 #'
-#' @param scrna Seurat object with clonotype data added to metadata with 
-#'   \code{AddClonotype}.
+#' @param scrna \linkS4class{Seurat} object with clonotype data added to 
+#'   metadata with \code{\link{AddClonotype}}.
 #' @param outdir Path to output directory.
 #' @param g.by Metadata column to group samples by. If not provided, only
 #'   histograms of clonotypes will be saved.

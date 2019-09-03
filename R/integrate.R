@@ -45,6 +45,10 @@ SimpleIntegration <- function(scrnas, split.by = NULL,
 
   # Arg check.
   method <- match.arg(method)
+  if (method == "MNN" && !(
+    "SeuratWrappers" %in% rownames(installed.packages()))) {
+    stop("'SeuratWrappers' must be installed before 'MNN' can be used.")
+  }
 
 	# Seurat object splitting checking.
 	if (length(scrnas) > 1) {
