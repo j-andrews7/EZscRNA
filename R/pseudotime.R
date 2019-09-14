@@ -1,4 +1,4 @@
-#' Infer principal root node of each partition
+#' Infer principal root node(s) of each partition
 #'
 #' \code{GetRootNodes} infers and returns the principal root node for each
 #' partition. This will allow for the cells to be ordered according to the 
@@ -12,20 +12,21 @@
 #'   represents the earliest time point or starting point.
 #' @param partitions Character string indicating which partitions to calculate
 #'   root nodes for. Done for all partitions if not provided.
-#'
+#' @param n.roots Number of root nodes to be found for each partition.
 #' @return Character vector containing the names of the root nodes for each
 #'   partition. If \code{partitions} parameter is set, only the root nodes for
 #'   those partitions will be returned.
 #'
 #' @importFrom monocle3 principal_graph
-#' @importFrom BiocGenerics which.max
 #' @importMethodsFrom SummarizedExperiment colData
 #'
 #' @export
 #'
 #' @author Jared Andrews
 #'
-GetRootNodes <- function(cds, order.var, order.start, partitions = NULL) {
+GetRootNodes <- function(cds, order.var, order.start, partitions = NULL, 
+  n.roots = 1) {
+
   root.nodes <- c()
 
   if (is.null(partitions)) {
@@ -43,7 +44,8 @@ GetRootNodes <- function(cds, order.var, order.start, partitions = NULL) {
     closest.vertex <- as.matrix(closest.vertex[colnames(cds), ])
     node <-
       igraph::V(principal_graph(cds)[["UMAP"]])$name[as.numeric(names
-        (which.max(table(closest.vertex[cell.ids,]))))]
+        (head(sort(table(closest.vertex[cell.ids,]), decreasing = TRUE), 
+          n.roots)))]
 
     root.nodes <- append(root.nodes, node)
   }
@@ -66,22 +68,27 @@ GetRootNodes <- function(cds, order.var, order.start, partitions = NULL) {
 #' @param scrna A \linkS4class{Seurat} object with UMAP mappings.
 #' @param clusters String indicating column in \code{meta.data} that 
 #'   contains cluster information to be utilized.
+#' @param reduction String indicating which reduction should be used for 
+#'   feature loadings. Set to "mnn" if \code{method = "MNN"} was used with 
+#'   \link{SimpleIntegration}.
 #' @return A \code{cell_data_set} object with trajectory information calculated.
 #'   Retains the same UMAP mappings and cluster information as \code{scrna}.
 #'
 #' @importFrom monocle3 cluster_cells new_cell_data_set learn_graph partitions
 #' @importMethodsFrom SingleCellExperiment reducedDims reducedDims<-
 #' @importFrom SingleCellExperiment reducedDims
+#' @importFrom Seurat GetAssayData Embeddings Loadings Cells
 #' @import methods
 #'
 #' @export
 #'
 #' @author Jared Andrews
 #' 
-SeuratToCDS <- function(scrna, clusters) {
+SeuratToCDS <- function(scrna, clusters, reduction = "pca") {
   # Extract components to build CDS object.
   message("Creating cell_data_set object.")
-  counts.data <- as(as.matrix(scrna@assays$RNA@data), 'sparseMatrix')
+  counts.data <- as(GetAssayData(scrna, slot = "data", assay = "RNA"), 
+    'sparseMatrix')
   cell_metadata <- scrna[[]]
   gene_annotation <- data.frame(gene_short_name = row.names(counts.data), 
     row.names = row.names(counts.data))
@@ -92,18 +99,17 @@ SeuratToCDS <- function(scrna, clusters) {
                            gene_metadata = gene_annotation)
 
   # Assign UMAP coordinates to CDS object.
-  reducedDims(cds)@listData[["UMAP"]] <- 
-    scrna@reductions[["umap"]]@cell.embeddings
+  reducedDims(cds)@listData[["UMAP"]] <- Embeddings(scrna, reduction = "umap")
 
   cds@preprocess_aux@listData[["gene_loadings"]] <- 
-    Loadings(scrna, reduction = "pca")
+    Loadings(scrna, reduction = reduction)
 
   # Cluster cells. Only done to get partitions that aren't provided by Seurat.
   cds <- cluster_cells(cds)
 
   # Map clusters to CDS object.
   list_cluster <- scrna[[]][[clusters]]
-  names(list_cluster) <- scrna@assays[["RNA"]]@data@Dimnames[[2]]
+  names(list_cluster) <- Cells(scrna)
 
   cds@clusters@listData[["UMAP"]][["clusters"]] <- list_cluster
 
@@ -111,8 +117,8 @@ SeuratToCDS <- function(scrna, clusters) {
   cds@clusters@listData[["UMAP"]][["louvain_res"]] <- "NA"
 
   # Assign UMAP coordinates to CDS object.
-  reducedDims(cds)@listData[["UMAP"]] <- 
-    scrna@reductions[["umap"]]@cell.embeddings
+  reducedDims(cds)@listData[["UMAP"]] <- Embeddings(scrna, reduction = "umap")
+  colnames(reducedDims(cds)@listData[["UMAP"]]) <- c("V1", "V2")
 
   message("Creating trajectory graph.")
   cds <- learn_graph(cds)

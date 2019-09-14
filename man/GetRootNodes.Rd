@@ -2,9 +2,10 @@
 % Please edit documentation in R/pseudotime.R
 \name{GetRootNodes}
 \alias{GetRootNodes}
-\title{Infer principal root node of each partition}
+\title{Infer principal root node(s) of each partition}
 \usage{
-GetRootNodes(cds, order.var, order.start, partitions = NULL)
+GetRootNodes(cds, order.var, order.start, partitions = NULL,
+  n.roots = 1)
 }
 \arguments{
 \item{cds}{\code{cell_data_set} object containing a trajectory graph, as from
@@ -18,6 +19,8 @@ represents the earliest time point or starting point.}
 
 \item{partitions}{Character string indicating which partitions to calculate
 root nodes for. Done for all partitions if not provided.}
+
+\item{n.roots}{Number of root nodes to be found for each partition.}
 }
 \value{
 Character vector containing the names of the root nodes for each

@@ -4,13 +4,17 @@
 \alias{SeuratToCDS}
 \title{Convert a Seurat object to a cell data set object}
 \usage{
-SeuratToCDS(scrna, clusters)
+SeuratToCDS(scrna, clusters, reduction = "pca")
 }
 \arguments{
 \item{scrna}{A \linkS4class{Seurat} object with UMAP mappings.}
 
 \item{clusters}{String indicating column in \code{meta.data} that 
 contains cluster information to be utilized.}
+
+\item{reduction}{String indicating which reduction should be used for 
+feature loadings. Set to "mnn" if \code{method = "MNN"} was used with 
+\link{SimpleIntegration}.}
 }
 \value{
 A \code{cell_data_set} object with trajectory information calculated.

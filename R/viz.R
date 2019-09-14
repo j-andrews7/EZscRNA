@@ -255,14 +255,16 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 		cdr3 <- c.df$cdr3s_aa
 		x.df <- df[(df$cdr3s_aa %in% cdr3),]
 
-		# Order 
-		index <- 1:length(o.by)
-		z = 1
-		x.df$ord <- 1
-		for (i in o.by) {
-		    x.df$ord[x.df[g.by] == i] <- z
-		    z = z + 1
-		}
+		# Order.
+    if (!is.null(o.by)) {
+  		index <- 1:length(o.by)
+  		z = 1
+  		x.df$ord <- 1
+  		for (i in o.by) {
+  		    x.df$ord[x.df[g.by] == i] <- z
+  		    z = z + 1
+  		}
+    }
 		
 		pdf(sprintf("%s/Clonotype.Distributions.pdf", outdir), height = 9, 
 			width = 9)
