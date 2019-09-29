@@ -35,9 +35,8 @@ Imports:
   SummarizedExperiment,
   igraph,
   methods,
-  S4Vectors
-Remotes: 
-  cole-trapnell-lab/monocle3,
+  S4Vectors,
+  slingshot
 License: GPL-3 | file LICENSE
 URL: https://github.com/j-andrews7/EZscRNA
 BugReports: https://github.com/j-andrews7/EZscRNA/issues
