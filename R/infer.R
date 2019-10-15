@@ -18,11 +18,12 @@
 #'
 #' If \code{outdir} is specified, the annotation results will be written to a
 #' file named in \code{clusters.refset.labels.txt} format if 
-#' \code{method="cluster"} or \code{refset.labels} format if 
-#' \code{method="single"}. Additionally, a heatmap will be made from the
-#' annotation results via \code{\link[SingleR]{plotScoreHeatmap}} if there are
-#' fewer than 65500 cells (the hclust method used fails with more cells than 
-#' that). 
+#' \code{method="cluster"} or \code{refset.labels.txt} format if 
+#' \code{method="single"}. Label distributions will be written to files named in
+#' \code{refset.labels.dist.txt} and \code{refset.labels.pruned.dist.txt} 
+#' format. Additionally, a heatmap will be made from the annotation results via 
+#' \code{\link[SingleR]{plotScoreHeatmap}} if there are fewer than 65500 cells 
+#' (the hclust method used fails with more cells than that). 
 #'
 #' @param scrna \linkS4class{Seurat} object.
 #' @param refsets List of reference dataset(s). Multiple can be provided.
@@ -52,7 +53,8 @@
 #'   cell type information in the \code{meta.data} slot named in 
 #'   \code{refset.labels} format. If \code{method = "cluster"}, the resulting
 #'   \code{meta.data} column will be named in \code{clusters.refset.labels} 
-#'   format. 
+#'   format. Pruned labels will also be added with \code{.pruned} appended to
+#'   the column name.
 #'
 #' @importFrom utils write.table
 #'
@@ -207,8 +209,12 @@ PerformCellInference <- function(scrna, sce, method, refset, labels,
       write.table(label.dists, file = sprintf("%s/%s.%s.%s.dist.txt", outdir, 
         clusts.name, metadata(refset)$name, labels), quote = FALSE, sep = "\t", 
         row.names = FALSE)
+      write.table(pruned.label.dists, file = sprintf(
+        "%s/%s.%s.%s.pruned.dist.txt", outdir, clusts.name, 
+        metadata(refset)$name, labels), quote = FALSE, sep = "\t", 
+        row.names = FALSE)
       p <- SingleR::plotScoreHeatmap(annots, clusters = annots$clusters, 
-        silent = TRUE)
+        silent = TRUE, show.labels = TRUE, show.pruned = TRUE)
       pdf(sprintf("%s/%s.%s.%s.pdf", outdir, clusts.name, metadata(refset)$name, 
         labels))
       print(p)
@@ -219,8 +225,14 @@ PerformCellInference <- function(scrna, sce, method, refset, labels,
     scrna[[sprintf("%s.%s.%s", clusts.name, metadata(refset)$name, labels)]] <- 
       annots$labels[match(scrna[[]][[clusts.name]], annots$clusters)]
 
-    scrna[[sprintf("%s.%s.%s.pruned", clusts.name, metadata(refset)$name, labels)]] <- 
+    scrna[[sprintf("%s.%s.%s.pruned", clusts.name, metadata(refset)$name, 
+      labels)]] <- 
       annots$pruned.labels[match(scrna[[]][[clusts.name]], annots$clusters)]
+
+    # Change NAs to "Ambiguous" so they are still plotted by default.
+    scrna[[sprintf("%s.%s.%s.pruned", clusts.name, metadata(refset)$name, 
+      labels)]][is.na(scrna[[sprintf("%s.%s.%s.pruned", clusts.name, 
+        metadata(refset)$name, labels)]])] <- "Ambiguous"
 
   } else {
     cells <- rownames(annots)
@@ -236,13 +248,15 @@ PerformCellInference <- function(scrna, sce, method, refset, labels,
       write.table(label.dists, file = sprintf("%s/%s.%s.dist.txt", outdir, 
         metadata(refset)$name, labels), quote = FALSE, sep = "\t", 
         row.names = FALSE)
-
+      write.table(pruned.label.dists, file = sprintf("%s/%s.%s.pruned.dist.txt", 
+        outdir, metadata(refset)$name, labels), quote = FALSE, sep = "\t", 
+        row.names = FALSE)
       # pheatmap clustering can't handle tons of cells.
       if (nrow(annots) < 65500) {
         pdf(sprintf("%s/%s.%s.%s.%s.pdf", outdir, method, metadata(refset)$name, 
           labels, clusts.name))
         p <- SingleR::plotScoreHeatmap(annots, clusters = clusts, 
-          silent = TRUE)
+          silent = TRUE, show.labels = TRUE, show.pruned = TRUE)
         print(p)
         dev.off()
       } else {
@@ -250,8 +264,15 @@ PerformCellInference <- function(scrna, sce, method, refset, labels,
           " more than 65000 cells."))
       }
     }
+
     scrna[[sprintf("%s.%s", metadata(refset)$name, labels)]] <- annots$labels
-    scrna[[sprintf("%s.%s.pruned", metadata(refset)$name, labels)]] <- annots$pruned.labels
+    scrna[[sprintf("%s.%s.pruned", metadata(refset)$name, labels)]] <- 
+      annots$pruned.labels
+
+    # Change NAs to Ambiguous.
+    scrna[[sprintf("%s.%s.pruned", metadata(refset)$name, labels)]][is.na(
+      scrna[[sprintf("%s.%s.pruned", metadata(refset)$name, labels)]])] <- 
+      "Ambiguous"
   }
 
   return(scrna)

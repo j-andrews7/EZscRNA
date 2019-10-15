@@ -45,7 +45,8 @@ A \linkS4class{Seurat} object with inferred
   cell type information in the \code{meta.data} slot named in 
   \code{refset.labels} format. If \code{method = "cluster"}, the resulting
   \code{meta.data} column will be named in \code{clusters.refset.labels} 
-  format.
+  format. Pruned labels will also be added with \code{.pruned} appended to
+  the column name.
 }
 \description{
 \code{AssignCellType} performs correlation-based cell type inference using a 
@@ -66,11 +67,12 @@ by SingleR:
 
 If \code{outdir} is specified, the annotation results will be written to a
 file named in \code{clusters.refset.labels.txt} format if 
-\code{method="cluster"} or \code{refset.labels} format if 
-\code{method="single"}. Additionally, a heatmap will be made from the
-annotation results via \code{\link[SingleR]{plotScoreHeatmap}} if there are
-fewer than 65500 cells (the hclust method used fails with more cells than 
-that).
+\code{method="cluster"} or \code{refset.labels.txt} format if 
+\code{method="single"}. Label distributions will be written to files named in
+\code{refset.labels.dist.txt} and \code{refset.labels.pruned.dist.txt} 
+format. Additionally, a heatmap will be made from the annotation results via 
+\code{\link[SingleR]{plotScoreHeatmap}} if there are fewer than 65500 cells 
+(the hclust method used fails with more cells than that).
 }
 \examples{
 library("Seurat")
