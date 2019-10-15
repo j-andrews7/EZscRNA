@@ -402,26 +402,35 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, idents = "default",
     out.umap <- sprintf("%s/UMAP.%s.pdf", out, j)
 
     # Dynamic figure sizing.
-    h = 0
-    w = 0
+    h <- 6
+    w <- 5
     if (ng > 1) {
-      w = 12 # two columns
-      h = 5 * (floor(ng / 2) + ng %% 2) # number of rows
-    } else {
-      w = 6 
-      h = 5 
-    }
+      w <- 12 # two columns
+      if (ng > 4) {
+        h <- 15 
+      } else if (ng > 2) {
+        h <- 10
+      } 
+    } 
 
     pdf(out.tsne, useDingbats = FALSE, height = h, width = w)
-    fp <- FeaturePlot(object = scrna, features = genes, 
-    	cols = c("gray","red"), ncol = 2, reduction = "tsne", ...)
-    print(fp)
+    it <- 1
+    for (i in 1:ceiling(ng/6)) {
+      fp <- FeaturePlot(object = scrna, features = genes[it:it+5], 
+    	  cols = c("gray","red"), ncol = 2, reduction = "tsne", ...)
+      print(fp)
+      it <- it + 6
+    }
     dev.off()
 
     pdf(out.umap, useDingbats = FALSE, height = h, width = w)
-    fp <- FeaturePlot(object = scrna, features = genes, 
-    	cols = c("gray","red"), ncol = 2, reduction = "umap", ...)
-    print(fp)
+    it <- 1
+    for (i in 1:ceiling(ng/6)) {
+      fp <- FeaturePlot(object = scrna, features = genes[it:it+5], 
+    	  cols = c("gray","red"), ncol = 2, reduction = "umap", ...)
+      print(fp)
+      it <- it + 6
+    }
     dev.off()
 
     # Iterate through idents.
