@@ -8,7 +8,7 @@ Authors@R: person("Jared", "Andrews", email = "jared.andrews07@gmail.com",
 Author: Jared Andrews [aut, cre]
 Maintainer: Jared Andrews <jared.andrews07@gmail.com>
 Description: Serves as a convenient wrapper for 
-  EZ(-er), high-level scRNA-seq analysis using best practices. It provides a 
+  EZ(-er), high-level scRNA-seq analysis. It provides a 
   number of high-level functions spanning QC/preprocessing, exploratory 
   data analysis, clustering & marker finding, cell type inference using  
   reference data sets, pseudotime trajectories, and dynamic 
@@ -37,6 +37,8 @@ Imports:
   methods,
   S4Vectors,
   slingshot
+Suggests:
+  SingleR
 License: GPL-3 | file LICENSE
 URL: https://github.com/j-andrews7/EZscRNA
 BugReports: https://github.com/j-andrews7/EZscRNA/issues

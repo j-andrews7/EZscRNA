@@ -216,6 +216,9 @@ PerformCellInference <- function(scrna, sce, method, refset, labels,
     scrna[[sprintf("%s.%s.%s", clusts.name, metadata(refset)$name, labels)]] <- 
       annots$labels[match(scrna[[]][[clusts.name]], annots$clusters)]
 
+    scrna[[sprintf("%s.%s.%s.pruned", clusts.name, metadata(refset)$name, labels)]] <- 
+      annots$pruned.labels[match(scrna[[]][[clusts.name]], annots$clusters)]
+
   } else {
     cells <- rownames(annots)
     rownames(annots) <- NULL
@@ -245,6 +248,7 @@ PerformCellInference <- function(scrna, sce, method, refset, labels,
       }
     }
     scrna[[sprintf("%s.%s", metadata(refset)$name, labels)]] <- annots$labels
+    scrna[[sprintf("%s.%s.pruned", metadata(refset)$name, labels)]] <- annots$pruned.labels
   }
 
   return(scrna)
