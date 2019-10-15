@@ -191,6 +191,9 @@ PerformCellInference <- function(scrna, sce, method, refset, labels,
   label.dists <- 100 * (table(annots$labels) / 
     sum(table(annots$labels)))
 
+  pruned.label.dists <- 100 * (table(annots$pruned.labels) / 
+    sum(table(annots$pruned.labels)))
+
   if (method == "cluster") {
     clusters <- rownames(annots)
     rownames(annots) <- NULL
