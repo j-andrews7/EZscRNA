@@ -36,8 +36,7 @@ Imports:
   igraph,
   methods,
   S4Vectors,
-  slingshot
-Suggests:
+  slingshot,
   SingleR
 License: GPL-3 | file LICENSE
 URL: https://github.com/j-andrews7/EZscRNA
