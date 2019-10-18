@@ -27,7 +27,6 @@ Imports:
   future,
   enrichR (>= 2.0),
   scales, 
-  monocle3,
   SingleR,
   scater,
   SingleCellExperiment,
