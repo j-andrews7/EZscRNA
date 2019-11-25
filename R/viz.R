@@ -416,6 +416,11 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, idents = "default",
     pdf(out.tsne, useDingbats = FALSE, height = h, width = w)
     it <- 1
     for (i in 1:ceiling(ng/6)) {
+      if (ng < (it + 5)) {
+        max.genes <- ng
+      } else {
+        max.genes <- it + 5
+      }
       fp <- FeaturePlot(object = scrna, features = genes[it:it+5], 
     	  cols = c("gray","red"), ncol = 2, reduction = "tsne", ...)
       print(fp)
@@ -426,6 +431,11 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, idents = "default",
     pdf(out.umap, useDingbats = FALSE, height = h, width = w)
     it <- 1
     for (i in 1:ceiling(ng/6)) {
+      if (ng < (it + 5)) {
+        max.genes <- ng
+      } else {
+        max.genes <- it + 5
+      }
       fp <- FeaturePlot(object = scrna, features = genes[it:it+5], 
     	  cols = c("gray","red"), ncol = 2, reduction = "umap", ...)
       print(fp)
