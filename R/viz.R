@@ -421,7 +421,7 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, idents = "default",
       } else {
         max.genes <- it + 5
       }
-      fp <- FeaturePlot(object = scrna, features = genes[it:it+5], 
+      fp <- FeaturePlot(object = scrna, features = genes[it:max.genes], 
     	  cols = c("gray","red"), ncol = 2, reduction = "tsne", ...)
       print(fp)
       it <- it + 6
@@ -436,7 +436,7 @@ VizAnnotatedMarkers <- function(scrna, marker.df, outdir, idents = "default",
       } else {
         max.genes <- it + 5
       }
-      fp <- FeaturePlot(object = scrna, features = genes[it:it+5], 
+      fp <- FeaturePlot(object = scrna, features = genes[it:max.genes], 
     	  cols = c("gray","red"), ncol = 2, reduction = "umap", ...)
       print(fp)
       it <- it + 6
