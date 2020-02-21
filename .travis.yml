@@ -4,7 +4,7 @@ language: R
 cache: packages
 sudo: required
 r:
-  - bioc-devel
+  - bioc-release
 
 # Attempt to get past time limit by having separate step for preparing cache.
 jobs:
@@ -45,7 +45,7 @@ r_binary_packages:
   - FNN
 
 before_script:
-  - R -e 'BiocManager::install(version = "devel", ask=FALSE)'
+  - R -e 'BiocManager::install(ask=FALSE)'
   - R -e 'BiocManager::valid()'
 
 apt_packages:
