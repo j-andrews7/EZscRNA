@@ -46,7 +46,7 @@ RunEnrichr <- function(genes, libraries = c("GO_Molecular_Function_2018",
 	# Run enrichments.
 	message("Submitting sets to the Enrichr server. Please be patient, this can",
 		" sometimes take a few minutes if the server is under heavy load or down.")
-	results <- enrichr(genes, libraries)
+	results <- enrichR::enrichr(genes, libraries)
 	res.names <- names(results)
 
 	if (!is.null(outdir)) {

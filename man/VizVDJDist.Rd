@@ -8,8 +8,8 @@ VizVDJDist(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
   n.clono.g = NULL)
 }
 \arguments{
-\item{scrna}{Seurat object with clonotype data added to metadata with 
-\code{AddClonotype}.}
+\item{scrna}{\linkS4class{Seurat} object with clonotype data added to 
+metadata with \code{\link{AddClonotype}}.}
 
 \item{outdir}{Path to output directory.}
 

@@ -109,10 +109,12 @@ ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8, mnn = FALSE,
   }
   message("Using ", reduc, " reduction.")
 
+  if (!mnn) {
   scrna <- RunPCA(scrna, npcs = npcs)
+  }
   scrna <- RunTSNE(scrna, dims = 1:npcs, reduction = reduc)
   scrna <- RunUMAP(scrna, dims = 1:npcs, n.neighbors = n.neighbors, min.dist =
-    min.dist, reduction = reduc)
+    min.dist, reduction = reduc, umap.method = "umap-learn", metric = "correlation")
 
   message("Performing clustering on variable features.")
   scrna <- FindNeighbors(scrna, dims = 1:npcs, reduction = reduc)
@@ -139,7 +141,7 @@ ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8, mnn = FALSE,
 	  # Make marker heatmap. Dynamic sizing.
 	  h <- 4 + (0.15 * length(top10up$gene))
 		w <- 3 + (0.4 * length(sort(unique(Idents(scrna)))))
-	  pdf(sprintf("%s/Top10.UpMarkers.Cluster.%.1fRes.%dPC.%s.Heatmap.pdf", 
+	  pdf(sprintf("%s/Top10.UpMarkers.Cluster.%.1fRes.%dPC.%s.Downsample.Heatmap.pdf", 
       outdir, i, npcs, reduc), height = h, width = w)
 	  p <- DoHeatmap(subset(scrna, downsample = 100), features = top10up$gene, 
       assay = "RNA")

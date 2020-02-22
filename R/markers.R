@@ -23,11 +23,11 @@ ScoreAnnotatedMarkers <- function(scrna, marker.df) {
 
   # Plot individual genes in various classes.
   for (i in unique(marker.df$Set)) {
-
     # Remove problematic characters from cell classes.
     j <- gsub(" ", "_", i)
     j <- gsub("/", "_", j)
     message("Scoring ", j)
+    start <- Sys.time()
     genes <- trimws(unlist(strsplit(marker.df$Marker[which(marker.df$Set == i)], 
     	",")))
     # Remove genes not found in Seurat object.
@@ -48,6 +48,10 @@ ScoreAnnotatedMarkers <- function(scrna, marker.df) {
     # No idea why, but this does not work with the "[[]]" accessor.
     colnames(scrna@meta.data)[colnames(scrna@meta.data) == paste0(j, ".Score1"
     	)] <- paste0(j, ".Score")
+
+    end <- Sys.time()
+    elapsed <- end - start
+    message("Took: ", round(elapsed, digits = 3), " seconds.")
   }
 
   return(scrna)

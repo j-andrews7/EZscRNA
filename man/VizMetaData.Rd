@@ -2,25 +2,29 @@
 % Please edit documentation in R/viz.R
 \name{VizMetaData}
 \alias{VizMetaData}
-\title{Visualize by metadata variables}
+\title{Visualize a Seurat object by metadata variables}
 \usage{
-VizMetaData(scrna, vars, outdir, ...)
+VizMetaData(scrna, vars, outdir, mnn = FALSE, ...)
 }
 \arguments{
-\item{scrna}{Seurat object.}
+\item{scrna}{\linkS4class{Seurat} object.}
 
-\item{vars}{Vector of meta.data column names to plot.}
+\item{vars}{String or character vector of \code{meta.data} column names to 
+plot.}
 
 \item{outdir}{Path to output directory.}
+
+\item{mnn}{Boolean indicating whether integration performed via 
+\code{\link{SimpleIntegration}} used \code{method = "MNN"}.}
 
 \item{...}{Arguments to be passed to \code{\link[Seurat]{DimPlot}}. 
 \code{cols}, \code{reduction}, and \code{group.by} are already defined and 
 will throw an error if passed.}
 }
 \description{
-\code{VizDimMetaData} creates Seurat DimPlots for the given meta.data columns
-using UMAP, TSNE, and PCA reductions. These plots are automatically saved in 
-a PDF in the specified output directory.
+\code{VizMetaData} creates Seurat DimPlots for the given \code{meta.data} 
+columns using UMAP, TSNE, and PCA reductions. These plots are automatically 
+saved in a PDF in the specified output directory.
 }
 \author{
 Jared Andrews

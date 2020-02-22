@@ -1,20 +1,19 @@
 Package: EZscRNA
 Title: Simple Convenience Functions for High-Level scRNA-Seq Analysis
 Version: 0.1.0.9000
-Date: 2019-08-22
+Date: 2019-11-25
 Authors@R: person("Jared", "Andrews", email = "jared.andrews07@gmail.com", 
   role = c("aut", "cre"),
   comment = c(ORCID = "https://orcid.org/0000-0002-0780-6248"))
 Author: Jared Andrews [aut, cre]
 Maintainer: Jared Andrews <jared.andrews07@gmail.com>
 Description: Serves as a convenient wrapper for 
-  EZ(-er), high-level scRNA-seq analysis using best practices. It provides a 
+  EZ(-er), high-level scRNA-seq analysis. It provides a 
   number of high-level functions spanning QC/preprocessing, exploratory 
   data analysis, clustering & marker finding, cell type inference using  
   reference data sets, pseudotime trajectories, and dynamic 
   visualizations.
 Depends: 
-  R (>= 3.6.0),
   Seurat (>= 3.1.0),
   sctransform (>= 0.2.0)
 Imports: 
@@ -27,7 +26,6 @@ Imports:
   future,
   enrichR (>= 2.0),
   scales, 
-  monocle3,
   SingleR,
   scater,
   SingleCellExperiment,
@@ -35,10 +33,9 @@ Imports:
   SummarizedExperiment,
   igraph,
   methods,
-  S4Vectors
-Remotes: 
-  cole-trapnell-lab/monocle3,
-  LTLA/SingleR, 
+  S4Vectors,
+  slingshot,
+  SingleR
 License: GPL-3 | file LICENSE
 URL: https://github.com/j-andrews7/EZscRNA
 BugReports: https://github.com/j-andrews7/EZscRNA/issues

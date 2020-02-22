@@ -3,9 +3,9 @@
 [![Travis build status](https://travis-ci.org/j-andrews7/EZscRNA.svg?branch=master)](https://travis-ci.org/j-andrews7/EZscRNA)
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/j-andrews7/EZscRNA?branch=master&svg=true)](https://ci.appveyor.com/project/j-andrews7/EZscRNA)
 
-This R package is meant to be a high-level wrapper around popular, well-maintained scRNA R packages (Seurat, Slingshot), created in an effort to streamline the end-to-end process for new users while still maintaining the ability to customize the analyses fully for more advanced users. It also attempts to include convenience functions for integrating multimodal data that other tools don't seem to address (mainly VDJ data) and cell type inference using any supplied reference dataset.
+This R package is meant to be a high-level wrapper around well-established scRNA R packages (e.g. Seurat, scran, slingshot), created in an effort to streamline the end-to-end process for new users while still maintaining the ability to customize the analyses fully for more advanced users. It also attempts to include convenience functions for integrating multimodal data that other tools don't seem to address (mainly VDJ data) and cell type inference using any supplied reference dataset.
 
-It was written with best practices as defined by the creators of Seurat in mind, so few changes should be necessary for basic users.
+Few changes should be necessary for basic users.
 
 It was developed for more convenient maintenance of our workflows, but if anyone else finds it useful, all the better.
 
@@ -19,7 +19,7 @@ Currently, EZscRNA can be installed with devtools:
 devtools::install_github("j-andrews7/EZscRNA")
 ```
 
-I'll get it on CRAN once I have a stable version (and the time to write documentation).
+It will be added to CRAN once stable and more well-documented.
 
 ## Quick Start
 
