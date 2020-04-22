@@ -251,18 +251,13 @@ PerformCellInference <- function(scrna, sce, method, refset, labels,
       write.table(pruned.label.dists, file = sprintf("%s/%s.%s.pruned.dist.txt", 
         outdir, metadata(refset)$name, labels), quote = FALSE, sep = "\t", 
         row.names = FALSE)
-      # pheatmap clustering can't handle tons of cells.
-      if (nrow(annots) < 65500) {
-        pdf(sprintf("%s/%s.%s.%s.%s.pdf", outdir, method, metadata(refset)$name, 
-          labels, clusts.name))
-        p <- SingleR::plotScoreHeatmap(annots, clusters = clusts, 
-          silent = TRUE, show.labels = TRUE, show.pruned = TRUE)
-        print(p)
-        dev.off()
-      } else {
-        message(paste0("Skipping `plotScoreHeatmap()`, as it can't cluster", 
-          " more than 65000 cells."))
-      }
+
+      pdf(sprintf("%s/%s.%s.%s.%s.pdf", outdir, method, metadata(refset)$name, 
+        labels, clusts.name))
+      p <- SingleR::plotScoreHeatmap(annots, clusters = clusts, 
+        silent = TRUE, show.labels = TRUE, show.pruned = TRUE)
+      print(p)
+      dev.off()
     }
 
     scrna[[sprintf("%s.%s", metadata(refset)$name, labels)]] <- annots$labels
