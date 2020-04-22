@@ -134,7 +134,7 @@ NormScoreCC <- function(scrna, skip.sct = NULL) {
 #'   with \code{reduction.name = "cc"}. 
 #'
 #' @importFrom Seurat SCTransform RunPCA ElbowPlot DimPlot 
-#'   as.SingleCellExperiment
+#'   as.SingleCellExperiment VariableFeatures
 #' @importFrom grDevices dev.off pdf
 #' @importFrom scater plotExplanatoryVariables
 #'
@@ -188,7 +188,7 @@ BatchCCEDA <- function(scrna, outdir = ".", npcs = 50, vars = NULL,
   		print(p)
   		dev.off()
     }
-    sce <- as.SingleCellExperiment(scrna)
+    sce <- as.SingleCellExperiment(scrna, assay = "SCT")
     var.feats <- VariableFeatures(scrna)
     p1 <- plotExplanatoryVariables(sce, variables = vars) + ggtitle("All Genes")
     p2 <- plotExplanatoryVariables(sce, variables = vars, 
