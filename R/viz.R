@@ -238,22 +238,22 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 	if (!is.null(g.by)) {
 
 		# Get clonotype frequencies.
-		df <- scrna[[]] %>% dplyr::count((!!as.symbol(g.by)), cdr3s_aa) %>% 
+		df <- scrna[[]] %>% dplyr::count((!!as.symbol(g.by)), cdr3) %>% 
 			dplyr::group_by(!!as.symbol(g.by)) %>% dplyr::mutate(prop = prop.table(n))
 
 		# Sort by frequency.
 		df <- df[order(-df$prop),]
 
 		# Remove rows with no TCR data.
-		df <- df[!is.na(df$cdr3s_aa),]
+		df <- df[!is.na(df$cdr3),]
 
 		# Get the top n TCR sequences by frequency. Sample agnostic.
-		c.df <- df[!duplicated(df$cdr3s_aa),]
+		c.df <- df[!duplicated(df$cdr3),]
 		c.df <- c.df[1:as.numeric(n.clono.c),]
 
 		# Get all rows for the the top TCR AA sequences in original df.
-		cdr3 <- c.df$cdr3s_aa
-		x.df <- df[(df$cdr3s_aa %in% cdr3),]
+		cdr3 <- c.df$cdr3
+		x.df <- df[(df$cdr3 %in% cdr3),]
 
 		# Order.
     if (!is.null(o.by)) {
@@ -270,7 +270,7 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 			width = 9)
 
 		# Plot grouped barchart for top clonotypes.
-		p <- ggplot(x.df, aes(x = reorder(cdr3s_aa, -prop), prop, 
+		p <- ggplot(x.df, aes(x = reorder(cdr3, -prop), prop, 
 			group = ord,  fill = !!as.symbol(g.by))) + 
 			geom_col(position = position_dodge(preserve = "single"), 
 			colour = "black") + scale_y_continuous(labels = scales::percent) +
@@ -291,7 +291,7 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 				g.spec <- g.spec[1:as.numeric(n.clono.g),]
 			}
 
-			p <- ggplot(g.spec, aes(x = reorder(cdr3s_aa, -prop), prop)) + geom_col(
+			p <- ggplot(g.spec, aes(x = reorder(cdr3, -prop), prop)) + geom_col(
 				colour = "black") + scale_y_continuous(labels = scales::percent) +
 				ggtitle(i) + xlab("Clonotype") + ylab("Frequency") + theme_classic() +
 				theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1), 
@@ -301,7 +301,7 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 		}
 	} else {
 		# Get clonotype frequencies.
-		df <- scrna[[]] %>% dplyr::count((!!as.symbol(g.by)), cdr3s_aa) %>% 
+		df <- scrna[[]] %>% dplyr::count((!!as.symbol(g.by)), cdr3) %>% 
 			dplyr::mutate(prop = prop.table(n))
 
 		# Subset df here for top clonotypes to show in specific groups.
@@ -310,7 +310,7 @@ VizVDJDist <- function(scrna, outdir, g.by = NULL, o.by = NULL, n.clono.c = 10,
 			g.spec <- g.spec[1:as.numeric(n.clono.g),]
 		}
 
-		p <- ggplot(g.spec, aes(x = reorder(cdr3s_aa, -prop), prop)) + geom_col(
+		p <- ggplot(g.spec, aes(x = reorder(cdr3, -prop), prop)) + geom_col(
 			colour = "black") + scale_y_continuous(labels = scales::percent) +
 			xlab("Clonotype") + ylab("Frequency") + theme_classic() +
 			theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1), 
