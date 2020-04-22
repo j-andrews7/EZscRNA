@@ -1,7 +1,7 @@
 Package: EZscRNA
 Title: Simple Convenience Functions for High-Level scRNA-Seq Analysis
 Version: 0.1.0.9000
-Date: 2019-11-25
+Date: 2020-04-22
 Authors@R: person("Jared", "Andrews", email = "jared.andrews07@gmail.com", 
   role = c("aut", "cre"),
   comment = c(ORCID = "https://orcid.org/0000-0002-0780-6248"))
@@ -26,7 +26,6 @@ Imports:
   future,
   enrichR (>= 2.0),
   scales, 
-  SingleR,
   scater,
   SingleCellExperiment,
   BiocGenerics,
@@ -35,7 +34,11 @@ Imports:
   methods,
   S4Vectors,
   slingshot,
-  SingleR
+  SingleR,
+  scDblFinder,
+  CellaRepertorium
+Remotes:
+  amcdavid/CellaRepertorium
 License: GPL-3 | file LICENSE
 URL: https://github.com/j-andrews7/EZscRNA
 BugReports: https://github.com/j-andrews7/EZscRNA/issues
