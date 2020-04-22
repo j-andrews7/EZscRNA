@@ -6,6 +6,8 @@ sudo: required
 r:
   - bioc-release
 
+warnings_are_errors: false
+
 # Attempt to get past time limit by having separate step for preparing cache.
 jobs:
   include:
