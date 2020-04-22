@@ -1,17 +1,24 @@
-#' Creates basic QC plots
+#' Perform basic QC
 #'
-#' \code{RunQC} saves 3 QC plots showing gene counts, read counts, and percent 
-#' mitochondrial reads per cell to help determine filters. It returns a
-#' \linkS4class{Seurat} object with percent mitochondrial reads added to the 
-#' \code{meta.data}.
+#' \code{RunQC} generates QC metrics for mitochondrial reads and doublets.
+#' It saves 3 QC plots showing gene counts, read counts, and percent 
+#' mitochondrial reads per cell to help determine filters. 
 #'
 #' @param scrna \linkS4class{Seurat} object.
 #' @param outdir Path to output directory for QC plots. Will not plot if not 
 #'   set.
-#' @return \linkS4class{Seurat} object with percent mitochondrial reads added to 
-#'   the \code{meta.data} for each cell.
+#' @param classify.doublets Boolean determining whether doublet classification
+#'   is performed.
+#' @param ... Additional arguments for controlling doublet classification passed
+#'   to \code{\link[scDblFinder]{scDblFinder}}.
+#' @return \linkS4class{Seurat} object with percent mitochondrial reads and
+#'   doublet metrics added to the \code{meta.data} for each cell.
 #'
-#' @importFrom Seurat PercentageFeatureSet VlnPlot
+#' @importFrom Seurat PercentageFeatureSet as.SingleCellExperiment
+#' @importFrom scDblFinder scDblFinder
+#' @importFrom utils write.table
+#' @importFrom grDevices dev.off pdf
+#' @importFrom dittoSeq multi_dittoPlot
 #'
 #' @export
 #'
@@ -21,21 +28,41 @@
 #'
 #' @author Jared Andrews
 #'
-RunQC <- function(scrna, outdir = NULL) {
-  # Low-quality or dying cells often have mitochondrial contamination.
-  scrna[["percent.mt"]] <- PercentageFeatureSet(scrna, pattern = "^MT-")
+#' @seealso \code{\link[scDblFinder]{scDblFinder}} for more info on doublet
+#'   classification.
+#'
+RunQC <- function(scrna, outdir = NULL, classify.doublets = TRUE, ...) {
+    # Low-quality or dying cells often have mitochondrial contamination.
+    scrna[["percent.mt"]] <- PercentageFeatureSet(scrna, pattern = "^MT-")
 
-  if (!is.null(outdir)) {
-    message("Creating QC plots.")
-    pdf(sprintf("%s/Vln.QC.Metrics.pdf", outdir), height = 12, width = 8, 
-    	useDingbats = FALSE)
-    p <- VlnPlot(scrna, features = c("nFeature_RNA", "nCount_RNA", 
-  		"percent.mt"), ncol = 1)
-    print(p)
-    dev.off()
-  }
+    # Classify doublets.
+    if (classify.doublets) {
+        sce <- as.SingleCellExperiment(scrna)
+        sce <- scDblFinder(sce, ...)
+    }
 
-  return(scrna)
+    scrna[["scDblFinder.weighted"]] <- sce$scDblFinder.weighted
+    scrna[["scDblFinder.ratio"]] <- sce$scDblFinder.ratio
+    scrna[["scDblFinder.class"]] <- sce$scDblFinder.class
+    scrna[["scDblFinder.score"]] <- sce$scDblFinder.score
+
+    if (!is.null(outdir)) {
+        message("Creating QC plots.")
+        pdf(sprintf("%s/Vln.QC.Metrics.pdf", outdir), height = 12, width = 8, 
+            useDingbats = FALSE)
+        p <- multi_dittoPlot(scrna, c("nFeature_RNA", "nCount_RNA", "percent.mt"), 
+            group.by = "orig.ident")
+        print(p)
+        dev.off()
+
+        if (classify.doublets) {    
+            write.table(as.matrix(table(scrna$scDblFinder.class)), 
+                file = sprintf("%s/doublet.counts.txt", outdir), 
+                sep = "\t", quote = FALSE, col.names = FALSE)
+        }
+    }
+
+    return(scrna)
 }
 
 
@@ -71,9 +98,9 @@ NormScoreCC <- function(scrna, skip.sct = NULL) {
 	s.genes <- cc.genes$s.genes
 	g2m.genes <- cc.genes$g2m.genes
 
-  if (!isTRUE(skip.sct)) {
-	  scrna <- SCTransform(scrna)
-  }
+    if (!isTRUE(skip.sct)) {
+        scrna <- SCTransform(scrna)
+    }
 
 	cc.seurat <- CellCycleScoring(scrna, s.features = s.genes, 
 		g2m.features = g2m.genes, assay = "RNA")
