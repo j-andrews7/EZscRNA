@@ -26,6 +26,7 @@
 #'   during \code{\link[Seurat]{SCTransform}}. 
 #' @param n.features Number of anchor features to use with 
 #'   \code{\link[Seurat]{SelectIntegrationFeatures}}. 
+#' @param ... Extra parameters passed to \code{\link[batchelor]{fastMNN}}.
 #' @return An integrated \linkS4class{Seurat} object with technical 
 #'   variation/batch effects removed from the individual samples.
 #'
@@ -41,7 +42,7 @@
 #' @author Jared Andrews
 #'
 SimpleIntegration <- function(scrnas, split.by = NULL, 
-  method = c("Seurat", "MNN"), vars.to.regress = NULL, n.features = 3000) {
+  method = c("Seurat", "MNN"), vars.to.regress = NULL, n.features = 3000, ...) {
 
     # Arg check.
     method <- match.arg(method)
@@ -68,7 +69,7 @@ SimpleIntegration <- function(scrnas, split.by = NULL,
 	}
 
     if (method == "MNN") {
-        scrna <- RunFastMNN(object.list = scrnas, features = n.features, assay = "SCT")
+        scrna <- RunFastMNN(object.list = scrnas, features = n.features, assay = "SCT", ...)
     } else if (method == "Seurat") {
         # Actual integration.
         anch.features <- Seurat::SelectIntegrationFeatures(object.list = scrnas, 
