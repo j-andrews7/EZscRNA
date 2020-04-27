@@ -127,8 +127,6 @@ ClusterDEG <- function(scrna, outdir = ".", npcs = 30, res = 0.8, mnn = FALSE,
     for (i in res) {
         message(paste0("Finding cluster markers using ", i, " resolution."))
         scrna <- FindClusters(scrna, resolution = i)
-        scrna[[sprintf("Clusters.%.1fRes.%dPC.%s", i, npcs, reduc)]] <- 
-            Idents(scrna) 
   
         markers <- FindAllMarkers(scrna, assay = "SCT", 
 			logfc.threshold = logfc.thresh, min.pct = min.pct, test.use = test)
