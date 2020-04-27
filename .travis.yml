@@ -27,6 +27,7 @@ r_binary_packages:
   - tidyr
   - stringi
   - Rcpp
+  - plyr
   - reticulate
   - RcppParallel
   - digest
@@ -48,6 +49,7 @@ r_binary_packages:
 before_script:
   - R -e 'BiocManager::install(ask=FALSE)'
   - R -e 'BiocManager::valid()'
+  - R -e 'update.packages(checkBuilt = TRUE, ask = FALSE)'
 
 apt_packages:
   - libudunits2-dev
