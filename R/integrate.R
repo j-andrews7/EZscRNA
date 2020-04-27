@@ -43,12 +43,12 @@
 SimpleIntegration <- function(scrnas, split.by = NULL, 
   method = c("Seurat", "MNN"), vars.to.regress = NULL, n.features = 3000) {
 
-  # Arg check.
-  method <- match.arg(method)
-  if (method == "MNN" && !(
-    "SeuratWrappers" %in% rownames(installed.packages()))) {
-    stop("'SeuratWrappers' must be installed before 'MNN' can be used.")
-  }
+    # Arg check.
+    method <- match.arg(method)
+    if (method == "MNN" && !(
+        "SeuratWrappers" %in% rownames(installed.packages()))) {
+        stop("'SeuratWrappers' must be installed before 'MNN' can be used.")
+    
 
 	# Seurat object splitting checking.
 	if (length(scrnas) > 1) {
@@ -67,21 +67,21 @@ SimpleIntegration <- function(scrnas, split.by = NULL,
 		}
 	}
 
-  if (method == "MNN") {
-    scrna <- RunFastMNN(object.list = scrnas, features = n.features)
-  } else if (method == "Seurat") {
-    # Actual integration.
-    anch.features <- Seurat::SelectIntegrationFeatures(object.list = scrnas, 
-      nfeatures = n.features)
-    scrnas <- Seurat::PrepSCTIntegration(object.list = scrnas, 
-      anchor.features = anch.features, verbose = FALSE)
+    if (method == "MNN") {
+        scrna <- RunFastMNN(object.list = scrnas, features = n.features, assay = "SCT")
+    } else if (method == "Seurat") {
+        # Actual integration.
+        anch.features <- Seurat::SelectIntegrationFeatures(object.list = scrnas, 
+            nfeatures = n.features)
+        scrnas <- Seurat::PrepSCTIntegration(object.list = scrnas, 
+            anchor.features = anch.features, verbose = FALSE)
 
-    anchors <- Seurat::FindIntegrationAnchors(object.list = scrnas, 
-      normalization.method = "SCT", anchor.features = anch.features, 
-      verbose = FALSE)
-    scrna <- Seurat::IntegrateData(anchorset = anchors, 
-      normalization.method = "SCT", verbose = FALSE)
-  }
+        anchors <- Seurat::FindIntegrationAnchors(object.list = scrnas, 
+            normalization.method = "SCT", anchor.features = anch.features, 
+            verbose = FALSE)
+        scrna <- Seurat::IntegrateData(anchorset = anchors, 
+            normalization.method = "SCT", verbose = FALSE)
+    }
 
 	return(scrna)
 }
