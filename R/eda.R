@@ -48,7 +48,7 @@ RunQC <- function(scrna, outdir = NULL, classify.doublets = TRUE, ...) {
 
     if (!is.null(outdir)) {
         message("Creating QC plots.")
-        pdf(sprintf("%s/Vln.QC.Metrics.pdf", outdir), height = 12, width = 8, 
+        pdf(sprintf("%s/Vln.QC.Metrics.pdf", outdir), height = 8, width = 8, 
             useDingbats = FALSE)
         p <- multi_dittoPlot(scrna, c("nFeature_RNA", "nCount_RNA", "percent.mt"), 
             group.by = "orig.ident")
