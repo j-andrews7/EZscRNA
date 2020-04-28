@@ -1,6 +1,6 @@
 #' Infers and assigns nearest cell type for each cell using SingleR
 #'
-#' \code{AssignCellType} performs correlation-based cell type inference using a 
+#' \code{InferCellType} performs correlation-based cell type inference using a 
 #' reference dataset via \code{\link[SingleR]{SingleR}}. 
 #'
 #' @details
@@ -26,34 +26,24 @@
 #' (the hclust method used fails with more cells than that). 
 #'
 #' @param scrna \linkS4class{Seurat} object.
-#' @param refsets List of reference dataset(s). Multiple can be provided.
-#' @param labels String indicating whether to use broad lineage-based labels 
-#'   \code{labels="label.main"} for each reference sample or more fine-grained 
-#'   labels (\code{labels="label.fine"}. The former is quicker and can be 
-#'   informative enough if your sample has many cell types. The latter is 
-#'   best-suited for purified cell types or if particular cellular subtypes are 
-#'   important. If both are supplied, inference will be performed for both 
-#'   label sets.
-#' @param outdir Path to output directory for annotation scores, distributions,
-#'   and heatmaps.
-#' @param method String or character vector specifying whether annotation should 
-#'   be applied to each single cell \code{method = "single"} or aggregated into 
-#'   cluster-level profiles \code{method = "cluster"} prior to annotation. If
-#'   both are supplied, inference will be performed for both methods.
+#' @param refs List of reference dataset(s). Multiple can be provided.
+#' @param labels List of vectors containing vectors for labels for each sample
+#'   in each reference dataset.
+#' @param outdir Path to output directory for results table(s).
 #' @param clusters String or character vector defining the \code{meta.data} 
 #'   column(s) in \code{scrna} that specify cluster identities for each cell. 
-#'   Only required if \code{method = "cluster"}. A character vector can be 
-#'   provided if multiple annotations with different clusters is wanted.
+#'   A character vector can be provided if multiple annotations with different 
+#'   clusters is wanted.
 #'   
 #'   If provided with \code{method = "single"}, clusters will be used as an 
 #'   additional label in heatmap plotting. 
-#' @param singler.params List of additional arguments to be passed to 
+#' @param ... Extra parameters to be passed to 
 #'   \code{\link[SingleR]{SingleR}}.
 #' @return A \linkS4class{Seurat} object with inferred
 #'   cell type information in the \code{meta.data} slot named in 
-#'   \code{refset.labels} format. If \code{method = "cluster"}, the resulting
+#'   \code{refset.labels} format. If \code{clusters} is provided, the resulting
 #'   \code{meta.data} column will be named in \code{clusters.refset.labels} 
-#'   format. Pruned labels will also be added with \code{.pruned} appended to
+#'   format. Pruned labels will also be added with \code{.pruned} prepended to
 #'   the column name.
 #'
 #' @importFrom utils write.table
@@ -66,209 +56,60 @@
 #' pbmc <- pbmc_small
 #' # Download reference data from ExperimentHub.
 #' hpca <- HumanPrimaryCellAtlasData()
-#' # Always give the reference set a name.
-#' metadata(hpca)$name <- "HPCA"
-#' pbmc.pred <- AssignCellType(pbmc, refsets = list(hpca), 
-#'   labels = "label.main", method = "single")
+#' pbmc.pred <- InferCellType(pbmc, refs = list(HPCA=hpca), 
+#'   labels = list(hpca$label.fine), method = "single")
 #'
-#' pbmc.clusters.pred <- AssignCellType(pbmc, refsets = list(hpca), 
-#'   labels = "label.fine", method = "cluster", clusters = "RNA_snn_res.1")
-#'
-#' \dontrun{
-#' # Use both broad and fine labels, 'Single' and 'cluster' method, multiple 
-#' # reference sets, and multiple cluster annotations.
-#' bp <- BlueprintEncodeData()
-#' metadata(bp)$name <- "Blueprint_Encode"
-#' pbmc.all.anno <- AssignCellType(pbmc, refsets = list(hpca, bp), 
-#'   clusters = c("RNA_snn_res.0.8", "RNA_snn_res.1"))
-#' }
+#' pbmc.clusters.pred <- InferCellType(pbmc, refsets = list(HPCA=hpca), 
+#'   labels = list(hpca$label.fine), method = "cluster", clusters = "RNA_snn_res.1")
 #'
 #' @seealso \code{\link[SingleR]{SingleR}} for additional options.
 #'
 #' @author Jared Andrews
 #'
-AssignCellType <- function(scrna, refsets, labels = c("label.main", 
-  "label.fine"), outdir = NULL, method = c("single", "cluster"), 
-  clusters = NULL, singler.params = NULL) {
+InferCellType <- function(scrna, refs, labels, outdir = NULL, clusters = NULL, 
+    recomp = TRUE, ...) {
 
-  # Arg matching & checking.
-  labels <- match.arg(labels, several.ok = TRUE)
-  method <- match.arg(method, several.ok = TRUE)
-
-  for (ref in refsets) {
-    if(is.null(metadata(ref)$name)) {
-      stop("The refset object must have a name", 
-        " (e.g. metadata(hpca)$name <- 'HPCA'")
+    dir.create(file.path(outdir), recursive = TRUE, showWarnings = FALSE)
+    
+    sce <- Seurat::as.SingleCellExperiment(scrna, assay = "RNA")
+    sce <- scater::logNormCounts(sce)
+    
+    if (recomp) {
+        out.suf <- "recomp"
+    } else {
+        # Used to differentiate between common combining and recomputed combining.
+        out.suf <- "common"
     }
-  }
 
-  if ((is.null(clusters)) && (method == "cluster")) {
-    stop("'clusters' cannot be NULL when 'method=\"cluster\"'.")
-  }
+    pred <- SingleR::SingleR(test = sce, ref = refs, labels = labels, method = "single", 
+        recompute = recomp, ...)
 
-  # Convert to SingleCellExperiment.
-  sce <- Seurat::as.SingleCellExperiment(scrna, assay = "RNA")
+    pred$cells <- rownames(pred)
 
-  # Reference datasets are log2 transformed rather than natural log transformed
-  # (Seurat). Scater normalization is log2. 
-  sce <- scater::logNormCounts(sce)
+    if (!is.null(outdir)) {
+        write.table(pred, file = sprintf("%s/CellPredictions.%s.txt", outdir, out.suf), 
+            sep = "\t", quote = FALSE, row.names = FALSE)
+    }
 
-  for (ref in refsets) {
-    message("Get common genes in ", metadata(ref)$name)
-    common <- intersect(rownames(sce), rownames(ref))
-    sce.com <- sce[common,]
-    ref <- ref[common,]
+    scrna[[sprintf("%s.pruned.labels", out.suf)]] <- pred$pruned.labels
+    scrna[[sprintf("%s.labels", out.suf)]] <- pred$labels
+    
+    if (!is.null(clusters)) {
+        for (clust in clusters) {
 
-    # This is admittedly a touch gross.
-    for (meth in method) {
-      for (lab in labels) {
-        if (!is.null(clusters)) {
-          for (c in clusters) {
-            scrna <- PerformCellInference(scrna = scrna, sce = sce.com, 
-              method = meth, refset = ref, labels = lab, 
-              clusts.name = c, clusts = sce[[c]], outdir = outdir, 
-              singler.params = singler.params)
-          }
-        } else {
-          scrna <- PerformCellInference(scrna = scrna, sce = sce.com, 
-            method = meth, refset = ref, labels = lab, outdir = outdir,
-            singler.params = singler.params)
+            pred <- SingleR::SingleR(test = sce, ref = refs, labels = labels, 
+                method = "cluster", clusters = sce[[clust]], recompute = recomp, ...)
+
+            pred$clusters <- rownames(pred)
+            scrna[[sprintf("%s.%s.pruned.pred",clust, out.suf)]] <- pred$pruned.labels[match(scrna[[]][[clust]], rownames(pred))]
+            scrna[[sprintf("%s.%s.pred",clust, out.suf)]] <- pred$labels[match(scrna[[]][[clust]], rownames(pred))]
+
+            if (!is.null(outdir)) {
+                write.table(pred, file = sprintf("%s/%s.%s.ClusterPredictions.txt", outdir, clust, out.suf), 
+                    sep = "\t", quote = FALSE, row.names = FALSE)
+            }
         }
-      }
     }
-  }
-
-	return(scrna)
-}
-
-#' Performs SingleR inference
-#'
-#' \code{PerformCellInference} performs correlation-based cell type inference 
-#' using a reference dataset via \code{\link[SingleR]{SingleR}}. 
-#'
-#' @param scrna \linkS4class{Seurat} object.
-#' @param sce \code{SingleCellExperiment} object.
-#' @param method String or character vector specifying whether annotation should 
-#'   be applied to each single cell \code{method = "single"} or aggregated into 
-#'   cluster-level profiles \code{method = "cluster"} prior to annotation. If
-#'   both are supplied, predictions will be performed for both methods.
-#' @param refset Reference dataset as \linkS4class{SummarizedExperiment}. 
-#' @param labels String indicating whether to use broad lineage-based labels 
-#'   \code{labels="label.main"} for each reference sample or more fine-grained 
-#'   labels (\code{labels="label.fine"}. 
-#' @param outdir Path to output directory for annotation scores, distributions,
-#'   and heatmap.
-#' @param clusts.name String indicating clusters column.
-#' @param clusts Vector of cluster assignments for each cell.
-#' @param singler.params List of arguments to be passed to 
-#'   \code{\link[SingleR]{SingleR}}.
-#' @return A \linkS4class{Seurat} object with inferred
-#'   cell type information in the \code{meta.data} slot named in 
-#'   \code{refset.labels} format. If \code{method = "cluster"}, the resulting
-#'   \code{meta.data} column will be named in \code{clusters.refset.labels} 
-#'   format. 
-#'
-#' @importFrom utils write.table
-#' @importFrom grDevices dev.off pdf
-#' @importFrom S4Vectors metadata
-#'
-#' @author Jared Andrews
-#'
-PerformCellInference <- function(scrna, sce, method, refset, labels, 
-  outdir, clusts.name = "NoClusters", clusts = NULL, singler.params = NULL) {
-
-  message("Performing cell type inference.")
-  
-  start <- Sys.time()
-  annots <- do.call(SingleR::SingleR, c(list(test = sce, ref = refset, 
-    labels = refset[[labels]], method = method, clusters = clusts), 
-    singler.params))
-  end <- Sys.time()
-
-  elapsed <- end - start
-  message("Took: ", round(elapsed, digits = 3), " seconds with:\n", 
-    paste0("labels: ", labels, "; method: ", method, "; ref: ", 
-      metadata(refset)$name, "; clusters: ", clusts.name))
-
-  label.dists <- 100 * (table(annots$labels) / 
-    sum(table(annots$labels)))
-
-  pruned.label.dists <- 100 * (table(annots$pruned.labels) / 
-    sum(table(annots$pruned.labels)))
-
-  if (method == "cluster") {
-    clusters <- rownames(annots)
-    rownames(annots) <- NULL
-    annots <- cbind(clusters, annots)
-
-    if (!is.null(outdir)) {
-      # Create output tables/plots.
-      write.table(annots, file = sprintf("%s/%s.%s.%s.txt", outdir, clusts.name, 
-        metadata(refset)$name, labels), quote = FALSE, sep = "\t", 
-        row.names = FALSE)
-      write.table(label.dists, file = sprintf("%s/%s.%s.%s.dist.txt", outdir, 
-        clusts.name, metadata(refset)$name, labels), quote = FALSE, sep = "\t", 
-        row.names = FALSE)
-      write.table(pruned.label.dists, file = sprintf(
-        "%s/%s.%s.%s.pruned.dist.txt", outdir, clusts.name, 
-        metadata(refset)$name, labels), quote = FALSE, sep = "\t", 
-        row.names = FALSE)
-      p <- SingleR::plotScoreHeatmap(annots, clusters = annots$clusters, 
-        silent = TRUE, show.labels = TRUE, show.pruned = TRUE)
-      pdf(sprintf("%s/%s.%s.%s.pdf", outdir, clusts.name, metadata(refset)$name, 
-        labels))
-      print(p)
-      dev.off()
-    }
-
-    # Add labels as column to meta.data.
-    scrna[[sprintf("%s.%s.%s", clusts.name, metadata(refset)$name, labels)]] <- 
-      annots$labels[match(scrna[[]][[clusts.name]], annots$clusters)]
-
-    scrna[[sprintf("%s.%s.%s.pruned", clusts.name, metadata(refset)$name, 
-      labels)]] <- 
-      annots$pruned.labels[match(scrna[[]][[clusts.name]], annots$clusters)]
-
-    # Change NAs to "Ambiguous" so they are still plotted by default.
-    scrna[[sprintf("%s.%s.%s.pruned", clusts.name, metadata(refset)$name, 
-      labels)]][is.na(scrna[[sprintf("%s.%s.%s.pruned", clusts.name, 
-        metadata(refset)$name, labels)]])] <- "Ambiguous"
-
-  } else {
-    cells <- rownames(annots)
-    rownames(annots) <- NULL
-    annots <- cbind(cells, annots)
-
-    if (!is.null(outdir)) {
-
-      # Create output tables/plots.
-      write.table(annots, file = sprintf("%s/%s.%s.txt", outdir, 
-        metadata(refset)$name, labels), quote = FALSE, sep = "\t", 
-        row.names = FALSE)
-      write.table(label.dists, file = sprintf("%s/%s.%s.dist.txt", outdir, 
-        metadata(refset)$name, labels), quote = FALSE, sep = "\t", 
-        row.names = FALSE)
-      write.table(pruned.label.dists, file = sprintf("%s/%s.%s.pruned.dist.txt", 
-        outdir, metadata(refset)$name, labels), quote = FALSE, sep = "\t", 
-        row.names = FALSE)
-
-      pdf(sprintf("%s/%s.%s.%s.%s.pdf", outdir, method, metadata(refset)$name, 
-        labels, clusts.name))
-      p <- SingleR::plotScoreHeatmap(annots, clusters = clusts, 
-        silent = TRUE, show.labels = TRUE, show.pruned = TRUE)
-      print(p)
-      dev.off()
-    }
-
-    scrna[[sprintf("%s.%s", metadata(refset)$name, labels)]] <- annots$labels
-    scrna[[sprintf("%s.%s.pruned", metadata(refset)$name, labels)]] <- 
-      annots$pruned.labels
-
-    # Change NAs to Ambiguous.
-    scrna[[sprintf("%s.%s.pruned", metadata(refset)$name, labels)]][is.na(
-      scrna[[sprintf("%s.%s.pruned", metadata(refset)$name, labels)]])] <- 
-      "Ambiguous"
-  }
-
-  return(scrna)
+    
+    return(scrna)
 }
