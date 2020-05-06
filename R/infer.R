@@ -57,10 +57,10 @@
 #' # Download reference data from ExperimentHub.
 #' hpca <- HumanPrimaryCellAtlasData()
 #' pbmc.pred <- InferCellType(pbmc, refs = list(HPCA=hpca), 
-#'   labels = list(hpca$label.fine), method = "single")
+#'   labels = list(hpca$label.fine))
 #'
-#' pbmc.clusters.pred <- InferCellType(pbmc, refsets = list(HPCA=hpca), 
-#'   labels = list(hpca$label.fine), method = "cluster", clusters = "RNA_snn_res.1")
+#' pbmc.clusters.pred <- InferCellType(pbmc, refs = list(HPCA=hpca), 
+#'   labels = list(hpca$label.fine), clusters = "RNA_snn_res.1")
 #'
 #' @seealso \code{\link[SingleR]{SingleR}} for additional options.
 #'
@@ -84,11 +84,11 @@ InferCellType <- function(scrna, refs, labels, outdir = NULL, clusters = NULL,
     pred <- SingleR::SingleR(test = sce, ref = refs, labels = labels, method = "single", 
         recompute = recomp, ...)
 
-    pred$cells <- rownames(pred)
-
     if (!is.null(outdir)) {
         write.table(pred, file = sprintf("%s/CellPredictions.%s.txt", outdir, out.suf), 
-            sep = "\t", quote = FALSE, row.names = FALSE)
+            sep = "\t", quote = FALSE, row.names = TRUE)
+
+        saveRDS(pred, file = sprintf("%s/CellPredictions.%s.rds", outdir, out.suf))
     }
 
     scrna[[sprintf("%s.pruned.labels", out.suf)]] <- pred$pruned.labels
@@ -107,6 +107,8 @@ InferCellType <- function(scrna, refs, labels, outdir = NULL, clusters = NULL,
             if (!is.null(outdir)) {
                 write.table(pred, file = sprintf("%s/%s.%s.ClusterPredictions.txt", outdir, clust, out.suf), 
                     sep = "\t", quote = FALSE, row.names = FALSE)
+
+                saveRDS(pred, file = sprintf("%s/%s.%s.ClusterPredictions.rds", outdir, clust, out.suf))
             }
         }
     }
